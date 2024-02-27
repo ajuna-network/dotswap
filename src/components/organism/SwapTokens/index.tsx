@@ -25,7 +25,12 @@ import { ReactComponent as SwitchArrow } from "../../../assets/img/switch-arrow.
 import { ReactComponent as AssetTokenIcon } from "../../../assets/img/test-token.svg";
 import { LottieMedium } from "../../../assets/loader";
 import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
-import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
+import {
+  createPoolCardsArray,
+  getAllLiquidityPoolsTokensMetadata,
+  getAllPools,
+  getPoolReserves,
+} from "../../../services/poolServices";
 import {
   checkSwapAssetForAssetExactInGasFee,
   checkSwapAssetForAssetExactOutGasFee,
@@ -589,7 +594,6 @@ const SwapTokens = () => {
       const assetTokensNotInPoolTokenPairsArray: any = assetTokens.filter((item: any) =>
         assetTokensInPoolTokenPairsArray.includes(item.assetTokenMetadata.symbol)
       );
-
       setAvailablePoolTokenA(assetTokensNotInPoolTokenPairsArray);
     }
   };
@@ -721,6 +725,26 @@ const SwapTokens = () => {
 
     setTokenSelectionModal(tokenInputSelected);
   };
+
+  useEffect(() => {
+    getSwapTokenA();
+    getSwapTokenB();
+  }, [tokenBalances, poolsTokenMetadata]);
+
+  useEffect(() => {
+    if (api) {
+      const fetchPools = async () => {
+        const pools = await getAllPools(api);
+        const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
+
+        if (pools) {
+          dispatch({ type: ActionType.SET_POOLS, payload: pools });
+          dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
+        }
+      };
+      fetchPools();
+    }
+  }, [api]);
 
   const closeSuccessModal = async () => {
     dispatch({ type: ActionType.SET_SWAP_FINALIZED, payload: false });

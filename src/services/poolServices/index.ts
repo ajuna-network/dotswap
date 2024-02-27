@@ -468,6 +468,7 @@ export const checkAddPoolLiquidityGasFee = async (
 
 export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
   const poolsTokenData = [];
+
   const pools = await getAllPools(api);
   if (pools) {
     const poolsAssetTokenIds = pools?.map((pool: any) => {
@@ -494,6 +495,7 @@ export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
       }
     }
   }
+
   return poolsTokenData;
 };
 

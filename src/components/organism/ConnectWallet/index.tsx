@@ -1,9 +1,5 @@
-import classNames from "classnames";
-import { NavLink, useLocation } from "react-router-dom";
-import { POOLS_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
 import { ReactComponent as AccountImage } from "../../../assets/img/account-image-icon.svg";
-import { ReactComponent as Logo } from "../../../assets/img/logo-icon.svg";
-import { ActionType, ButtonVariants, NetworkKeys, WalletConnectSteps } from "../../../app/types/enum.ts";
+import { ActionType, ButtonVariants, WalletConnectSteps } from "../../../app/types/enum.ts";
 import { reduceAddress } from "../../../app/util/helper";
 import {
   connectWalletAndFetchBalance,
@@ -21,18 +17,15 @@ import type { Timeout } from "react-number-format/types/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.ts";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
-import NetworkSelector from "../../atom/NetworkSelector/index.tsx";
 
-const HeaderTopNav = () => {
+const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
   const { walletConnectLoading, api } = state;
-  const location = useLocation();
 
   const [walletAccount, setWalletAccount] = useState<WalletAccount>({} as WalletAccount);
   const [modalStep, setModalStep] = useState<ModalStepProps>({ step: WalletConnectSteps.stepExtensions });
   const [walletConnectOpen, setWalletConnectOpen] = useState(false);
   const [supportedWallets, setSupportedWallets] = useState<Wallet[]>([] as Wallet[]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const walletConnected = LocalStorage.get("wallet-connected");
 
@@ -91,67 +84,43 @@ const HeaderTopNav = () => {
 
   return (
     <>
-      <nav className="flex h-[73px] items-center justify-between px-[23px]">
-        <div className="w-[400px]">
-          <Logo />
-        </div>
-        <div className="flex gap-16 text-gray-200">
-          <NavLink
-            to={SWAP_ROUTE}
-            className={classNames("font-unbounded-variable tracking-[.96px]", {
-              "text-gray-400": location.pathname.includes(SWAP_ROUTE),
-            })}
-          >
-            {t("button.swap")}
-          </NavLink>
-          <NavLink
-            to={POOLS_ROUTE}
-            className={classNames("font-unbounded-variable tracking-[.96px]", {
-              "text-gray-400": location.pathname.includes(POOLS_ROUTE),
-            })}
-          >
-            {t("button.pool")}
-          </NavLink>
-        </div>
-
-        <div className="flex w-[400px] items-center gap-8">
-          <NetworkSelector
-            items={[{ name: NetworkKeys.Rococo }, { name: NetworkKeys.Westend }, { name: NetworkKeys.Kusama }]}
-            networkSelected={window.localStorage.getItem("network") as NetworkKeys}
-            isDropdownOpen={isDropdownOpen}
-            setIsDropdownOpen={setIsDropdownOpen}
-          />
-          {walletConnected ? (
-            <>
-              {walletConnectLoading ? (
-                <Button
-                  onClick={connectWallet}
-                  variant={ButtonVariants.btnPrimaryPinkLg}
-                  disabled={walletConnectLoading}
-                >
-                  <LottieSmall />
-                </Button>
-              ) : (
-                <div className="flex items-center justify-center gap-[26px]">
-                  <div className="flex flex-col text-gray-300">
-                    <div className="font-[500]">{walletAccount?.name || "Account"}</div>
-                    <div className="text-small">{reduceAddress(walletAccount?.address, 6, 6)}</div>
-                  </div>
-                  <div>
-                    <button onClick={() => disconnectWallet()}>
-                      <AccountImage />
-                    </button>
-                  </div>
+      <div className="flex w-[400px] items-center justify-end gap-8">
+        {walletConnected ? (
+          <>
+            {walletConnectLoading ? (
+              <Button
+                className="max-w-[171px]"
+                onClick={connectWallet}
+                variant={ButtonVariants.btnPrimaryGhostLg}
+                disabled={walletConnectLoading}
+              >
+                <LottieSmall />
+              </Button>
+            ) : (
+              <div className="flex items-center justify-center gap-[26px]">
+                <div className="flex flex-col text-gray-300">
+                  <div className="font-[500]">{walletAccount?.name || "Account"}</div>
+                  <div className="text-small">{reduceAddress(walletAccount?.address, 6, 6)}</div>
                 </div>
-              )}
-            </>
-          ) : (
-            <Button onClick={connectWallet} variant={ButtonVariants.btnPrimaryPinkLg} disabled={walletConnectLoading}>
-              {walletConnectLoading ? <LottieSmall /> : t("button.connectWallet")}
-            </Button>
-          )}
-        </div>
-      </nav>
+                <div>
+                  <button onClick={() => disconnectWallet()}>
+                    <AccountImage />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <Button
+            className="max-w-[171px]"
+            onClick={connectWallet}
+            variant={ButtonVariants.btnPrimaryGhostLg}
+            disabled={walletConnectLoading}
+          >
+            {walletConnectLoading ? <LottieSmall /> : t("button.connectWallet")}
+          </Button>
+        )}
+      </div>
 
       <WalletConnectModal
         title="Connect a Wallet"
@@ -168,4 +137,4 @@ const HeaderTopNav = () => {
   );
 };
 
-export default HeaderTopNav;
+export default ConnectWallet;

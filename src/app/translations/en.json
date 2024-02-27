@@ -39,8 +39,11 @@
     "selectToken": "Select token",
     "swap": "Swap",
     "pool": "Pools",
+    "dashboard": "Dashboard",
+    "crossChain": "Cross chain",
     "confirmSwap": "Confirm Swap",
-    "connectWallet": "Connect Wallet"
+    "connectWallet": "Connect Wallet",
+    "support": "Support"
   },
   "modal": {
     "connectWallet": "Connect a Wallet",
