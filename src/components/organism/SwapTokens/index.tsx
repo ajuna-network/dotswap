@@ -727,11 +727,6 @@ const SwapTokens = () => {
   };
 
   useEffect(() => {
-    getSwapTokenA();
-    getSwapTokenB();
-  }, [tokenBalances, poolsTokenMetadata]);
-
-  useEffect(() => {
     if (api) {
       const fetchPools = async () => {
         const pools = await getAllPools(api);
