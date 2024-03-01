@@ -13,6 +13,7 @@ import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
+import { whitelist } from "../../whitelist";
 
 const { parents, nativeTokenSymbol } = useGetNetwork();
 
@@ -600,26 +601,28 @@ export const createPoolCardsArray = async (
               nativeTokenFormatted = new Decimal(nativeTokenFormatted).toFixed(4);
             }
 
-            poolCardsArray.push({
-              name: `${nativeTokenSymbol}–${assetTokenMetadata.toHuman()?.symbol}`,
-              lpTokenAsset: lpToken ? lpToken : null,
-              lpTokenId: lpTokenId,
-              assetTokenId: pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, ""),
-              totalTokensLocked: {
-                nativeToken: {
-                  decimals: nativeTokenDecimals || "0",
-                  icon: NativeTokenIcon,
-                  formattedValue: nativeTokenFormatted,
-                  value: nativeToken,
+            if (whitelist.includes(pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, ""))) {
+              poolCardsArray.push({
+                name: `${nativeTokenSymbol}–${assetTokenMetadata.toHuman()?.symbol}`,
+                lpTokenAsset: lpToken ? lpToken : null,
+                lpTokenId: lpTokenId,
+                assetTokenId: pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, ""),
+                totalTokensLocked: {
+                  nativeToken: {
+                    decimals: nativeTokenDecimals || "0",
+                    icon: NativeTokenIcon,
+                    formattedValue: nativeTokenFormatted,
+                    value: nativeToken,
+                  },
+                  assetToken: {
+                    decimals: assetTokenDecimals,
+                    icon: AssetTokenIcon,
+                    formattedValue: assetTokenFormated,
+                    value: assetToken,
+                  },
                 },
-                assetToken: {
-                  decimals: assetTokenDecimals,
-                  icon: AssetTokenIcon,
-                  formattedValue: assetTokenFormated,
-                  value: assetToken,
-                },
-              },
-            });
+              });
+            }
           }
         }
       })
