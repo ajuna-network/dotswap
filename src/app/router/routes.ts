@@ -6,6 +6,8 @@ const ADD_LIQUIDITY = "add-liquidity";
 const ADD_LIQUIDITY_TO_EXISTING = "add-liquidity/:id";
 const REMOVE_LIQUIDITY_FROM_EXISTING = "remove-liquidity/:id";
 const SWAP_ROUTE = "swap";
+const DASHBOARD_ROUTE = "dashboard";
+const CROSS_CHAIN_ROUTE = "cross-chain";
 const POOLS_ADD_LIQUIDITY = "/pools/add-liquidity";
 const POOLS_PAGE = "/pools";
 
@@ -24,6 +26,8 @@ export {
   HOME_ROUTE,
   POOLS_ROUTE,
   SWAP_ROUTE,
+  DASHBOARD_ROUTE,
+  CROSS_CHAIN_ROUTE,
   ADD_LIQUIDITY,
   POOLS_ADD_LIQUIDITY,
   POOLS_PAGE,

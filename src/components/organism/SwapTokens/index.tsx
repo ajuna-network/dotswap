@@ -52,6 +52,7 @@ import TokenAmountInput from "../../molecule/TokenAmountInput";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import SwapSelectTokenModal from "../SwapSelectTokenModal";
+import { whitelist } from "../../../whitelist";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -545,52 +546,13 @@ const SwapTokens = () => {
 
   const getSwapTokenA = async () => {
     if (api) {
-      const poolsAssetTokenIds = pools?.map((pool: any) => {
-        if (pool?.[0]?.[1].interior?.X2) {
-          const assetTokenIds = pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, "").toString();
-          return assetTokenIds;
-        }
-      });
-
-      const tokens = tokenBalances?.assets?.filter((item: any) => poolsAssetTokenIds.includes(item.tokenId)) || [];
+      const tokens = tokenBalances?.assets?.filter((item: any) => whitelist.includes(item.tokenId)) || [];
 
       const assetTokens = [nativeToken]
         .concat(tokens)
         ?.filter((item: any) => item.tokenId !== selectedTokens.tokenB?.tokenId);
 
-      const poolTokenPairsArray: any[] = [];
-
-      await Promise.all(
-        pools.map(async (pool: any) => {
-          if (pool?.[0]?.[1]?.interior?.X2) {
-            const poolReserve: any = await getPoolReserves(
-              api,
-              pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, "")
-            );
-
-            if (poolReserve?.length > 0) {
-              const assetTokenMetadata: any = await api.query.assets.metadata(
-                pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, "")
-              );
-
-              poolTokenPairsArray.push({
-                name: `${nativeTokenSymbol}–${assetTokenMetadata.toHuman().symbol}`,
-              });
-            }
-          }
-        })
-      );
-
-      const assetTokensInPoolTokenPairsArray = poolTokenPairsArray.map((item: any) => item.name.split("–")[1]);
-
-      assetTokensInPoolTokenPairsArray.push(nativeTokenSymbol);
-
-      // todo: refactor to be sure what data we are passing - remove any
-      const assetTokensNotInPoolTokenPairsArray: any = assetTokens.filter((item: any) =>
-        assetTokensInPoolTokenPairsArray.includes(item.assetTokenMetadata.symbol)
-      );
-
-      setAvailablePoolTokenA(assetTokensNotInPoolTokenPairsArray);
+      setAvailablePoolTokenA(assetTokens as any);
     }
   };
 
@@ -701,7 +663,7 @@ const SwapTokens = () => {
   const getSwapTokenB = () => {
     const poolLiquidTokens: any = [nativeToken]
       .concat(poolsTokenMetadata)
-      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenA?.tokenId);
+      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenA?.tokenId && whitelist.includes(item.tokenId));
     if (tokenBalances !== null) {
       for (const item of poolLiquidTokens) {
         for (const walletAsset of tokenBalances.assets) {

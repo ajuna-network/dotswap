@@ -1,9 +1,9 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import "@polkadot/api-augment";
-import type { AnyJson } from "@polkadot/types/types/codec";
 import { formatBalance } from "@polkadot/util";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
-import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
+import type { AnyJson } from "@polkadot/types/types/codec";
+import { getWallets } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { TokenBalanceData } from "../../app/types";
@@ -14,6 +14,7 @@ import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
+import { whitelist } from "../../whitelist";
 
 export const setupPolkadotApi = async () => {
   const { rpcUrl } = useGetNetwork();
@@ -42,27 +43,45 @@ export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: str
   const allChainAssets: { tokenData: AnyJson; tokenId: any }[] = [];
 
   allAssets.forEach((item) => {
-    allChainAssets.push({ tokenData: item?.[1].toHuman(), tokenId: item?.[0].toHuman() });
+    const id = item?.[0].toHuman();
+    if (id?.toString()?.replace(/[, ]/g, "")) {
+      allChainAssets.push({ tokenData: item?.[1].toHuman(), tokenId: item?.[0].toHuman() });
+    }
   });
 
   const myAssetTokenData = [];
+  const assetTokensDataPromises = [];
 
   for (const item of allChainAssets) {
     const cleanedTokenId = item?.tokenId?.[0]?.replace(/[, ]/g, "");
-    const tokenAsset = await api.query.assets.account(cleanedTokenId, walletAddress);
-
-    if (tokenAsset.toHuman()) {
-      const assetTokenMetadata = await api.query.assets.metadata(cleanedTokenId);
-
-      const resultObject = {
-        tokenId: cleanedTokenId,
-        assetTokenMetadata: assetTokenMetadata.toHuman(),
-        tokenAsset: tokenAsset.toHuman(),
-      };
-
-      myAssetTokenData.push(resultObject);
-    }
+    assetTokensDataPromises.push(
+      Promise.all([
+        api.query.assets.account(cleanedTokenId, walletAddress),
+        api.query.assets.metadata(cleanedTokenId),
+      ]).then(([tokenAsset, assetTokenMetadata]) => {
+        if (whitelist.includes(cleanedTokenId)) {
+          const resultObject = {
+            tokenId: cleanedTokenId,
+            assetTokenMetadata: assetTokenMetadata.toHuman(),
+            tokenAsset: tokenAsset.toHuman()
+              ? tokenAsset.toHuman()
+              : {
+                  balance: "",
+                  extra: "",
+                  reason: "",
+                  status: "",
+                },
+          };
+          return resultObject;
+        }
+        return null;
+      })
+    );
   }
+
+  const results = await Promise.all(assetTokensDataPromises);
+
+  myAssetTokenData.push(...results.filter((result) => result !== null));
 
   const ss58Format = tokenMetadata?.ss58Format.toHuman();
   const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman();
@@ -251,12 +270,8 @@ export const connectWalletAndFetchBalance = async (
   api: any,
   account: WalletAccount
 ) => {
-  dispatch({ type: ActionType.SET_WALLET_CONNECT_LOADING, payload: true });
-  const wallet = getWalletBySource(account.wallet?.extensionName);
-  wallet?.enable("DOT-ACP");
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);
-  dispatch({ type: ActionType.SET_WALLET_CONNECT_LOADING, payload: false });
   try {
     await setTokenBalance(dispatch, api, account);
   } catch (error) {

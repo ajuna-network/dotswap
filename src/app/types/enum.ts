@@ -96,3 +96,8 @@ export enum TransactionTypes {
   withdraw = "withdraw",
   createPool = "createPool",
 }
+
+export enum SwapOrPools {
+  swap = "swap",
+  pools = "pools",
+}

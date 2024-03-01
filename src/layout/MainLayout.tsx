@@ -1,29 +1,19 @@
-import { Outlet, useSearchParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import SeoHelmet from "../components/atom/SeoHelmet";
-import Footer from "../components/organism/Footer";
-import HeaderTopNav from "../components/organism/HeaderTopNav";
-import { useEffect } from "react";
+import Sidebar from "../components/organism/Sidebar";
+import ConnectWallet from "../components/organism/ConnectWallet";
 
 const MainLayout = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    const networkSession = window.localStorage.getItem("network");
-    const networkParam = searchParams.get("network");
-
-    if (networkSession && networkParam) {
-      window.localStorage.setItem("network", networkParam);
-      setSearchParams({ network: networkParam });
-    } else if (networkSession) {
-      setSearchParams({ network: networkSession });
-    }
-  }, []);
   return (
     <>
       <SeoHelmet />
-      <HeaderTopNav />
-      <Outlet />
-      <Footer />
+      <div className="flex px-4 py-8">
+        <div className="absolute right-0 top-0 z-[9999] px-4 py-8">
+          <ConnectWallet />
+        </div>
+        <Sidebar />
+        <Outlet />
+      </div>
     </>
   );
 };

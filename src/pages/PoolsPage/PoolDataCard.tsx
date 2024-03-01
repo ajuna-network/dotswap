@@ -59,7 +59,7 @@ const PoolDataCard = ({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-white p-6">
+    <div className="flex flex-col gap-8 rounded-2xl bg-gradient-to-b from-white from-[55%] to-purple-50 to-[45%] p-6">
       <div className="flex gap-2">
         <div className="relative flex basis-2/5 flex-col font-unbounded-variable">
           <div className="relative flex">
