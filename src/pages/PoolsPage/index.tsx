@@ -5,8 +5,7 @@ import { ReactComponent as TokenIcon } from "../../assets/img/token-icon.svg";
 import { LottieLarge } from "../../assets/loader";
 import { useAppContext } from "../../state";
 import PoolDataCard from "./PoolDataCard";
-import { createPoolCardsArray, getAllLiquidityPoolsTokensMetadata, getAllPools } from "../../services/poolServices";
-import { ActionType } from "../../app/types/enum";
+import { createPoolCardsArray } from "../../services/poolServices";
 
 const PoolsPage = () => {
   const { state, dispatch } = useAppContext();
@@ -23,35 +22,19 @@ const PoolsPage = () => {
   }, [pools, selectedAccount, tokenBalances]);
 
   useEffect(() => {
-    if (api) {
-      const fetchPools = async () => {
-        const pools = await getAllPools(api);
-        const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-
-        if (pools) {
-          dispatch({ type: ActionType.SET_POOLS, payload: pools });
-          dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
-        }
-      };
-      fetchPools();
-    }
-  }, [api]);
-
-  useEffect(() => {
     if (poolsCards.length > 0) {
       setPoolsIsLoading(false);
     }
   }, [poolsCards]);
 
   return (
-    // <div className="flex w-full items-center justify-center px-20 pb-16 pt-16">
     <div className="flex w-full max-w-[1280px] flex-col">
       {isPoolsLoading ? (
         <div className="flex items-center justify-center">
           <LottieLarge />
         </div>
       ) : pools.length > 0 && poolsCards.length > 0 ? (
-        <div className="mt-14 grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {poolsCards.map((item: PoolCardProps, index: number) => {
             return (
               <div key={index}>
@@ -78,7 +61,6 @@ const PoolsPage = () => {
         </div>
       )}
     </div>
-    // </div>
   );
 };
 export default PoolsPage;

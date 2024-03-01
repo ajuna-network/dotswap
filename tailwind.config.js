@@ -64,6 +64,7 @@ export default {
           400: "#000000E5",
         },
         warning: "#FFF9E9",
+        "gradient-half-gray": "linear-gradient(to bottom, white 50%, #FBFCFE 50%);",
       },
       backgroundImage: {
         "placeholder-tokens": "linear-gradient(90deg, #F1EFEF -24.18%, #F9F8F8 50.26%, #E7E5E5 114.84%)",

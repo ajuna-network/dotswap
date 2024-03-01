@@ -25,12 +25,7 @@ import { ReactComponent as SwitchArrow } from "../../../assets/img/switch-arrow.
 import { ReactComponent as AssetTokenIcon } from "../../../assets/img/test-token.svg";
 import { LottieMedium } from "../../../assets/loader";
 import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
-import {
-  createPoolCardsArray,
-  getAllLiquidityPoolsTokensMetadata,
-  getAllPools,
-  getPoolReserves,
-} from "../../../services/poolServices";
+import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
 import {
   checkSwapAssetForAssetExactInGasFee,
   checkSwapAssetForAssetExactOutGasFee,
@@ -57,6 +52,7 @@ import TokenAmountInput from "../../molecule/TokenAmountInput";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import SwapSelectTokenModal from "../SwapSelectTokenModal";
+import { whitelist } from "../../../whitelist";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -591,8 +587,9 @@ const SwapTokens = () => {
       assetTokensInPoolTokenPairsArray.push(nativeTokenSymbol);
 
       // todo: refactor to be sure what data we are passing - remove any
-      const assetTokensNotInPoolTokenPairsArray: any = assetTokens.filter((item: any) =>
-        assetTokensInPoolTokenPairsArray.includes(item.assetTokenMetadata.symbol)
+      const assetTokensNotInPoolTokenPairsArray: any = assetTokens.filter(
+        (item: any) =>
+          assetTokensInPoolTokenPairsArray.includes(item.assetTokenMetadata.symbol) && whitelist.includes(item.tokenId)
       );
       setAvailablePoolTokenA(assetTokensNotInPoolTokenPairsArray);
     }
@@ -705,7 +702,7 @@ const SwapTokens = () => {
   const getSwapTokenB = () => {
     const poolLiquidTokens: any = [nativeToken]
       .concat(poolsTokenMetadata)
-      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenA?.tokenId);
+      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenA?.tokenId && whitelist.includes(item.tokenId));
     if (tokenBalances !== null) {
       for (const item of poolLiquidTokens) {
         for (const walletAsset of tokenBalances.assets) {
@@ -725,21 +722,6 @@ const SwapTokens = () => {
 
     setTokenSelectionModal(tokenInputSelected);
   };
-
-  useEffect(() => {
-    if (api) {
-      const fetchPools = async () => {
-        const pools = await getAllPools(api);
-        const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-
-        if (pools) {
-          dispatch({ type: ActionType.SET_POOLS, payload: pools });
-          dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
-        }
-      };
-      fetchPools();
-    }
-  }, [api]);
 
   const closeSuccessModal = async () => {
     dispatch({ type: ActionType.SET_SWAP_FINALIZED, payload: false });

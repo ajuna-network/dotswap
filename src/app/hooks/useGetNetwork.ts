@@ -1,10 +1,8 @@
+import { NETWORKS } from "../../networkConfig";
+import { NetworkKeys } from "../types/enum";
+
 const useGetNetwork = () => {
-  return {
-    nativeTokenSymbol: "KSM",
-    rpcUrl: "wss://kusama-asset-hub-rpc.polkadot.io/",
-    parents: 1,
-    assethubSubscanUrl: "https://assethub-kusama.subscan.io",
-  };
+  return NETWORKS[NetworkKeys.Kusama];
 };
 
 export default useGetNetwork;

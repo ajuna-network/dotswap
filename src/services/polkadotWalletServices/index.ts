@@ -14,6 +14,7 @@ import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
+import { whitelist } from "../../whitelist";
 
 export const setupPolkadotApi = async () => {
   const { rpcUrl } = useGetNetwork();
@@ -42,7 +43,10 @@ export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: str
   const allChainAssets: { tokenData: AnyJson; tokenId: any }[] = [];
 
   allAssets.forEach((item) => {
-    allChainAssets.push({ tokenData: item?.[1].toHuman(), tokenId: item?.[0].toHuman() });
+    const id = item?.[0].toHuman();
+    if (id?.toString()?.replace(/[, ]/g, "") && whitelist.includes(id?.toString()?.replace(/[, ]/g, ""))) {
+      allChainAssets.push({ tokenData: item?.[1].toHuman(), tokenId: item?.[0].toHuman() });
+    }
   });
 
   const myAssetTokenData = [];
