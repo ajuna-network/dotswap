@@ -1,13 +1,13 @@
 import classNames from "classnames";
 import { NavLink, useLocation } from "react-router-dom";
 import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, POOLS_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
-import { ReactComponent as DotSwapLogo } from "../../../assets/img/dot-swap-logo.svg";
-import { ReactComponent as CrossChainIcon } from "../../../assets/img/cross-chain-icon.svg";
-import { ReactComponent as DashboardIcon } from "../../../assets/img/dashboard-icon.svg";
-import { ReactComponent as SwapIcon } from "../../../assets/img/swap-icon.svg";
-import { ReactComponent as GitIcon } from "../../../assets/img/git-icon.svg";
-import { ReactComponent as XIcon } from "../../../assets/img/x-icon.svg";
-import { ReactComponent as TelegramIcon } from "../../../assets/img/telegram-icon.svg";
+import DotSwapLogo from "../../../assets/img/dot-swap-logo.svg?react";
+import CrossChainIcon from "../../../assets/img/cross-chain-icon.svg?react";
+import DashboardIcon from "../../../assets/img/dashboard-icon.svg?react";
+import SwapIcon from "../../../assets/img/swap-icon.svg?react";
+import GitIcon from "../../../assets/img/git-icon.svg?react";
+import XIcon from "../../../assets/img/x-icon.svg?react";
+import TelegramIcon from "../../../assets/img/telegram-icon.svg?react";
 import { t } from "i18next";
 
 const Sidebar = () => {

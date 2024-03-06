@@ -2,7 +2,7 @@ import { FC } from "react";
 import Modal from "../../atom/Modal";
 import Button from "../../atom/Button";
 import { ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/types/enum";
-import { ReactComponent as DotToken } from "../../../assets/img/dot-token.svg";
+import DotToken from "../../../assets/img/dot-token.svg?react";
 
 interface SwapSelectTokenModalProps {
   open: boolean;

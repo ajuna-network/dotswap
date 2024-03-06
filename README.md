@@ -28,7 +28,6 @@
 
 This project is part of Polkadot initiative for building front-end and UI for Asset Conversion Pallet on Polkadot's AssetHub. Link to the proposal [here](https://polkadot.polkassembly.io/referenda/68). Currently, the app is deployed on Westend, Rococo and Kusama - [here](https://dotacp-demo.mvpworkshop.co/swap?network=kusama).
 
-
 ## Useful links
 
 Link to [Figma file](https://www.figma.com/community/file/1309495648742675196/dotacp-ui-kit).
@@ -37,6 +36,14 @@ Link to the [GitHub project](https://github.com/orgs/MVPWorkshop/projects/11).
 All important information regarding the pallet communication is [here](./ASSET_CONVERSION_PALLET.md).
 
 ## How to install
+
+### Add domain in your hosts file
+
+Add in /etc/hosts `dedswap.local` for 127.0.0.1
+
+```
+127.0.0.1       localhost dedswap.local
+```
 
 ### Install All Packages
 

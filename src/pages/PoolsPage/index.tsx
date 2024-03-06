@@ -1,7 +1,7 @@
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { PoolCardProps } from "../../app/types";
-import { ReactComponent as TokenIcon } from "../../assets/img/token-icon.svg";
+import TokenIcon from "../../assets/img/token-icon.svg?react";
 import { LottieLarge } from "../../assets/loader";
 import { useAppContext } from "../../state";
 import PoolDataCard from "./PoolDataCard";

@@ -1,4 +1,4 @@
-import { ReactComponent as AccountImage } from "../../../assets/img/account-image-icon.svg";
+import AccountImage from "../../../assets/img/account-image-icon.svg?react";
 import { ActionType, ButtonVariants, WalletConnectSteps } from "../../../app/types/enum.ts";
 import { reduceAddress } from "../../../app/util/helper";
 import {
