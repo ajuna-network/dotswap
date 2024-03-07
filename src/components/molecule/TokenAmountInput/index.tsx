@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { t } from "i18next";
-import React, { useRef, useState } from "react";
+import { ReactNode, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
@@ -15,7 +15,7 @@ type TokenAmountInputProps = {
   tokenDecimals?: string | undefined;
   disabled?: boolean;
   className?: string;
-  tokenIcon?: React.ReactNode;
+  tokenIcon?: ReactNode;
   tokenValue?: string;
   labelText?: string;
   selectDisabled?: boolean;

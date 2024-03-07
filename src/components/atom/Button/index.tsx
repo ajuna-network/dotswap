@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { ReactComponent as ArrowDownIcon } from "../../../assets/img/down-arrow.svg";
+import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import { ButtonVariants } from "../../../app/types/enum";
 import classNames from "classnames";
 import "./style.scss";
@@ -10,19 +10,7 @@ type ButtonProps = {
   disabled?: boolean;
   className?: string;
   icon?: ReactNode;
-  variant?:
-    | ButtonVariants.btnPrimaryPinkLg
-    | ButtonVariants.btnPrimaryPinkSm
-    | ButtonVariants.btnPrimaryGhostLg
-    | ButtonVariants.btnPrimaryGhostSm
-    | ButtonVariants.btnSecondaryWhite
-    | ButtonVariants.btnSecondaryGray
-    | ButtonVariants.btnInteractivePink
-    | ButtonVariants.btnInteractiveGhost
-    | ButtonVariants.btnInteractiveDisabled
-    | ButtonVariants.btnSelectPink
-    | ButtonVariants.btnSelectGray
-    | ButtonVariants.btnSelectDisabled;
+  variant?: ButtonVariants;
   onClick: () => void;
 };
 
