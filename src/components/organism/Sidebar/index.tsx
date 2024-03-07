@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { NavLink, useLocation } from "react-router-dom";
-import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, POOLS_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
+import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, SUPPORT_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
 import DotSwapLogo from "../../../assets/img/dot-swap-logo.svg?react";
 import CrossChainIcon from "../../../assets/img/cross-chain-icon.svg?react";
 import DashboardIcon from "../../../assets/img/dashboard-icon.svg?react";
@@ -22,11 +22,12 @@ const Sidebar = () => {
         <div className="flex h-full w-full flex-col justify-between text-dark-300">
           <div>
             <NavLink
-              to={POOLS_ROUTE}
+              to={DASHBOARD_ROUTE}
               className={classNames(
                 "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(POOLS_ROUTE),
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400":
+                    location.pathname.includes(DASHBOARD_ROUTE),
                 }
               )}
             >
@@ -60,11 +61,11 @@ const Sidebar = () => {
             </NavLink>
           </div>
           <NavLink
-            to={DASHBOARD_ROUTE}
+            to={SUPPORT_ROUTE}
             className={classNames(
               "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
               {
-                "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(DASHBOARD_ROUTE),
+                "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SUPPORT_ROUTE),
               }
             )}
           >
