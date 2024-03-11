@@ -11,6 +11,7 @@ export const enum ButtonVariants {
   btnSelectPink = "btn-select-pink",
   btnSelectGray = "btn-select-gray",
   btnSelectDisabled = "btn-select-disabled",
+  btnCloseModal = "btn-close-modal",
 }
 
 export enum ActionType {
@@ -47,6 +48,7 @@ export enum ActionType {
   SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS = "SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS",
   SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP = "SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP",
   SET_BLOCK_HASH_FINALIZED = "SET_BLOCK_HASH_FINALIZED",
+  SET_LP_FEE = "SET_LP_FEE",
 }
 
 export enum TokenSelection {

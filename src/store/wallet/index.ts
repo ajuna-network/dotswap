@@ -11,6 +11,7 @@ export const initialWalletState: WalletState = {
   extensions: [],
   assetLoading: false,
   blockHashFinalized: "",
+  lpFee: "",
 };
 
 export const walletReducer = (state: WalletState, action: WalletAction): WalletState => {
@@ -31,6 +32,9 @@ export const walletReducer = (state: WalletState, action: WalletAction): WalletS
       return { ...state, assetLoading: action.payload };
     case ActionType.SET_BLOCK_HASH_FINALIZED:
       return { ...state, blockHashFinalized: action.payload };
+    case ActionType.SET_LP_FEE:
+      return { ...state, lpFee: action.payload };
+
     default:
       return state;
   }

@@ -42,6 +42,10 @@ export const formatInputTokenValue = (base: Decimal.Value, decimals: string) => 
     .toFixed();
 };
 
+export const liquidityProviderFee = (base: Decimal.Value, lpFee: string) => {
+  return new Decimal(base).times(parseFloat(lpFee)).dividedBy(100).toFixed();
+};
+
 export const formatDecimalsFromToken = (base: Decimal.Value, decimals: string) => {
   return new Decimal(base || 0).dividedBy(Math.pow(10, parseFloat(decimals || "0"))).toFixed();
 };

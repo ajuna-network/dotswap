@@ -15,6 +15,8 @@ export default {
           100: "rgba(243, 245, 251, 0.4)",
           300: "rgba(0, 0, 0, 0.7)",
           400: "rgba(0, 0, 0, 0.9)",
+          450: "#000000B2",
+          500: "#232735",
         },
         pink: {
           DEFAULT: "#E6007A",
@@ -62,6 +64,7 @@ export default {
           200: "#00000080",
           300: "#000000B2",
           400: "#000000E5",
+          500: "#EDEFF2",
         },
         warning: "#FFF9E9",
         "gradient-half-gray": "linear-gradient(to bottom, white 50%, #FBFCFE 50%);",

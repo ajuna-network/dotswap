@@ -133,6 +133,9 @@ export const setTokenBalance = async (
       const walletTokens: any = await getWalletTokensBalance(api, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
 
+      const lpFee = await api.consts.assetConversion.lpFee;
+      dispatch({ type: ActionType.SET_LP_FEE, payload: lpFee.toHuman() });
+
       LocalStorage.set("wallet-connected", selectedAccount);
 
       dotAcpToast.success("Wallet successfully connected!");

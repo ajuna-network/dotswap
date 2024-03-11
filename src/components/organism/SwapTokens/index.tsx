@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import Decimal from "decimal.js";
 import { t } from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { NumericFormat } from "react-number-format";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { InputEditedProps, PoolCardProps, TokenDecimalsErrorProps, TokenProps } from "../../../app/types";
@@ -19,10 +19,14 @@ import {
   convertToBaseUnit,
   formatDecimalsFromToken,
   formatInputTokenValue,
+  liquidityProviderFee,
 } from "../../../app/util/helper";
 import DotToken from "../../../assets/img/dot-token.svg?react";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
 import AssetTokenIcon from "../../../assets/img/test-token.svg?react";
+import CustomSlippageIcon from "../../../assets/img/custom-slippage-icon.svg?react";
+import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
+import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 import { LottieMedium } from "../../../assets/loader";
 import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
 import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
@@ -46,6 +50,7 @@ import {
   sellMax,
 } from "../../../services/tokenServices";
 import { useAppContext } from "../../../state";
+import useClickOutside from "../../../app/hooks/useClickOutside";
 import Button from "../../atom/Button";
 import WarningMessage from "../../atom/WarningMessage";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
@@ -74,6 +79,7 @@ type TokenSelectedProps = {
 const SwapTokens = () => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
+  const slippageRef = useRef<HTMLInputElement>(null);
 
   const {
     tokenBalances,
@@ -82,7 +88,7 @@ const SwapTokens = () => {
     api,
     selectedAccount,
     swapFinalized,
-    swapGasFeesMessage,
+    // swapGasFeesMessage,
     swapGasFee,
     swapLoading,
     poolsCards,
@@ -90,6 +96,7 @@ const SwapTokens = () => {
     swapExactOutTokenAmount,
     assetLoading,
     isTokenCanNotCreateWarningSwap,
+    lpFee,
   } = state;
 
   const [tokenSelectionModal, setTokenSelectionModal] = useState<TokenSelection>(TokenSelection.None);
@@ -142,9 +149,17 @@ const SwapTokens = () => {
   const [waitingForTransaction, setWaitingForTransaction] = useState<NodeJS.Timeout>();
   const [priceImpact, setPriceImpact] = useState<string>("");
   const [assetBPriceOfOneAssetA, setAssetBPriceOfOneAssetA] = useState<string>("");
+  const [showSlippage, setShowSlippage] = useState<boolean>(false);
+  const [swapInfo, setSwapInfo] = useState<boolean>(false);
 
   const [isMaxValueLessThenMinAmount, setIsMaxValueLessThenMinAmount] = useState<boolean>(false);
 
+  const toggleShowSlippage = () => {
+    setShowSlippage(!showSlippage);
+  };
+  useClickOutside(slippageRef, () => {
+    setShowSlippage(false);
+  });
   const nativeToken = {
     tokenId: "",
     assetTokenMetadata: {
@@ -1415,8 +1430,77 @@ const SwapTokens = () => {
   return (
     <div className="flex max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
-        <h3 className="heading-6 font-unbounded-variable font-normal">{t("swapPage.swap")}</h3>
-        <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
+        <div className="relative flex w-full items-center justify-between">
+          <h3 className="heading-6 font-unbounded-variable font-normal">{t("swapPage.swap")}</h3>
+          <div ref={slippageRef}>
+            <button onClick={toggleShowSlippage}>
+              <CustomSlippageIcon />
+            </button>
+            {showSlippage && (
+              <div className="top absolute right-0 top-[45px] z-10 flex w-[333px] flex-col gap-2 rounded-lg border-[1px] border-purple-300 bg-purple-50 px-4 py-6">
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
+                  <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>
+                  <span>{slippageValue}%</span>
+                </div>
+                <div className="flex flex-row gap-2">
+                  <div className="flex w-full basis-3/4 flex-row rounded-lg border-[1px] border-purple-100 bg-white p-1 text-large font-normal text-gray-400">
+                    <button
+                      className={classNames(
+                        "flex basis-1/2 items-center justify-center rounded-lg px-4 py-1 leading-[19px] tracking-[0.2px]",
+                        {
+                          "bg-white": !slippageAuto,
+                          "bg-purple-100": slippageAuto,
+                        }
+                      )}
+                      onClick={() => {
+                        setSlippageAuto(true);
+                        setSlippageValue(15);
+                      }}
+                      disabled={assetLoading || !selectedAccount.address}
+                    >
+                      {t("tokenAmountInput.auto")}
+                    </button>
+
+                    <button
+                      className={classNames(
+                        "flex basis-1/2 items-center justify-center rounded-lg px-4 py-1 leading-[19px] tracking-[0.2px]",
+                        {
+                          "bg-white": slippageAuto,
+                          "bg-purple-100": !slippageAuto,
+                        }
+                      )}
+                      onClick={() => setSlippageAuto(false)}
+                      disabled={assetLoading || !selectedAccount.address}
+                    >
+                      {t("tokenAmountInput.custom")}
+                    </button>
+                  </div>
+                  <div className="flex basis-1/3">
+                    <div className="relative flex">
+                      <NumericFormat
+                        value={slippageValue}
+                        isAllowed={(values) => {
+                          const { formattedValue, floatValue } = values;
+                          return formattedValue === "" || (floatValue !== undefined && floatValue <= 99);
+                        }}
+                        onValueChange={({ value }) => {
+                          setSlippageValue(parseInt(value) >= 0 ? parseInt(value) : 0);
+                        }}
+                        fixedDecimalScale={true}
+                        thousandSeparator={false}
+                        allowNegative={false}
+                        className="w-full rounded-lg bg-purple-100 px-2 text-large  text-gray-200 outline-none"
+                        disabled={slippageAuto || swapLoading || assetLoading || !selectedAccount.address}
+                      />
+                      <span className="absolute bottom-1/4 right-2 text-medium text-gray-100">%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
         <TokenAmountInput
           tokenText={selectedTokens.tokenA?.tokenSymbol}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
@@ -1446,113 +1530,99 @@ const SwapTokens = () => {
           assetLoading={assetLoading}
         />
         <button
-          className="absolute top-[170px]"
+          className="absolute top-[190px]"
           onClick={() => {
             handleSwitchTokens();
           }}
         >
           <SwitchArrow />
         </button>
-        <div className="mt-1 text-small">{swapGasFeesMessage}</div>
-
-        <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6">
-          <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-            <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>
-            <span>{slippageValue}%</span>
-          </div>
-          <div className="flex flex-row gap-2">
-            <div className="flex w-full basis-8/12 flex-row rounded-xl bg-white p-1 text-large font-normal text-gray-400">
-              <button
-                className={classNames("flex basis-1/2 justify-center rounded-lg px-4 py-3", {
-                  "bg-white": !slippageAuto,
-                  "bg-purple-100": slippageAuto,
-                })}
-                onClick={() => {
-                  setSlippageAuto(true);
-                  setSlippageValue(15);
-                }}
-                disabled={assetLoading || !selectedAccount.address}
-              >
-                {t("tokenAmountInput.auto")}
-              </button>
-
-              <button
-                className={classNames("flex basis-1/2 justify-center rounded-lg px-4 py-3", {
-                  "bg-white": slippageAuto,
-                  "bg-purple-100": !slippageAuto,
-                })}
-                onClick={() => setSlippageAuto(false)}
-                disabled={assetLoading || !selectedAccount.address}
-              >
-                {t("tokenAmountInput.custom")}
-              </button>
-            </div>
-            <div className="flex basis-1/3">
-              <div className="relative flex">
-                <NumericFormat
-                  value={slippageValue}
-                  isAllowed={(values) => {
-                    const { formattedValue, floatValue } = values;
-                    return formattedValue === "" || (floatValue !== undefined && floatValue <= 99);
-                  }}
-                  onValueChange={({ value }) => {
-                    setSlippageValue(parseInt(value) >= 0 ? parseInt(value) : 0);
-                  }}
-                  fixedDecimalScale={true}
-                  thousandSeparator={false}
-                  allowNegative={false}
-                  className="w-full rounded-lg bg-purple-100 p-2 text-large  text-gray-200 outline-none"
-                  disabled={slippageAuto || swapLoading || assetLoading || !selectedAccount.address}
-                />
-                <span className="absolute bottom-1/3 right-2 text-medium text-gray-100">%</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Button
+          onClick={() => (getSwapButtonProperties.disabled ? null : setReviewModalOpen(true))}
+          variant={ButtonVariants.btnInteractivePink}
+          disabled={getSwapButtonProperties.disabled || swapLoading}
+        >
+          {swapLoading ? <LottieMedium /> : getSwapButtonProperties.label}
+        </Button>
         {selectedTokenAValue.tokenValue !== "" && selectedTokenBValue.tokenValue !== "" && (
           <>
             {" "}
-            <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
-              <div className="flex w-full flex-row text-medium font-normal text-gray-200">
-                <span>
-                  1 {selectedTokens.tokenA.tokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokens.tokenB.tokenSymbol}
-                </span>
-              </div>
-            </div>
-            <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6">
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Price impact</div>
-                <span>~ {priceImpact}%</span>
-              </div>
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">
-                  {inputEdited.inputType === InputEditedType.exactIn ? "Expected output" : "Expected input"}
+            <div
+              className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
+                " translate-all  easy-and-out h-[52px] duration-300": !swapInfo,
+                "translate-all easy-and-out h-[185px] duration-300 ": swapInfo,
+              })}
+            >
+              <div className="flex w-full flex-row text-medium font-normal">
+                <div className="flex w-full items-center justify-between">
+                  <span>
+                    1 {selectedTokens.tokenA.tokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokens.tokenB.tokenSymbol}
+                  </span>
+                  <button onClick={() => setSwapInfo(!swapInfo)} className="relative z-10">
+                    {
+                      <ArrowDownIcon
+                        className={classNames("transform transition-transform duration-300", {
+                          "rotate-[-180deg]": swapInfo,
+                        })}
+                      />
+                    }
+                  </button>
                 </div>
-                <span>
-                  {inputEdited.inputType === InputEditedType.exactIn
-                    ? selectedTokenBValue.tokenValue + " " + selectedTokens.tokenB.tokenSymbol
-                    : selectedTokenAValue.tokenValue + " " + selectedTokens.tokenA.tokenSymbol}
-                </span>
               </div>
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">
-                  {inputEdited.inputType === InputEditedType.exactIn ? "Minimum output" : "Maximum input"}
+              <div
+                className={classNames("flex flex-col justify-between gap-2", {
+                  "translate-all easy-and-out  bottom-[-170px] opacity-0 duration-300": !swapInfo,
+                  "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": swapInfo,
+                })}
+              >
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">
+                    {inputEdited.inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
+                  </div>
+                  <span className="text-dark-500">
+                    {inputEdited.inputType === InputEditedType.exactIn
+                      ? formatDecimalsFromToken(
+                          formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals),
+                          selectedTokens.tokenB.decimals
+                        ) +
+                        " " +
+                        selectedTokens.tokenB.tokenSymbol
+                      : formatDecimalsFromToken(
+                          formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
+                          selectedTokens.tokenA.decimals
+                        ) +
+                        " " +
+                        selectedTokens.tokenA.tokenSymbol}
+                  </span>
                 </div>
-                <span>
-                  {inputEdited.inputType === InputEditedType.exactIn
-                    ? formatDecimalsFromToken(
-                        formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals),
-                        selectedTokens.tokenB.decimals
-                      ) +
-                      " " +
-                      selectedTokens.tokenB.tokenSymbol
-                    : formatDecimalsFromToken(
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Price impact</div>
+                  <span className="text-dark-500">~ {priceImpact}%</span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Liquidity Fee</div>
+                  <span className="text-dark-500">
+                    {formatDecimalsFromToken(
+                      liquidityProviderFee(
                         formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
-                        selectedTokens.tokenA.decimals
-                      ) +
+                        lpFee
+                      ),
+                      selectedTokens.tokenA.decimals
+                    ) +
                       " " +
                       selectedTokens.tokenA.tokenSymbol}
-                </span>
+                  </span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Transaction Cost</div>
+                  <span className="text-dark-500">{swapGasFee}</span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Route</div>
+                  <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
+                    <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                  </div>
+                </div>
               </div>
             </div>
           </>
@@ -1581,14 +1651,6 @@ const SwapTokens = () => {
           }}
           selected={selectedTokens.tokenB}
         />
-
-        <Button
-          onClick={() => (getSwapButtonProperties.disabled ? null : setReviewModalOpen(true))}
-          variant={ButtonVariants.btnInteractivePink}
-          disabled={getSwapButtonProperties.disabled || swapLoading}
-        >
-          {swapLoading ? <LottieMedium /> : getSwapButtonProperties.label}
-        </Button>
 
         <SwapAndPoolSuccessModal
           open={swapFinalized}
@@ -1620,6 +1682,7 @@ const SwapTokens = () => {
           open={reviewModalOpen}
           title="Review Swap"
           priceImpact={priceImpact}
+          swapGasFee={swapGasFee}
           transactionType={TransactionTypes.swap}
           inputValueA={selectedTokenAValue.tokenValue}
           inputValueB={selectedTokenBValue.tokenValue}
