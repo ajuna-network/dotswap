@@ -7,7 +7,7 @@ const MainLayout = () => {
   return (
     <>
       <SeoHelmet />
-      <div className="flex px-4 py-8">
+      <div className="flex min-h-screen w-full px-4 py-8">
         <div className="absolute right-0 top-0 z-[9999] px-4 py-8">
           <ConnectWallet />
         </div>

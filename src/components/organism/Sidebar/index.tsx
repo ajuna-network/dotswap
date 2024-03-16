@@ -14,8 +14,8 @@ const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="flex h-screen w-full max-w-[194px] flex-col gap-6">
-      <div className="flex h-full max-h-[840px] w-full flex-col items-start gap-7 rounded-2xl bg-white py-8">
+    <div className="shrink-1 flex w-full max-w-[194px] flex-col gap-6">
+      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8">
         <div className="mb-12 pl-4">
           <DotSwapLogo />
         </div>
