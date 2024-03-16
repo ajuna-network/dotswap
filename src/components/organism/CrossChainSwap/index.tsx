@@ -36,6 +36,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainExactTokenAmount,
     crosschainOriginChainFee,
     crosschainDestinationChainFee,
+    crosschainDestinationWalletAddress,
     crosschainLoading,
     assetLoading,
   } = state;
@@ -94,28 +95,30 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   }, [api]);
 
   useEffect(() => {
+    if (!crosschainDestinationWalletAddress) return;
     const fetchBalance = async () => {
-      if (!selectedAccount || !selectedAccount.address) return;
       try {
         const provider = new WsProvider("wss://kusama-rpc.polkadot.io/");
         const api = await ApiPromise.create({ provider });
         const {
           data: { free: currentBalance },
-        } = await api.query.system.account(selectedAccount.address.toString());
+        } = await api.query.system.account(crosschainDestinationWalletAddress);
 
-        setSelectedChain((prev) => {
-          return {
-            ...prev,
-            balance: currentBalance.toString(),
-          };
-        });
+        currentBalance &&
+          setSelectedChain((prev) => {
+            return {
+              ...prev,
+              balance: currentBalance.toString() + " DOT",
+            };
+          });
       } catch (error) {
         console.error("Error fetching balance:", error);
       }
     };
 
     fetchBalance();
-  }, [selectedAccount]);
+    return;
+  }, [crosschainDestinationWalletAddress]);
 
   const handleChainSwitch = () => {
     handleTokenValueChange("");
