@@ -104,11 +104,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           data: { free: currentBalance },
         } = await api.query.system.account(crosschainDestinationWalletAddress);
 
+        const tokenDecimals = tokenBalances?.tokenDecimals as string;
+
         currentBalance &&
           setSelectedChain((prev) => {
             return {
               ...prev,
-              balance: currentBalance.toString(),
+              balance: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals as string),
             };
           });
       } catch (error) {
