@@ -108,7 +108,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           setSelectedChain((prev) => {
             return {
               ...prev,
-              balance: currentBalance.toString() + " DOT",
+              balance: currentBalance.toString(),
             };
           });
       } catch (error) {
