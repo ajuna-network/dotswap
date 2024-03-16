@@ -57,7 +57,7 @@ const DestinationWalletAddress = ({ chainName, isPopupEdit = true }: Destination
 
   return (
     <div className="flex w-full rounded-lg bg-purple-100 px-4 py-6">
-      <div className="flex flex-1 flex-col justify-center text-small font-normal tracking-[.3px]">
+      <div className="flex flex-1 flex-col items-start justify-center text-small font-normal tracking-[.3px]">
         <div className="text-gray-200">
           {t("destinationWalletAddress.destination")} {chainName} {t("destinationWalletAddress.address")}
         </div>
