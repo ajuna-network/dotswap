@@ -33,8 +33,8 @@ const SwapPage: FC = () => {
     return <PoolsPage />;
   };
   return (
-    <div className="relative flex w-full flex-col items-center pb-10 pt-32">
-      <div className="absolute left-[30px] top-[75px] flex gap-2 rounded-3xl bg-white p-1">
+    <div className="mt-[106px] flex w-full flex-1 flex-col items-start justify-center px-8">
+      <div className="z-10 flex gap-2 rounded-3xl bg-white p-1">
         <button
           className={classNames("h-[37px] w-[71px] rounded-3xl", {
             "bg-purple-100": swapOrPools === SwapOrPools.swap,
@@ -54,9 +54,8 @@ const SwapPage: FC = () => {
       </div>
       <div
         className={classNames({
-          "mt-[35px] max-w-[604px]": swapOrPools === SwapOrPools.swap,
-          "mt-[35px] flex w-full max-w-[1280px] flex-col items-center justify-center":
-            swapOrPools === SwapOrPools.pools,
+          "-mt-[106px] flex w-full flex-1 items-center justify-center py-8": swapOrPools === SwapOrPools.swap,
+          "flex w-full flex-1 flex-col py-8": swapOrPools === SwapOrPools.pools,
         })}
       >
         {renderSwapOrPools()}

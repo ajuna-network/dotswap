@@ -77,7 +77,7 @@ const DestinationWalletAddress = ({ chainName, isPopupEdit = true }: Destination
             <Modal isOpen={open} onClose={onClose} title={t("destinationWalletAddress.modalTitle")}>
               <div className="flex w-[391px] items-center justify-between py-4 text-small font-normal tracking-[.3px]">
                 <WalletAddressInputField
-                  className="!w-[391px] rounded-lg bg-purple-100 px-4 py-6"
+                  className="!w-[391px] rounded-lg bg-purple-100 px-4 py-6 text-center"
                   disabled={disabled}
                   inputValue={inputValue}
                   handleAddressChange={handleAddressChange}

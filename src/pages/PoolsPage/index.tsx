@@ -28,13 +28,13 @@ const PoolsPage = () => {
   }, [poolsCards]);
 
   return (
-    <div className="flex w-full max-w-[1280px] flex-col">
+    <div className="relative flex h-full w-full flex-1 flex-col items-center">
       {isPoolsLoading ? (
         <div className="flex items-center justify-center">
           <LottieLarge />
         </div>
       ) : pools.length > 0 && poolsCards.length > 0 ? (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid w-full grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {poolsCards.map((item: PoolCardProps, index: number) => {
             return (
               <div key={index}>
@@ -53,7 +53,7 @@ const PoolsPage = () => {
           })}
         </div>
       ) : (
-        <div className="flex h-[664px] flex-col items-center justify-center gap-4 rounded-2xl bg-white p-6">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl bg-white p-6">
           <TokenIcon />
           <div className="text-center text-gray-300">
             {selectedAccount ? t("poolsPage.noActiveLiquidityPositions") : t("poolsPage.connectWalletToView")}

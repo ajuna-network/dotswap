@@ -117,9 +117,15 @@ const TokenAmountInput = ({
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
           Balance:{" "}
-          {tokenId && tokenText && Number(tokenBalance) !== 0
-            ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)
-            : tokenBalance || 0}
+          {tokenId && tokenText && Number(tokenBalance) !== 0 ? (
+            <>
+              {formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)}
+              &nbsp;
+              <span>($)</span>
+            </>
+          ) : (
+            <>{tokenBalance || 0}</>
+          )}
           {tokenText &&
             onMaxClick &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&
