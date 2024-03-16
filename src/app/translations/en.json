@@ -41,6 +41,8 @@
     "pool": "Pools",
     "dashboard": "Dashboard",
     "crossChain": "Cross chain",
+    "crossIn": "Cross in",
+    "crossOut": "Cross out",
     "confirmSwap": "Confirm Swap",
     "connectWallet": "Connect Wallet",
     "support": "Support"
@@ -83,6 +85,17 @@
     "notConnected": "Not connected",
     "noWalletFound": "No wallet found!"
   },
+  "destinationWalletAddress": {
+    "destination": "Destination",
+    "address": "Address",
+    "modalTitle": "Edit destination address",
+    "modalConfirm": "Confirm & Save",
+    "modalCancel": "Close",
+    "invalidAddress": "Address not valid",
+    "resetAddress": "Reset address",
+    "edit": "Edit",
+    "done": "Done"
+  },
   "tokenAmountInput": {
     "youPay": "You pay",
     "youReceive": "You receive",
@@ -93,6 +106,19 @@
   "headerTopNav": {
     "swap": "Swap",
     "pool": "Pool"
+  },
+  "crosschainReviewTransactionModal": {
+    "crossIn": "Cross in",
+    "crossOut": "Cross out",
+    "confirmation": "confirmation",
+    "confirm": "Confirm",
+    "close": "Close",
+    "transfer": "Transfer",
+    "currentBalance": "Current balance",
+    "transferringAmount": "Transferring amount",
+    "originChainFee": "Origin chain fee",
+    "destinationChainFee": "Destination chain fee",
+    "newBalance": "New balance"
   },
   "pageError": {
     "error": "Error:",
@@ -132,6 +158,15 @@
     "poolExists": "No need to create a new pool. Liquidity can be added to the existing one.",
     "palletSlippageError": "Calculated amount out is less than provided minimum amount.",
     "slippageError": "The transaction could not be completed due to the set slippage."
+  },
+  "crosschainPage": {
+    "from": "From",
+    "to": "To",
+    "crosschain": "Cross chain",
+    "crosschainDescription": "Cross chain description",
+    "originChainFee": "Origin chain fee",
+    "destinationChainFee": "Destination chain fee",
+    "route": "Route"
   },
   "footer": {
     "poweredBy": "Powered by",
