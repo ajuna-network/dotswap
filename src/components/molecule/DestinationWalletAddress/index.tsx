@@ -165,7 +165,7 @@ const WalletAddressInputField = ({
           "w-full outline-none placeholder:text-gray-200",
           {
             "text-gray-200": disabled,
-            "border border-solid border-alert bg-alert bg-opacity-10": !isAddressValid && !disabled,
+            "border border-solid border-alert !bg-alert !bg-opacity-10": !isAddressValid && !disabled,
           },
           className ? className : ""
         )}

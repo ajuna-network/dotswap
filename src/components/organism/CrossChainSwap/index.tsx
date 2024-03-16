@@ -92,6 +92,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         };
       });
     });
+
+    setSelectedToken({
+      tokenSymbol: "",
+      tokenId: "0",
+      decimals: "",
+      tokenBalance: "",
+    });
+
+    handleTokenValueChange("");
   }, [api]);
 
   useEffect(() => {
