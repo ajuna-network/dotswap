@@ -2,10 +2,11 @@ import { FC, createContext, Dispatch, useContext, ReactNode } from "react";
 import { WalletState, WalletAction } from "../store/wallet/interface";
 import { PoolsState, PoolAction } from "../store/pools/interface";
 import { SwapAction, SwapState } from "../store/swap/interface";
+import { CrosschainAction, CrosschainState } from "../store/crosschain/interface";
 
 interface AppContextType {
-  state: WalletState & PoolsState & SwapState;
-  dispatch: Dispatch<WalletAction | PoolAction | SwapAction>;
+  state: WalletState & PoolsState & SwapState & CrosschainState;
+  dispatch: Dispatch<WalletAction | PoolAction | SwapAction | CrosschainAction>;
 }
 
 interface AppStateProviderProps {
