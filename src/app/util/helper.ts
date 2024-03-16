@@ -3,6 +3,8 @@ import * as Sentry from "@sentry/react";
 import { Decimal } from "decimal.js";
 import { t } from "i18next";
 import { UrlParamType } from "../types";
+import { isHex } from "@polkadot/util";
+import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 
 export const init = () => {
   // Sentry
@@ -122,4 +124,18 @@ export const convertToBaseUnit = (input: string): Decimal => {
   }
 
   return value;
+};
+
+// Validate Polkadot address
+export const isWalletAddressValid = (address: string) => {
+  try {
+    const decoded = encodeAddress(isHex(address) ? address : decodeAddress(address));
+    if (decoded !== address) {
+      throw new Error("Invalid address");
+    } else {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
 };
