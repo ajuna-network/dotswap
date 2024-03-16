@@ -15,6 +15,7 @@ import { LottieMedium } from "../../../assets/loader";
 import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -47,13 +48,24 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     tokenBalance: "",
   });
 
+  const [selectedChain, setSelectedChain] = useState({
+    chainA: {
+      chainName: "",
+      chainType: "",
+    },
+    chainB: {
+      chainName: "",
+      chainType: "",
+    },
+    balance: "0",
+  });
+
   useEffect(() => {
     const getChainInfo = async () => {
       if (api) {
         const chainInfo = await api.rpc.system.chain();
         return chainInfo;
       }
-
       return "";
     };
 
@@ -65,35 +77,52 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         ? chainInfo.toString().replace(" Asset Hub", "")
         : chainInfo.toString();
       const chainType = stringContains(chainInfo.toString(), "Asset Hub") ? "Asset Hub" : "Relay Chain";
-      setSelectedChain({
-        chainA: {
-          chainName: chainName,
-          chainType: chainType,
-        },
-        chainB: {
-          chainName: chainName,
-          chainType: chainType === "Asset Hub" ? "Relay Chain" : "Asset Hub",
-        },
+      setSelectedChain((prev) => {
+        return {
+          ...prev,
+          chainA: {
+            chainName: chainName,
+            chainType: chainType,
+          },
+          chainB: {
+            chainName: chainName,
+            chainType: chainType === "Asset Hub" ? "Relay Chain" : "Asset Hub",
+          },
+        };
       });
     });
   }, [api]);
 
-  const [selectedChain, setSelectedChain] = useState({
-    chainA: {
-      chainName: "",
-      chainType: "",
-    },
-    chainB: {
-      chainName: "",
-      chainType: "",
-    },
-  });
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!selectedAccount || !selectedAccount.address) return;
+      try {
+        const provider = new WsProvider("wss://kusama-rpc.polkadot.io/");
+        const api = await ApiPromise.create({ provider });
+        const {
+          data: { free: currentBalance },
+        } = await api.query.system.account(selectedAccount.address.toString());
+
+        setSelectedChain((prev) => {
+          return {
+            ...prev,
+            balance: currentBalance.toString(),
+          };
+        });
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+      }
+    };
+
+    fetchBalance();
+  }, [selectedAccount]);
 
   const handleChainSwitch = () => {
     handleTokenValueChange("");
     setSelectedChain({
       chainA: selectedChain.chainB,
       chainB: selectedChain.chainA,
+      balance: selectedChain.balance,
     });
   };
 
@@ -314,7 +343,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           <div>
             <TokenAmountInput
               tokenText={selectedToken?.tokenSymbol}
-              tokenBalance={selectedToken?.tokenBalance}
+              tokenBalance={
+                selectedChain.chainA.chainType !== "Asset Hub" ? selectedChain.balance : selectedToken?.tokenBalance
+              }
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
               labelText={t("tokenAmountInput.youPay")}
