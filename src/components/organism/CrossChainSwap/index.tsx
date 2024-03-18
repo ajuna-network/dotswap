@@ -14,7 +14,8 @@ import { useAppContext } from "../../../state";
 import { LottieMedium } from "../../../assets/loader";
 import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
-import { formatDecimalsFromToken, fetchRelayBalance, fetchAssetHubBalance } from "../../../app/util/helper";
+import { formatDecimalsFromToken } from "../../../app/util/helper";
+import { fetchRelayBalance, fetchAssetHubBalance } from "../../../services/polkadotWalletServices";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;

@@ -278,3 +278,90 @@ export const connectWalletAndFetchBalance = async (
     dotAcpToast.error(`Wallet connection error: ${error}`);
   }
 };
+
+/**
+ * Fetches the balance of a given address on a relay chain.
+ *
+ * @param address - The address to fetch the balance for.
+ * @param tokenBalancesDecimals - The number of decimals for token balances.
+ * @param setSelectedChain - A function to update the state with the fetched chain and balance information.
+ * @param rpcUrl - The RPC URL of the chain to connect to.
+ */
+
+type ChainDetail = {
+  chainName: string;
+  chainType: string;
+};
+
+type SelectedChainState = {
+  chainA: ChainDetail;
+  chainB: ChainDetail;
+  balance: string;
+};
+
+type SetSelectedChainFunction = React.Dispatch<React.SetStateAction<SelectedChainState>>;
+
+export const fetchRelayBalance = async (
+  address: string,
+  tokenBalancesDecimals: string,
+  setSelectedChain: SetSelectedChainFunction,
+  rpcUrl: string
+): Promise<void> => {
+  if (!address) return;
+
+  const { ApiPromise, WsProvider } = await import("@polkadot/api");
+
+  try {
+    const provider = new WsProvider(rpcUrl);
+    const api = await ApiPromise.create({ provider });
+    const {
+      data: { free: currentBalance },
+    } = await api.query.system.account(address);
+
+    await provider.disconnect();
+
+    const tokenDecimals = tokenBalancesDecimals as string;
+
+    if (currentBalance) {
+      setSelectedChain((prev: SelectedChainState) => ({
+        ...prev,
+        chainA: {
+          chainName: api.runtimeChain.toString(),
+          chainType: api.runtimeChain.toString().indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
+        },
+        balance: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+  }
+};
+
+/**
+ * Fetches and updates the chain information for the Asset Hub.
+ * This function is used to determine and set the current active chain's name and type.
+ *
+ * @param api - The ApiPromise instance used to query blockchain data. It can be null, indicating no API instance is available.
+ * @param setSelectedChain - A function to update the state with the fetched chain information. This function modifies the 'chainB' part of the state to reflect the current chain's details.
+ */
+
+export const fetchAssetHubBalance = async (api: ApiPromise | null, setSelectedChain: SetSelectedChainFunction) => {
+  if (!api) return;
+
+  const chainInfo = await api.rpc.system.chain();
+
+  const chainName =
+    chainInfo.indexOf("Asset Hub") !== -1 ? chainInfo.toString().replace(" Asset Hub", "") : chainInfo.toString();
+
+  try {
+    setSelectedChain((prev: SelectedChainState) => ({
+      ...prev,
+      chainB: {
+        chainName: chainName,
+        chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
+      },
+    }));
+  } catch (error) {
+    console.error("Error fetching chain info:", error);
+  }
+};
