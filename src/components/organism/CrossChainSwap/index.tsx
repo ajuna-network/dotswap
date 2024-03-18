@@ -77,11 +77,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
     fetchAssetHubBalance(api, setSelectedChain);
 
-    console.log("crosschainDestinationWalletAddress", crosschainDestinationWalletAddress);
-
     fetchRelayBalance(
       crosschainDestinationWalletAddress,
-      tokenBalances?.tokenDecimals.toString() as string,
+      tokenBalances?.tokenDecimals.toString(),
       setSelectedChain,
       "wss://rococo-rpc.polkadot.io/"
     );
@@ -99,9 +97,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const nativeToken = {
     tokenId: "",
     assetTokenMetadata: {
-      symbol: tokenBalances?.tokenSymbol as string,
-      name: tokenBalances?.tokenSymbol as string,
-      decimals: tokenBalances?.tokenDecimals as string,
+      symbol: tokenBalances?.tokenSymbol,
+      name: tokenBalances?.tokenSymbol,
+      decimals: tokenBalances?.tokenDecimals,
     },
     tokenAsset: {
       balance: tokenBalances?.balance,
@@ -402,7 +400,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           setReviewModalOpen(false);
         }}
         onConfirmTransaction={() => {
-          console.log("confirm transaction");
+          console.log("confirm transaction"); //TODO: implement confirm transaction
         }}
       />
     </div>
