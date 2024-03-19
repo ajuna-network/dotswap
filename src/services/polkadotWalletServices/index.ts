@@ -125,17 +125,16 @@ export const setTokenBalance = async (
   selectedAccount: WalletAccount
 ) => {
   if (api) {
-    dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
     try {
-      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
-
       const walletTokens: any = await getWalletTokensBalance(api, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
 
       LocalStorage.set("wallet-connected", selectedAccount);
 
       dotAcpToast.success("Wallet successfully connected!");
+
+      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
+      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
     } catch (error) {
       dotAcpToast.error(`Wallet connection error: ${error}`);
     } finally {
@@ -280,6 +279,66 @@ export const connectWalletAndFetchBalance = async (
 };
 
 /**
+ * Fetches the balance of a given address on a provided api instance.
+ *
+ * @param api - The ApiPromise instance used to query blockchain data.
+ * @param address - The address to fetch the balance for.
+ *
+ * @returns The balance of the address.
+ *
+ */
+
+export const fetchNativeTokenBalances = async (
+  address: string,
+  tokenDecimals: string,
+  api?: ApiPromise,
+  rpcUrl?: string
+) => {
+  if (!address) return;
+  if (!api && rpcUrl) {
+    const { ApiPromise, WsProvider } = await import("@polkadot/api");
+
+    try {
+      const provider = new WsProvider(rpcUrl);
+      const api = await ApiPromise.create({ provider });
+
+      const {
+        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
+      } = await api.query.system.account(address);
+
+      await provider.disconnect();
+
+      return {
+        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
+        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
+        chainName: api.runtimeChain.toString(),
+      };
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      return undefined;
+    }
+  } else if (api) {
+    try {
+      const {
+        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
+      } = await api.query.system.account(address);
+      return {
+        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
+        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
+        chainName: api.runtimeChain.toString(),
+      };
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+};
+
+/**
  * Fetches the balance of a given address on a relay chain.
  *
  * @param address - The address to fetch the balance for.
@@ -306,35 +365,27 @@ export const fetchRelayBalance = async (
   tokenBalancesDecimals: string,
   setSelectedChain: SetSelectedChainFunction,
   rpcUrl: string
-): Promise<void> => {
+) => {
   if (!address) return;
 
-  const { ApiPromise, WsProvider } = await import("@polkadot/api");
+  fetchNativeTokenBalances(address, tokenBalancesDecimals, undefined, rpcUrl).then((data) => {
+    if (!data) return;
 
-  try {
-    const provider = new WsProvider(rpcUrl);
-    const api = await ApiPromise.create({ provider });
-    const {
-      data: { free: currentBalance },
-    } = await api.query.system.account(address);
-
-    await provider.disconnect();
+    const { free, chainName } = data;
 
     const tokenDecimals = tokenBalancesDecimals as string;
 
-    if (currentBalance) {
+    if (free && chainName) {
       setSelectedChain((prev: SelectedChainState) => ({
         ...prev,
         chainA: {
-          chainName: api.runtimeChain.toString(),
-          chainType: api.runtimeChain.toString().indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
+          chainName: chainName,
+          chainType: chainName.indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
         },
-        balance: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+        balance: formatDecimalsFromToken(free.toString(), tokenDecimals),
       }));
     }
-  } catch (error) {
-    console.error("Error fetching balance:", error);
-  }
+  });
 };
 
 /**

@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { t } from "i18next";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useRef, useState, useEffect } from "react";
 import { NumericFormat } from "react-number-format";
 import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
-import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
+import { fetchTokenUsdPrice } from "../../../app/util/helper";
 
 type TokenAmountInputProps = {
   tokenText: string;
@@ -21,6 +21,7 @@ type TokenAmountInputProps = {
   selectDisabled?: boolean;
   assetLoading?: boolean;
   withdrawAmountPercentage?: number;
+  showUSDValue?: boolean;
   onClick: () => void;
   onSetTokenValue: (value: string) => void;
   onMaxClick?: () => void;
@@ -30,14 +31,13 @@ const TokenAmountInput = ({
   tokenIcon,
   tokenText,
   tokenBalance,
-  tokenId,
-  tokenDecimals,
   disabled,
   tokenValue,
   labelText,
   selectDisabled,
   assetLoading,
   withdrawAmountPercentage,
+  showUSDValue,
   onSetTokenValue,
   onClick,
   onMaxClick,
@@ -49,6 +49,17 @@ const TokenAmountInput = ({
   useClickOutside(wrapperRef, () => {
     setIsFocused(false);
   });
+
+  const [tokenPriceUSD, setTokenPriceUSD] = useState<string>("");
+
+  useEffect(() => {
+    if (!tokenText || !showUSDValue) return;
+    fetchTokenUsdPrice("polkadot").then((data: string | void) => {
+      if (typeof data === "string") {
+        setTokenPriceUSD((parseFloat(data) * parseFloat(tokenBalance || "0")).toFixed(2));
+      }
+    });
+  }, [tokenText]);
 
   return (
     <div
@@ -116,16 +127,8 @@ const TokenAmountInput = ({
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
-          Balance:{" "}
-          {tokenId && tokenText && Number(tokenBalance) !== 0 ? (
-            <>
-              {formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)}
-              &nbsp;
-              <span>($)</span>
-            </>
-          ) : (
-            <>{tokenBalance || 0}</>
-          )}
+          Balance: {tokenBalance || 0}
+          {tokenPriceUSD && showUSDValue && <span>&nbsp;(${tokenPriceUSD})</span>}
           {tokenText &&
             onMaxClick &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&

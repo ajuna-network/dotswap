@@ -139,3 +139,22 @@ export const isWalletAddressValid = (address: string) => {
     return false;
   }
 };
+
+export const fetchTokenUsdPrice = async (tokenSymbol: string) => {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "X-API-KEY": "YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=",
+    },
+  };
+
+  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenSymbol}`, options)
+    .then((response) => response.json())
+    .then((response) => {
+      return JSON.stringify(response.price, null, 2);
+    })
+    .catch((err) => console.error(err));
+
+  return price;
+};

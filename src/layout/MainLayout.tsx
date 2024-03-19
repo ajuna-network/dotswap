@@ -8,11 +8,13 @@ const MainLayout = () => {
     <>
       <SeoHelmet />
       <div className="flex min-h-screen w-full px-4 py-8">
-        <div className="absolute right-0 top-0 z-[9999] px-4 py-8">
-          <ConnectWallet />
-        </div>
         <Sidebar />
-        <Outlet />
+        <div className="flex w-full flex-col px-4">
+          <div className="z-[9999] flex w-full justify-end">
+            <ConnectWallet />
+          </div>
+          <Outlet />
+        </div>
       </div>
     </>
   );

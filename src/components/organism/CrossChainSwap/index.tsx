@@ -318,6 +318,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
                     : selectedChain.balance
                   : selectedToken?.tokenBalance
               }
+              showUSDValue
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
               labelText={t("tokenAmountInput.youPay")}
