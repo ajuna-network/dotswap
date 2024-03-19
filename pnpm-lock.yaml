@@ -29,6 +29,9 @@ dependencies:
   '@polkadot/util':
     specifier: ^12.3.2
     version: 12.6.2
+  '@polkadot/util-crypto':
+    specifier: ^12.6.2
+    version: 12.6.2(@polkadot/util@12.6.2)
   '@sentry/react':
     specifier: ^7.104.0
     version: 7.105.0(react@18.2.0)

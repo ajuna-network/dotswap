@@ -76,10 +76,16 @@ type TokenSelectedProps = {
   tokenSelected: TokenPosition;
 };
 
-const SwapTokens = () => {
+type SwapTokensProps = {
+  tokenId?: string;
+};
+
+const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
   const slippageRef = useRef<HTMLInputElement>(null);
+
+  console.log(tokenId); //TODO: remove after implementing function
 
   const {
     tokenBalances,

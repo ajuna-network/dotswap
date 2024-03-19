@@ -9,7 +9,7 @@ export const initialWalletState: WalletState = {
   tokenBalances: null,
   walletConnectLoading: false,
   extensions: [],
-  assetLoading: false,
+  assetLoading: true,
   blockHashFinalized: "",
   lpFee: "",
 };

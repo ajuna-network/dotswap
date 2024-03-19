@@ -58,6 +58,7 @@ export default {
           100: "#FFF9E9",
         },
         gray: {
+          5: "#EDEFF2",
           10: "#FFFFFF4D",
           50: "#0000000F",
           100: "#00000059",
@@ -67,6 +68,7 @@ export default {
           500: "#EDEFF2",
         },
         warning: "#FFF9E9",
+        alert: "#F53D6B",
         "gradient-half-gray": "linear-gradient(to bottom, white 50%, #FBFCFE 50%);",
       },
       backgroundImage: {

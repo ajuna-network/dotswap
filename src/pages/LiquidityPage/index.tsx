@@ -17,7 +17,7 @@ const LiquidityPage = () => {
     }
   };
 
-  return <div className="flex w-full flex-col items-center pb-10 pt-32">{renderPoolComponent()}</div>;
+  return <div className="flex w-full flex-col items-center px-6 py-8">{renderPoolComponent()}</div>;
 };
 
 export default LiquidityPage;
