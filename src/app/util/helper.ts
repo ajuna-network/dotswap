@@ -3,6 +3,8 @@ import * as Sentry from "@sentry/react";
 import { Decimal } from "decimal.js";
 import { t } from "i18next";
 import { UrlParamType } from "../types";
+import { isHex } from "@polkadot/util";
+import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 
 export const init = () => {
   // Sentry
@@ -40,6 +42,10 @@ export const formatInputTokenValue = (base: Decimal.Value, decimals: string) => 
     .times(Math.pow(10, parseFloat(decimals)))
     .floor()
     .toFixed();
+};
+
+export const liquidityProviderFee = (base: Decimal.Value, lpFee: string) => {
+  return new Decimal(base).times(parseFloat(lpFee)).dividedBy(100).toFixed();
 };
 
 export const formatDecimalsFromToken = (base: Decimal.Value, decimals: string) => {
@@ -122,4 +128,37 @@ export const convertToBaseUnit = (input: string): Decimal => {
   }
 
   return value;
+};
+
+// Validate Polkadot address
+export const isWalletAddressValid = (address: string) => {
+  try {
+    const decoded = encodeAddress(isHex(address) ? address : decodeAddress(address));
+    if (decoded !== address) {
+      throw new Error("Invalid address");
+    } else {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+export const fetchTokenUsdPrice = async (tokenSymbol: string) => {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "X-API-KEY": "YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=",
+    },
+  };
+
+  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenSymbol}`, options)
+    .then((response) => response.json())
+    .then((response) => {
+      return JSON.stringify(response.price, null, 2);
+    })
+    .catch((err) => console.error(err));
+
+  return price;
 };

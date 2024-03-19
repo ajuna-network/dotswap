@@ -84,4 +84,7 @@ button {
       @apply bg-gray-100 text-gray-200 hover:bg-gray-100 hover:text-gray-200;
     }
   }
+  &.btn-close-modal {
+    @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-unbounded-variable text-medium font-normal hover:text-pink;
+  }
 }

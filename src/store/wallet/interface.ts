@@ -13,6 +13,7 @@ export interface WalletState {
   walletConnectLoading: boolean;
   assetLoading: boolean;
   blockHashFinalized: string;
+  lpFee: string;
 }
 
 export type WalletAction =
@@ -23,4 +24,5 @@ export type WalletAction =
   | { type: ActionType.SET_WALLET_CONNECT_LOADING; payload: boolean }
   | { type: ActionType.SET_WALLET_EXTENSIONS; payload: InjectedExtension[] }
   | { type: ActionType.SET_ASSET_LOADING; payload: boolean }
-  | { type: ActionType.SET_BLOCK_HASH_FINALIZED; payload: string };
+  | { type: ActionType.SET_BLOCK_HASH_FINALIZED; payload: string }
+  | { type: ActionType.SET_LP_FEE; payload: string };

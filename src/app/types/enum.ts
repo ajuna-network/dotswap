@@ -11,6 +11,7 @@ export const enum ButtonVariants {
   btnSelectPink = "btn-select-pink",
   btnSelectGray = "btn-select-gray",
   btnSelectDisabled = "btn-select-disabled",
+  btnCloseModal = "btn-close-modal",
 }
 
 export enum ActionType {
@@ -47,6 +48,13 @@ export enum ActionType {
   SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS = "SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS",
   SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP = "SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP",
   SET_BLOCK_HASH_FINALIZED = "SET_BLOCK_HASH_FINALIZED",
+  SET_LP_FEE = "SET_LP_FEE",
+  SET_CROSSCHAIN_TRANSFER_FINALIZED = "SET_CROSSCHAIN_TRANSFER_FINALIZED",
+  SET_CROSSCHAIN_ORIGIN_CHAIN_FEE = "SET_CROSSCHAIN_ORIGIN_CHAIN_FEE",
+  SET_CROSSCHAIN_DESTINATION_CHAIN__FEE = "SET_CROSSCHAIN_DESTINATION_CHAIN__FEE",
+  SET_CROSSCHAIN_LOADING = "SET_CROSSCHAIN_LOADING",
+  SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT = "SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT",
+  SET_CROSSCHAIN_DESTINATION_WALLET_ADDRESS = "SET_CROSSCHAIN_DESTINATION_WALLET_ADDRESS",
 }
 
 export enum TokenSelection {
@@ -83,6 +91,7 @@ export enum NetworkKeys {
   Westend = "westend",
   Rococo = "rococo",
   Kusama = "kusama",
+  KusamaRPC = "kusamaRPC",
 }
 
 export enum WalletConnectSteps {
@@ -100,4 +109,9 @@ export enum TransactionTypes {
 export enum SwapOrPools {
   swap = "swap",
   pools = "pools",
+}
+
+export enum CrosschainTransactionTypes {
+  crossIn = "crossIn",
+  crossOut = "crossOut",
 }

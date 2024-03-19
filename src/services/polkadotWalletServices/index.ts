@@ -125,17 +125,19 @@ export const setTokenBalance = async (
   selectedAccount: WalletAccount
 ) => {
   if (api) {
-    dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
     try {
-      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
-
       const walletTokens: any = await getWalletTokensBalance(api, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
+
+      const lpFee = await api.consts.assetConversion.lpFee;
+      dispatch({ type: ActionType.SET_LP_FEE, payload: lpFee.toHuman() });
 
       LocalStorage.set("wallet-connected", selectedAccount);
 
       dotAcpToast.success("Wallet successfully connected!");
+
+      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
+      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
     } catch (error) {
       dotAcpToast.error(`Wallet connection error: ${error}`);
     } finally {
@@ -276,5 +278,144 @@ export const connectWalletAndFetchBalance = async (
     await setTokenBalance(dispatch, api, account);
   } catch (error) {
     dotAcpToast.error(`Wallet connection error: ${error}`);
+  }
+};
+
+/**
+ * Fetches the balance of a given address on a provided api instance.
+ *
+ * @param api - The ApiPromise instance used to query blockchain data.
+ * @param address - The address to fetch the balance for.
+ *
+ * @returns The balance of the address.
+ *
+ */
+
+export const fetchNativeTokenBalances = async (
+  address: string,
+  tokenDecimals: string,
+  api?: ApiPromise,
+  rpcUrl?: string
+) => {
+  if (!address) return;
+  if (!api && rpcUrl) {
+    const { ApiPromise, WsProvider } = await import("@polkadot/api");
+
+    try {
+      const provider = new WsProvider(rpcUrl);
+      const api = await ApiPromise.create({ provider });
+
+      const {
+        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
+      } = await api.query.system.account(address);
+
+      await provider.disconnect();
+
+      return {
+        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
+        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
+        chainName: api.runtimeChain.toString(),
+      };
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      return undefined;
+    }
+  } else if (api) {
+    try {
+      const {
+        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
+      } = await api.query.system.account(address);
+      return {
+        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
+        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
+        chainName: api.runtimeChain.toString(),
+      };
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      return undefined;
+    }
+  } else {
+    return undefined;
+  }
+};
+
+/**
+ * Fetches the balance of a given address on a relay chain.
+ *
+ * @param address - The address to fetch the balance for.
+ * @param tokenBalancesDecimals - The number of decimals for token balances.
+ * @param setSelectedChain - A function to update the state with the fetched chain and balance information.
+ * @param rpcUrl - The RPC URL of the chain to connect to.
+ */
+
+type ChainDetail = {
+  chainName: string;
+  chainType: string;
+};
+
+type SelectedChainState = {
+  chainA: ChainDetail;
+  chainB: ChainDetail;
+  balance: string;
+};
+
+type SetSelectedChainFunction = React.Dispatch<React.SetStateAction<SelectedChainState>>;
+
+export const fetchRelayBalance = async (
+  address: string,
+  tokenBalancesDecimals: string,
+  setSelectedChain: SetSelectedChainFunction,
+  rpcUrl: string
+) => {
+  if (!address) return;
+
+  fetchNativeTokenBalances(address, tokenBalancesDecimals, undefined, rpcUrl).then((data) => {
+    if (!data) return;
+
+    const { free, chainName } = data;
+
+    const tokenDecimals = tokenBalancesDecimals as string;
+
+    if (free && chainName) {
+      setSelectedChain((prev: SelectedChainState) => ({
+        ...prev,
+        chainA: {
+          chainName: chainName,
+          chainType: chainName.indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
+        },
+        balance: formatDecimalsFromToken(free.toString(), tokenDecimals),
+      }));
+    }
+  });
+};
+
+/**
+ * Fetches and updates the chain information for the Asset Hub.
+ * This function is used to determine and set the current active chain's name and type.
+ *
+ * @param api - The ApiPromise instance used to query blockchain data. It can be null, indicating no API instance is available.
+ * @param setSelectedChain - A function to update the state with the fetched chain information. This function modifies the 'chainB' part of the state to reflect the current chain's details.
+ */
+
+export const fetchAssetHubBalance = async (api: ApiPromise | null, setSelectedChain: SetSelectedChainFunction) => {
+  if (!api) return;
+
+  const chainInfo = await api.rpc.system.chain();
+
+  const chainName =
+    chainInfo.indexOf("Asset Hub") !== -1 ? chainInfo.toString().replace(" Asset Hub", "") : chainInfo.toString();
+
+  try {
+    setSelectedChain((prev: SelectedChainState) => ({
+      ...prev,
+      chainB: {
+        chainName: chainName,
+        chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
+      },
+    }));
+  } catch (error) {
+    console.error("Error fetching chain info:", error);
   }
 };

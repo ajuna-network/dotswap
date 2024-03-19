@@ -10,6 +10,7 @@ interface SwapSelectTokenModalProps {
   inputValueA: string;
   inputValueB: string;
   priceImpact?: string;
+  swapGasFee?: string;
   tokenValueA?: string;
   tokenValueB?: string;
   tokenValueASecond?: string;
@@ -28,7 +29,8 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   title,
   inputValueA,
   inputValueB,
-  priceImpact,
+  // priceImpact,
+  swapGasFee,
   tokenValueA,
   tokenValueASecond,
   tokenValueB,
@@ -72,10 +74,10 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
           <>
             <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
             <div className="flex flex-col">
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span className="font-inter text-medium text-gray-300">Price impact</span>
                 <span className="font-inter text-medium text-gray-400">{priceImpact}%</span>
-              </div>
+              </div> */}
               {showAll ? (
                 <>
                   <div className="flex justify-between">
@@ -105,29 +107,36 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                 </>
               ) : (
                 <>
-                  <div className="flex justify-between">
+                  {/* <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">
                       {inputType == InputEditedType.exactIn ? "Expected output" : "Expected input"}
                     </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueA} {tokenSymbolA}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">
-                      {inputType === InputEditedType.exactIn ? "Minimum output" : "Maximum input"}
+                      {inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
                     </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueB} {tokenSymbolB}
                     </span>
+                  </div>
+                  <div className="flex justify-between text-medium font-normal text-gray-300">
+                    <div className="flex">Transaction Cost</div>
+                    <span className="font-inter text-medium text-gray-400">{swapGasFee}</span>
                   </div>
                 </>
               )}
             </div>
           </>
         )}
-        <div className="flex flex-col">
-          <Button onClick={onConfirmTransaction} variant={ButtonVariants.btnInteractivePink}>
+        <div className="flex">
+          <Button onClick={onClose} variant={ButtonVariants.btnCloseModal}>
+            Close
+          </Button>
+          <Button onClick={onConfirmTransaction} variant={ButtonVariants.btnPrimaryPinkSm}>
             Confirm {transactionType === TransactionTypes.add && "Deposit"}
             {transactionType === TransactionTypes.swap && "Swap"}
             {transactionType === TransactionTypes.createPool && "Deposit"}
