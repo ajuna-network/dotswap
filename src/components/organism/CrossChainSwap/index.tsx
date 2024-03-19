@@ -16,6 +16,7 @@ import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { fetchRelayBalance, fetchAssetHubBalance } from "../../../services/polkadotWalletServices";
+import useGetNetwork from "../../../app/hooks/useGetNetwork";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -26,6 +27,8 @@ type TokenValueProps = {
 };
 
 const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
+  const { rpcUrlRelay } = useGetNetwork();
+
   const { state, dispatch } = useAppContext();
 
   const {
@@ -81,7 +84,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       crosschainDestinationWalletAddress,
       tokenBalances?.tokenDecimals.toString(),
       setSelectedChain,
-      "wss://rococo-rpc.polkadot.io/"
+      rpcUrlRelay
     );
   }, [crosschainDestinationWalletAddress, tokenBalances, setSelectedChain, api]);
 

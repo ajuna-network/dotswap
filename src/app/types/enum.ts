@@ -91,7 +91,6 @@ export enum NetworkKeys {
   Westend = "westend",
   Rococo = "rococo",
   Kusama = "kusama",
-  KusamaRPC = "kusamaRPC",
 }
 
 export enum WalletConnectSteps {

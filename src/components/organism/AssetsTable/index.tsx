@@ -7,6 +7,7 @@ import { fetchNativeTokenBalances } from "../../../services/polkadotWalletServic
 import AssetItemChild from "../../molecule/AccordionAssetItem/AssetItemChild";
 import Modal from "../../atom/Modal";
 import SwapTokens from "../SwapTokens";
+import useGetNetwork from "../../../app/hooks/useGetNetwork";
 
 type Token = {
   tokenId: string;
@@ -22,6 +23,8 @@ type Token = {
 
 const AssetsTable = () => {
   const { state } = useAppContext();
+
+  const { rpcUrlRelay } = useGetNetwork();
 
   const { tokenBalances, api, selectedAccount, assetLoading } = state;
 
@@ -52,7 +55,7 @@ const AssetsTable = () => {
         selectedAccount.address,
         tokenBalances?.tokenDecimals,
         undefined,
-        "wss://rococo-rpc.polkadot.io"
+        rpcUrlRelay
       ).then((data: any) => {
         const floatRelayBalance = parseFloat(data?.free);
         const floatTokenBalance = nativeToken.tokenAsset.balance ? parseFloat(nativeToken.tokenAsset.balance) : 0;
@@ -101,7 +104,7 @@ const AssetsTable = () => {
                     tokenSymbol={token.assetTokenMetadata.symbol}
                     decimals={token.assetTokenMetadata.decimals}
                     isRelayChain
-                    rpcUrl="wss://rococo-rpc.polkadot.io/"
+                    rpcUrl={rpcUrlRelay}
                   />
                   <AssetItemChild
                     tokenSymbol={token.assetTokenMetadata.symbol}
