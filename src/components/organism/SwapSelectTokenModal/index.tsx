@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { FC } from "react";
 import { TokenProps } from "../../../app/types";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
-import DotToken from "../../../assets/img/dot-token.svg?react";
+import TokenIcon from "../../atom/TokenIcon";
 import CheckIcon from "../../../assets/img/selected-token-check.svg?react";
 import Modal from "../../atom/Modal";
 
@@ -17,6 +17,7 @@ interface SwapSelectTokenModalProps {
   title: string;
   tokensData: TokenProps[];
   selected: TokenProps;
+  showBalance?: boolean;
   onClose: () => void;
   onSelect: (tokenData: TokenProps) => void;
 }
@@ -26,6 +27,7 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
   title,
   tokensData,
   selected,
+  showBalance = true,
   onClose,
   onSelect,
 }) => {
@@ -56,14 +58,18 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
                       id: item.tokenId,
                       assetSymbol: item.assetTokenMetadata.symbol,
                       decimals: item.assetTokenMetadata.decimals,
-                      assetTokenBalance: item.tokenAsset.balance,
+                      assetTokenBalance:
+                        formatDecimalsFromToken(
+                          Number(item.tokenAsset.balance?.replace(/[, ]/g, "")),
+                          item.assetTokenMetadata.decimals as string
+                        ) || "0",
                     })
                   }
                 >
                   <div className="flex w-full items-center justify-between">
                     <div className="flex gap-3">
                       <div>
-                        <DotToken width={36} height={36} />
+                        <TokenIcon tokenSymbol={item.assetTokenMetadata.symbol} />
                       </div>
                       <div className="flex flex-col items-start">
                         <div
@@ -82,17 +88,19 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      <div className="text-[12px] group-hover:text-white">
-                        {item.tokenId && item.tokenAsset.balance !== 0
-                          ? formatDecimalsFromToken(
-                              Number(item.tokenAsset.balance.replace(/[, ]/g, "")),
-                              item.assetTokenMetadata.decimals
-                            )
-                          : item.tokenAsset.balance}
+                    {showBalance ? (
+                      <div className="flex gap-1">
+                        <div className="text-[12px] group-hover:text-white">
+                          {item.tokenId && item.tokenAsset.balance !== 0
+                            ? formatDecimalsFromToken(
+                                Number(item.tokenAsset.balance.replace(/[, ]/g, "")),
+                                item.assetTokenMetadata.decimals
+                              )
+                            : item.tokenAsset.balance}
+                        </div>
+                        {item.tokenId === selected.tokenId ? <CheckIcon /> : null}
                       </div>
-                      {item.tokenId === selected.tokenId ? <CheckIcon /> : null}
-                    </div>
+                    ) : null}
                   </div>
                 </button>
               </div>

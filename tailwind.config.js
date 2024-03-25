@@ -5,6 +5,7 @@ export default {
     extend: {
       fontFamily: {
         "unbounded-variable": ["UnboundedVariable", "sans-serif"],
+        "titillium-web": ["TitilliumWeb", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
       colors: {
@@ -13,6 +14,7 @@ export default {
         },
         dark: {
           100: "rgba(243, 245, 251, 0.4)",
+          200: "rgba(0, 0, 0, 0.3)",
           300: "rgba(0, 0, 0, 0.7)",
           400: "rgba(0, 0, 0, 0.9)",
           450: "#000000B2",

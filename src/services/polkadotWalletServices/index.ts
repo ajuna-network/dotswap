@@ -350,45 +350,37 @@ export const fetchNativeTokenBalances = async (
  * @param rpcUrl - The RPC URL of the chain to connect to.
  */
 
-type ChainDetail = {
-  chainName: string;
-  chainType: string;
-};
+export const fetchRelayBalance = async (address: string, tokenBalancesDecimals: string, rpcUrl: string) => {
+  try {
+    if (!address) return;
 
-type SelectedChainState = {
-  chainA: ChainDetail;
-  chainB: ChainDetail;
-  balance: string;
-};
+    const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, undefined, rpcUrl);
 
-type SetSelectedChainFunction = React.Dispatch<React.SetStateAction<SelectedChainState>>;
-
-export const fetchRelayBalance = async (
-  address: string,
-  tokenBalancesDecimals: string,
-  setSelectedChain: SetSelectedChainFunction,
-  rpcUrl: string
-) => {
-  if (!address) return;
-
-  fetchNativeTokenBalances(address, tokenBalancesDecimals, undefined, rpcUrl).then((data) => {
-    if (!data) return;
+    if (!data) {
+      return {
+        chainB: {
+          chainName: "",
+          chainType: "",
+        },
+        balance: "",
+      };
+    }
 
     const { free, chainName } = data;
 
-    const tokenDecimals = tokenBalancesDecimals as string;
-
     if (free && chainName) {
-      setSelectedChain((prev: SelectedChainState) => ({
-        ...prev,
-        chainA: {
+      return {
+        chainB: {
           chainName: chainName,
           chainType: chainName.indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
         },
-        balance: formatDecimalsFromToken(free.toString(), tokenDecimals),
-      }));
+        balance: free.toString(),
+      };
     }
-  });
+  } catch (error) {
+    console.error("Error fetching relay balance:", error);
+    return null; // Return null or handle the error appropriately
+  }
 };
 
 /**
@@ -399,7 +391,7 @@ export const fetchRelayBalance = async (
  * @param setSelectedChain - A function to update the state with the fetched chain information. This function modifies the 'chainB' part of the state to reflect the current chain's details.
  */
 
-export const fetchAssetHubBalance = async (api: ApiPromise | null, setSelectedChain: SetSelectedChainFunction) => {
+export const fetchAssetHubBalance = async (api: ApiPromise | null) => {
   if (!api) return;
 
   const chainInfo = await api.rpc.system.chain();
@@ -408,13 +400,10 @@ export const fetchAssetHubBalance = async (api: ApiPromise | null, setSelectedCh
     chainInfo.indexOf("Asset Hub") !== -1 ? chainInfo.toString().replace(" Asset Hub", "") : chainInfo.toString();
 
   try {
-    setSelectedChain((prev: SelectedChainState) => ({
-      ...prev,
-      chainB: {
-        chainName: chainName,
-        chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
-      },
-    }));
+    return {
+      chainName: chainName,
+      chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
+    };
   } catch (error) {
     console.error("Error fetching chain info:", error);
   }

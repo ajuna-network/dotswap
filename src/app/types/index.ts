@@ -39,6 +39,20 @@ export type TokenBalanceData = {
   assets: any;
 };
 
+export type AssetListToken = {
+  tokenId: string;
+  assetTokenMetadata: {
+    symbol: string;
+    name: string;
+    decimals: string;
+  };
+  tokenAsset: {
+    balance: string;
+    relayBalance: string;
+  };
+  spotPrice: string;
+};
+
 export type UrlParamType = {
   id: string;
 };
@@ -67,4 +81,16 @@ export type Token = {
   value: string;
   decimals: string;
   formattedValue: string;
+};
+
+export type SelectedChain = {
+  chainA: {
+    chainName: string;
+    chainType: string;
+  };
+  chainB: {
+    chainName: string;
+    chainType: string;
+  };
+  balance: string;
 };

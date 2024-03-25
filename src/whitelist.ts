@@ -1,2 +1,5 @@
-// '' = native, 10 = usdc, 11 = usdt, 85 = dot is ded, 1894 = USDt(only for testing)
-export const whitelist = ["", "10", "11", "85", "1984"];
+// '' = native, 1984 = USDt, 1107 = GUPPY || Kusama
+export const whitelist = ["", "1984", "1107"];
+
+// '' = native, 1984 = USDt, 1337 = USDC || Polkadot
+// export const whitelist = ["", "1984", "1337"];

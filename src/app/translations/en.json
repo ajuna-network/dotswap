@@ -162,6 +162,7 @@
   "crosschainPage": {
     "from": "From",
     "to": "To",
+    "transfer": "Transfer",
     "crosschain": "Cross chain",
     "crosschainDescription": "Cross chain description",
     "originChainFee": "Origin chain fee",

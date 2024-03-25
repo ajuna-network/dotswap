@@ -6,7 +6,7 @@ import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
-import { fetchTokenUsdPrice } from "../../../app/util/helper";
+import { getSpotPrice } from "../../../app/util/helper";
 
 type TokenAmountInputProps = {
   tokenText: string;
@@ -53,13 +53,13 @@ const TokenAmountInput = ({
   const [tokenPriceUSD, setTokenPriceUSD] = useState<string>("");
 
   useEffect(() => {
-    if (!tokenText || !showUSDValue) return;
-    fetchTokenUsdPrice("polkadot").then((data: string | void) => {
+    if (!tokenText || !showUSDValue || !tokenBalance) return;
+    getSpotPrice(tokenText).then((data: string | void) => {
       if (typeof data === "string") {
         setTokenPriceUSD((parseFloat(data) * parseFloat(tokenBalance || "0")).toFixed(2));
       }
     });
-  }, [tokenText]);
+  }, [tokenText, tokenBalance]);
 
   return (
     <div
@@ -118,7 +118,7 @@ const TokenAmountInput = ({
             className="basis-[57%]"
             disabled={disabled}
           >
-            {disabled && assetLoading ? <LottieSmall /> : t("button.selectToken")}
+            {!disabled ? assetLoading ? <LottieSmall /> : t("button.selectToken") : t("button.selectToken")}
           </Button>
         )}
       </div>
