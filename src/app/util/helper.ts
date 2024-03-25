@@ -144,7 +144,39 @@ export const isWalletAddressValid = (address: string) => {
   }
 };
 
-export const fetchTokenUsdPrice = async (tokenSymbol: string) => {
+/**
+ * Fetches the spot price of a token from Coinstats API
+ * @param tokenSymbol pass the token symbol to get the spot price in USD
+ * @returns USD value of the token
+ */
+
+export const getSpotPrice = async (tokenSymbol: string) => {
+  if (!tokenSymbol || tokenSymbol === "") return;
+
+  const getNameFromSymbol = (symbol: string) => {
+    switch (symbol) {
+      case "KSM":
+        return "kusama";
+      case "DOT":
+        return "polkadot";
+      case "ROC":
+        return "roco-finance";
+      case "GUPPY":
+        return "guppy-gang";
+      case "USDt":
+        return "tether";
+      case "USDC":
+        return "usd-coin";
+
+      default:
+        return "";
+    }
+  };
+
+  const tokenId = getNameFromSymbol(tokenSymbol);
+
+  if (tokenId === "" || tokenSymbol === "GUPPY") return;
+
   const options = {
     method: "GET",
     headers: {
@@ -152,8 +184,7 @@ export const fetchTokenUsdPrice = async (tokenSymbol: string) => {
       "X-API-KEY": "YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=",
     },
   };
-
-  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenSymbol}`, options)
+  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
     .then((response) => response.json())
     .then((response) => {
       return JSON.stringify(response.price, null, 2);
@@ -162,3 +193,48 @@ export const fetchTokenUsdPrice = async (tokenSymbol: string) => {
 
   return price;
 };
+
+/**
+ * Fetches the spot price of a token from Coingecko API
+ * @param symbol pass the token symbol to get the spot price in USD
+ * @returns USD value of the token
+ */
+
+//TODO: returns cors error
+
+// export const getSpotPrice = async (symbol: string) => {
+//   const getNameFromSymbol = (symbol: string) => {
+//     switch (symbol) {
+//       case "KSM":
+//         return "kusama";
+//       case "DOT":
+//         return "polkadot";
+//       case "ROC":
+//         return "roco-finance";
+//       case "GUPPY":
+//         return "guppy-gang";
+//       case "USDT":
+//         return "tether";
+//       case "USDC":
+//         return "usd-coin";
+
+//       default:
+//         return "";
+//     }
+//   };
+
+//   const name = getNameFromSymbol(symbol);
+
+//   const options = {
+//     method: "GET",
+//     headers: {
+//       accept: "application/json",
+//     },
+//   };
+//   const res = await fetch(
+//     `https://api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd&precision=2`,
+//     options
+//   );
+//   const json = await res.json();
+//   return json[name].usd;
+// };

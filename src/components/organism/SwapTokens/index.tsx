@@ -58,6 +58,7 @@ import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
+import TokenIcon from "../../atom/TokenIcon";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -84,8 +85,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
   const slippageRef = useRef<HTMLInputElement>(null);
-
-  console.log(tokenId); //TODO: remove after implementing function
 
   const {
     tokenBalances,
@@ -1433,6 +1432,51 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     selectedTokenAValue.tokenValue,
   ]);
 
+  useEffect(() => {
+    if (!tokenId || assetLoading || !tokenBalances) return;
+
+    if (tokenId === "0") {
+      // set native token
+      setSelectedTokens((prev) => {
+        return {
+          ...prev,
+          tokenA: {
+            tokenSymbol: tokenBalances.tokenSymbol,
+            tokenId: "0",
+            decimals: tokenBalances.tokenDecimals,
+            tokenBalance: tokenBalances.balance.toString(),
+          },
+        };
+      });
+
+      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+
+      return;
+    }
+    const token = tokenBalances.assets.find((item: any) => item.tokenId === tokenId);
+
+    if (token) {
+      // set selected token
+      setSelectedTokens((prev) => {
+        return {
+          ...prev,
+          tokenA: {
+            tokenSymbol: token.assetTokenMetadata.symbol,
+            tokenId: token.tokenId,
+            decimals: token.assetTokenMetadata.decimals,
+            tokenBalance:
+              formatDecimalsFromToken(
+                Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
+                token.assetTokenMetadata.decimals as string
+              ) || "0",
+          },
+        };
+      });
+
+      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+    }
+  }, [tokenId, assetLoading, tokenBalances]);
+
   return (
     <div className="flex max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
@@ -1513,7 +1557,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenId={selectedTokens.tokenA?.tokenId}
           tokenDecimals={selectedTokens.tokenA?.decimals}
           labelText={t("tokenAmountInput.youPay")}
-          tokenIcon={<DotToken />}
+          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenA?.tokenSymbol} width={"24px"} height={"24px"} />}
           tokenValue={selectedTokenAValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
           onSetTokenValue={(value) => tokenAValue(value)}
@@ -1528,7 +1572,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenId={selectedTokens.tokenB?.tokenId}
           tokenDecimals={selectedTokens.tokenB?.decimals}
           labelText={t("tokenAmountInput.youReceive")}
-          tokenIcon={<DotToken />}
+          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenB?.tokenSymbol} width={"24px"} height={"24px"} />}
           tokenValue={selectedTokenBValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenB)}
           onSetTokenValue={(value) => tokenBValue(value)}

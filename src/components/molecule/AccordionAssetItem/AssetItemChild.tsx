@@ -3,12 +3,12 @@ import DotToken from "../../../assets/img/dot-token.svg?react";
 import AssetHubToken from "../../../assets/img/asset-hub.svg?react";
 import { fetchNativeTokenBalances } from "../../../services/polkadotWalletServices";
 import { useAppContext } from "../../../state";
-import { fetchTokenUsdPrice } from "../../../app/util/helper";
 
 type AssetItemChildProps = {
   isRelayChain?: boolean;
   decimals: string;
   tokenSymbol: string;
+  tokenSpotPrice: string;
   rpcUrl?: string;
   className?: string;
 };
@@ -17,6 +17,7 @@ const AssetItemChild = ({
   isRelayChain = false,
   decimals,
   tokenSymbol,
+  tokenSpotPrice,
   rpcUrl,
   className = "bg-purple-100 rounded-[10px]",
 }: AssetItemChildProps) => {
@@ -25,39 +26,33 @@ const AssetItemChild = ({
   const { selectedAccount, api } = state;
 
   const [balances, setBalances] = useState({
-    floatFreeTokenBalance: 0,
-    floatLockedTokenBalance: 0,
+    freeTokenBalance: 0,
+    usdFreeTokenBalance: 0,
+    lockedTokenBalance: 0,
+    usdLockedTokenBalance: 0,
     chainName: "",
   });
-
-  const [usdLockedTokenBalance, setUsdLockedTokenBalance] = useState<string>("");
-  const [usdFreeTokenBalance, setUsdFreeTokenBalance] = useState<string>("");
 
   useEffect(() => {
     if (!api) return;
     fetchNativeTokenBalances(selectedAccount.address, decimals, !rpcUrl ? api : undefined, !rpcUrl ? "" : rpcUrl).then(
       (data: any) => {
         const floatFreeTokenBalance = parseFloat(data?.free);
+        const floatUsdFreeTokenBalance = parseFloat(data?.free) * parseFloat(tokenSpotPrice);
         const floatLockedTokenBalance = parseFloat(data?.reserved);
+        const floatUsdLockedTokenBalance = parseFloat(data?.reserved) * parseFloat(tokenSpotPrice);
         const chainName = data?.chainName;
+
         setBalances({
-          floatFreeTokenBalance,
-          floatLockedTokenBalance,
-          chainName,
+          freeTokenBalance: floatFreeTokenBalance,
+          usdFreeTokenBalance: floatUsdFreeTokenBalance,
+          lockedTokenBalance: floatLockedTokenBalance,
+          usdLockedTokenBalance: floatUsdLockedTokenBalance,
+          chainName: chainName,
         });
       }
     );
   }, [selectedAccount]);
-
-  useEffect(() => {
-    if (!balances) return;
-    fetchTokenUsdPrice("polkadot").then((data: string | void) => {
-      if (typeof data === "string") {
-        setUsdLockedTokenBalance((parseFloat(data) * balances.floatLockedTokenBalance).toFixed(2));
-        setUsdFreeTokenBalance((parseFloat(data) * balances.floatFreeTokenBalance).toFixed(2));
-      }
-    });
-  }, [balances]);
 
   return (
     <div className={`flex w-full flex-col transition-all duration-300 ease-in-out ${className}`}>
@@ -72,22 +67,27 @@ const AssetItemChild = ({
           </div>
         </div>
         <div className="flex items-start justify-start gap-8">
-          {balances && balances.floatLockedTokenBalance !== 0 ? (
+          {balances && balances.lockedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="text-small font-normal uppercase text-dark-300">Locked</div>
+              <div className="font-titillium-web text-small font-normal uppercase text-dark-200">Locked</div>
               <div className="text-small font-semibold">
-                {balances && usdLockedTokenBalance !== "" && balances.floatLockedTokenBalance !== 0
-                  ? balances.floatLockedTokenBalance + " " + tokenSymbol + " ($" + usdLockedTokenBalance + ")"
+                {balances && balances.lockedTokenBalance !== 0
+                  ? balances.lockedTokenBalance +
+                    " " +
+                    tokenSymbol +
+                    " ($" +
+                    balances.usdLockedTokenBalance.toFixed(2) +
+                    ")"
                   : "0"}
               </div>
             </div>
           ) : null}
 
           <div className="flex flex-col">
-            <div className="text-small font-normal uppercase text-dark-300">Available balance</div>
+            <div className="font-titillium-web text-small font-normal uppercase text-dark-200">Available balance</div>
             <div className="text-small font-semibold">
-              {balances && usdFreeTokenBalance !== ""
-                ? balances.floatFreeTokenBalance + " " + tokenSymbol + " ($" + usdFreeTokenBalance + ")"
+              {balances
+                ? balances.freeTokenBalance + " " + tokenSymbol + " ($" + balances.usdFreeTokenBalance.toFixed(2) + ")"
                 : "0"}
             </div>
           </div>

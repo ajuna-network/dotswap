@@ -16,6 +16,8 @@ import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { fetchRelayBalance, fetchAssetHubBalance } from "../../../services/polkadotWalletServices";
+import useGetNetwork from "../../../app/hooks/useGetNetwork";
+import TokenIcon from "../../atom/TokenIcon";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -26,6 +28,8 @@ type TokenValueProps = {
 };
 
 const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
+  const { rpcUrlRelay } = useGetNetwork();
+
   const { state, dispatch } = useAppContext();
 
   const {
@@ -38,6 +42,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainDestinationChainFee,
     crosschainDestinationWalletAddress,
     crosschainLoading,
+    crosschainSelectedChain,
     assetLoading,
   } = state;
 
@@ -49,17 +54,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     tokenBalance: "",
   });
 
-  const [selectedChain, setSelectedChain] = useState({
-    chainA: {
-      chainName: "",
-      chainType: "",
-    },
-    chainB: {
-      chainName: "",
-      chainType: "",
-    },
-    balance: "0",
-  });
+  const selectedChain = crosschainSelectedChain;
 
   useEffect(() => {
     setSelectedToken({
@@ -73,24 +68,42 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   }, [api]);
 
   useEffect(() => {
-    if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances?.tokenDecimals || !api) return;
+    if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances.tokenDecimals || !api) return;
+    if (selectedChain.chainA.chainName !== "" && selectedChain.chainB.chainName !== "") return;
 
-    fetchAssetHubBalance(api, setSelectedChain);
+    const fetchData = async () => {
+      try {
+        const [chainA, chainB] = await Promise.all([
+          fetchAssetHubBalance(api),
+          fetchRelayBalance(crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString(), rpcUrlRelay),
+        ]);
 
-    fetchRelayBalance(
-      crosschainDestinationWalletAddress,
-      tokenBalances?.tokenDecimals.toString(),
-      setSelectedChain,
-      "wss://rococo-rpc.polkadot.io/"
-    );
-  }, [crosschainDestinationWalletAddress, tokenBalances, setSelectedChain, api]);
+        if (!chainA || !chainB) return;
+
+        dispatch({
+          type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
+          payload: {
+            chainA: chainA,
+            chainB: chainB.chainB,
+            balance: chainB.balance,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [crosschainDestinationWalletAddress, tokenBalances, api]);
 
   const handleChainSwitch = () => {
     handleTokenValueChange("");
-    setSelectedChain({
-      chainA: selectedChain.chainB,
-      chainB: selectedChain.chainA,
-      balance: selectedChain.balance,
+    dispatch({
+      type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
+      payload: {
+        chainA: selectedChain.chainB,
+        chainB: selectedChain.chainA,
+        balance: selectedChain.balance,
+      },
     });
   };
 
@@ -168,7 +181,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
   const getCrosschainButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(tokenBalances?.balance || 0);
+    const tokenBalanceDecimal = new Decimal(
+      selectedChain.chainA.chainType !== "Asset Hub" ? selectedChain.balance : tokenBalances?.balance || 0
+    );
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
@@ -260,6 +275,18 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setReviewModalOpen(true);
   };
 
+  useEffect(() => {
+    if (!isPopupEdit && !selectedToken.tokenSymbol && !assetLoading) {
+      setSelectedToken({
+        tokenSymbol: nativeToken.assetTokenMetadata.symbol || "",
+        tokenId: "",
+        decimals: nativeToken.assetTokenMetadata.decimals || "",
+        tokenBalance: nativeToken.tokenAsset.balance?.toString() || "",
+      });
+      tokenSelectModal(nativeToken);
+    }
+  }, [!isPopupEdit, assetLoading, api]);
+
   return (
     <div className="flex w-full max-w-[552px] flex-col items-center justify-center gap-5">
       <div className="relative flex w-full gap-7 rounded-2xl bg-white p-8">
@@ -271,7 +298,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               <DotToken width={37} height={35} />
             )}
           </div>
-          <div className="flex flex-1 flex-col justify-center">
+          <div className="flex flex-1 flex-col items-start justify-center">
             <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100">
               {t("crosschainPage.from")}
             </div>
@@ -290,10 +317,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             </div>
           </div>
           <div className="flex items-center justify-center">
-            {selectedChain.chainB.chainType === "Asset Hub" ? (
-              <AssetHub width={37} height={35} />
-            ) : (
+            {selectedChain.chainB.chainType === "Relay Chain" ? (
               <DotToken width={37} height={35} />
+            ) : (
+              <AssetHub width={37} height={35} />
             )}
           </div>
         </div>
@@ -321,8 +348,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               showUSDValue
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
-              labelText={t("tokenAmountInput.youPay")}
-              tokenIcon={<DotToken />}
+              labelText={t("crosschainPage.transfer")}
+              tokenIcon={<TokenIcon tokenSymbol={selectedToken.tokenSymbol} width={"24px"} height={"24px"} />}
               tokenValue={selectedTokenValue.tokenValue || "0"}
               onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
               onSetTokenValue={(value) => {
@@ -346,7 +373,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               disabled={getCrosschainButtonProperties.disabled || crosschainLoading}
               variant={ButtonVariants.btnInteractivePink}
             >
-              {assetLoading ? <LottieMedium /> : getCrosschainButtonProperties.label}
+              {!selectedAccount && assetLoading ? <LottieMedium /> : getCrosschainButtonProperties.label}
             </Button>
           </div>
         </div>
@@ -384,6 +411,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           tokenSelectModal(tokenData);
         }}
         selected={selectedToken}
+        showBalance={false}
       />
       <CrosschainReviewTransactionModal
         open={reviewModalOpen}

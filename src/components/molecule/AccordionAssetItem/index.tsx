@@ -2,26 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import DownArrow from "../../../assets/img/down-arrow.svg?react";
 import Button from "../../atom/Button";
 import { ButtonVariants } from "../../../app/types/enum";
-import DotToken from "../../../assets/img/dot-token.svg?react";
+import TokenIcon from "../../atom/TokenIcon";
 import CrossChainSwap from "../../organism/CrossChainSwap";
 import Modal from "../../atom/Modal";
-import { fetchTokenUsdPrice } from "../../../app/util/helper";
-
-type Token = {
-  tokenId: string;
-  assetTokenMetadata: {
-    symbol: string;
-    name: string;
-    decimals: string;
-  };
-  tokenAsset: {
-    balance: string | undefined;
-  };
-};
+import { formatDecimalsFromToken } from "../../../app/util/helper";
+import { AssetListToken } from "../../../app/types";
 
 type AccordionAssetItemProps = {
-  token: Token;
-  totalBalance: number | undefined;
+  token: AssetListToken;
   className?: string;
   children?: React.ReactNode;
   alwaysOpen?: boolean;
@@ -31,7 +19,6 @@ type AccordionAssetItemProps = {
 
 const AccordionAssetItem = ({
   token,
-  totalBalance,
   className = "border-t border-1 border-purple-100",
   children,
   alwaysOpen = false,
@@ -45,8 +32,6 @@ const AccordionAssetItem = ({
   const [accordionHeight, setAccordionHeight] = useState({ titleElmHeight: 0, itemsElmHeight: 0 });
   const [crossChainModalOpen, setCrossChainModalOpen] = useState(false);
 
-  const [usdTokenBalance, setUsdTokenBalance] = useState<string>("");
-
   const toggleAccordionAssetItem = () => {
     setIsOpen(!isOpen);
   };
@@ -58,18 +43,21 @@ const AccordionAssetItem = ({
     });
   }, [isOpen, titleElm, itemsElm]);
 
-  useEffect(() => {
-    if (!totalBalance) return;
-    fetchTokenUsdPrice("polkadot").then((data: string | void) => {
-      if (typeof data === "string") {
-        setUsdTokenBalance((parseFloat(data) * totalBalance).toFixed(2));
-      }
-    });
-  }, [totalBalance]);
-
   const handleCrosschainModal = () => {
     setCrossChainModalOpen(!crossChainModalOpen);
   };
+
+  const formattedBalance =
+    token.tokenId === ""
+      ? token.tokenAsset.balance
+      : formatDecimalsFromToken(
+          Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
+          token.assetTokenMetadata.decimals as string
+        ) || "0";
+
+  const totalBalance = parseFloat(formattedBalance) + parseFloat(token.tokenAsset.relayBalance || "0");
+
+  const usdTotalBalance = (parseFloat(token.spotPrice) * totalBalance).toFixed(2);
 
   return (
     <div
@@ -92,16 +80,17 @@ const AccordionAssetItem = ({
           className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}
         >
           <div className="flex w-1/4 items-center justify-start gap-3 font-unbounded-variable text-heading-6 font-normal">
-            <DotToken width={36} height={36} />
+            <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
             <span>{token.assetTokenMetadata.symbol}</span>
           </div>
           <div className="flex w-2/4 items-center justify-start">
             <div className="flex flex-col">
-              <div className="text-small font-normal uppercase text-dark-300">Total Available Balance</div>
-              <div className="text-small font-semibold">
-                {totalBalance && usdTokenBalance !== ""
-                  ? totalBalance + " " + token.assetTokenMetadata.symbol + " ($" + usdTokenBalance + ")"
-                  : "0"}
+              <div className="font-titillium-web text-small font-normal uppercase text-dark-200">
+                Total Available Balance
+              </div>
+              <div className="font-titillium-web text-small font-semibold">
+                {totalBalance && totalBalance !== 0 ? totalBalance + " " + token.assetTokenMetadata.symbol : "0"}
+                {token.spotPrice ? " ($" + usdTotalBalance + ")" : ""}
               </div>
             </div>
           </div>
@@ -119,7 +108,7 @@ const AccordionAssetItem = ({
             )}
             <Button
               onClick={() => {
-                handleSwapModal(token.tokenId);
+                handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
               }}
               variant={ButtonVariants.btnSecondaryGray}
               className="max-w-max"
@@ -158,7 +147,7 @@ const AccordionAssetItem = ({
             handleCrosschainModal();
           }}
         >
-          <CrossChainSwap isPopupEdit />
+          <CrossChainSwap isPopupEdit={false} />
         </Modal>
       )}
     </div>
