@@ -1,4 +1,3 @@
-import React from "react";
 import DotIcon from "../../../assets/img/dot-token.svg?react";
 import DefaultIcon from "../../../assets/img/dot-token.svg?react";
 import GuppyIcon from "../../../assets/img/guppy-icon.svg?react";
