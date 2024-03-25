@@ -41,7 +41,7 @@ const ConnectWallet = () => {
       dotAcpToast.error(`Error connecting: ${error}`);
     }
   };
-  //small change
+
   const onBack = () => {
     setModalStep({ step: WalletConnectSteps.stepExtensions });
   };
