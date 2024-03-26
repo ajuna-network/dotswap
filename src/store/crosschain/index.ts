@@ -27,7 +27,7 @@ export const crosschainReducer = (state: CrosschainState, action: CrosschainActi
       return { ...state, crosschainFinalized: action.payload };
     case ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE:
       return { ...state, crosschainOriginChainFee: action.payload };
-    case ActionType.SET_CROSSCHAIN_DESTINATION_CHAIN__FEE:
+    case ActionType.SET_CROSSCHAIN_DESTINATION_CHAIN_FEE:
       return { ...state, crosschainDestinationChainFee: action.payload };
     case ActionType.SET_CROSSCHAIN_LOADING:
       return { ...state, crosschainLoading: action.payload };
