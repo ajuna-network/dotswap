@@ -18,8 +18,6 @@ export const executeCrossOut = async (
   const kusamaApi = await ApiPromise.create({ provider: wsProvider });
   const call = await Builder(kusamaApi).to("AssetHubKusama").amount(amount).address(destinationAddress).build();
   const wallet = getWalletBySource(walletAccount.wallet?.extensionName);
-  console.log("wallet", wallet);
-  console.log("wallet", JSON.stringify(wallet, null, 2));
   await call.signAsync(walletAccount.address, { signer: wallet!.signer });
   return await new Promise((resolve, reject) => {
     void call.send(({ status, dispatchError, txHash }) => {
