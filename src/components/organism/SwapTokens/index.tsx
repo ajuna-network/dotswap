@@ -494,12 +494,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       }
       if (
         selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
-        tokenADecimal.gt(
-          formatDecimalsFromToken(
-            selectedTokens.tokenA.tokenBalance.replace(/[, ]/g, ""),
-            selectedTokens.tokenA.decimals
-          )
-        )
+        tokenADecimal.gt(selectedTokens.tokenA.tokenBalance)
       ) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokens.tokenA.tokenSymbol }),
@@ -1052,13 +1047,13 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     setSelectedTokens({
       tokenA: {
         tokenSymbol: selectedTokenB.tokenSymbol,
-        tokenBalance: selectedTokenB.tokenBalance.toString(),
+        tokenBalance: selectedTokenB.tokenBalance,
         tokenId: selectedTokenB.tokenId,
         decimals: selectedTokenB.decimals,
       },
       tokenB: {
         tokenSymbol: selectedTokenA.tokenSymbol,
-        tokenBalance: selectedTokenA.tokenBalance.toString(),
+        tokenBalance: selectedTokenA.tokenBalance,
         tokenId: selectedTokenA.tokenId,
         decimals: selectedTokenA.decimals,
       },
@@ -1442,7 +1437,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           ...prev,
           tokenA: {
             tokenSymbol: tokenBalances.tokenSymbol,
-            tokenId: "0",
+            tokenId: "",
             decimals: tokenBalances.tokenDecimals,
             tokenBalance: tokenBalances.balance.toString(),
           },

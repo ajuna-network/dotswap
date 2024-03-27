@@ -117,6 +117,7 @@ const DestinationWalletAddress = ({ chainName, isPopupEdit = true }: Destination
               setDisabled(!disabled);
               isPopupEdit && setOpen(true);
             }}
+            disabled={!crosschainDestinationWalletAddress}
           >
             {t("destinationWalletAddress.edit")}
           </button>

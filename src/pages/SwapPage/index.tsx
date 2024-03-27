@@ -5,11 +5,33 @@ import PoolsPage from "../PoolsPage";
 import classNames from "classnames";
 import { getAllLiquidityPoolsTokensMetadata, getAllPools } from "../../services/poolServices";
 import { useAppContext } from "../../state";
+import { useLocation, useNavigate } from "react-router-dom";
+import { SWAP_ROUTE } from "../../app/router/routes";
+import { urlTo } from "../../app/util/helper";
 
 const SwapPage: FC = () => {
   const { state, dispatch } = useAppContext();
   const { api } = state;
-  const [swapOrPools, setSwapOrPools] = useState<SwapOrPools>(SwapOrPools.swap);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [swapOrPools, setSwapOrPools] = useState<SwapOrPools>(
+    location.state?.pageType === SwapOrPools.pools ? SwapOrPools.pools : SwapOrPools.swap
+  );
+
+  const navigateToSwap = () => {
+    navigate(urlTo("/" + SWAP_ROUTE), {
+      state: { pageType: SwapOrPools.swap },
+    });
+    setSwapOrPools(SwapOrPools.swap);
+  };
+
+  const navigateToPools = () => {
+    navigate(urlTo("/" + SWAP_ROUTE), {
+      state: { pageType: SwapOrPools.pools },
+    });
+    setSwapOrPools(SwapOrPools.pools);
+  };
 
   useEffect(() => {
     if (api) {
@@ -39,7 +61,7 @@ const SwapPage: FC = () => {
           className={classNames("h-[37px] w-[71px] rounded-3xl", {
             "bg-purple-100": swapOrPools === SwapOrPools.swap,
           })}
-          onClick={() => setSwapOrPools(SwapOrPools.swap)}
+          onClick={() => navigateToSwap()}
         >
           Swap
         </button>
@@ -47,7 +69,7 @@ const SwapPage: FC = () => {
           className={classNames("h-[37px] w-[71px] rounded-3xl", {
             "bg-purple-100": swapOrPools === SwapOrPools.pools,
           })}
-          onClick={() => setSwapOrPools(SwapOrPools.pools)}
+          onClick={() => navigateToPools()}
         >
           Pools
         </button>

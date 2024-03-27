@@ -56,6 +56,7 @@ const AccordionAssetItem = ({
         ) || "0";
 
   const totalBalance = parseFloat(formattedBalance) + parseFloat(token.tokenAsset.relayBalance || "0");
+  const formattedTotalBalance = token.tokenId !== "" ? totalBalance : totalBalance.toFixed(2);
 
   const usdTotalBalance = (parseFloat(token.spotPrice) * totalBalance).toFixed(2);
 
@@ -85,11 +86,13 @@ const AccordionAssetItem = ({
           </div>
           <div className="flex w-2/4 items-center justify-start">
             <div className="flex flex-col">
-              <div className="font-titillium-web text-small font-normal uppercase text-dark-200">
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
                 Total Available Balance
               </div>
-              <div className="font-titillium-web text-small font-semibold">
-                {totalBalance && totalBalance !== 0 ? totalBalance + " " + token.assetTokenMetadata.symbol : "0"}
+              <div className="font-titillium-web text-base font-semibold">
+                {totalBalance && totalBalance !== 0
+                  ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
+                  : "0"}
                 {token.spotPrice ? " ($" + usdTotalBalance + ")" : ""}
               </div>
             </div>

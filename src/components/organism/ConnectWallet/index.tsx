@@ -84,7 +84,7 @@ const ConnectWallet = () => {
 
   return (
     <>
-      <div className="flex w-[400px] items-center justify-end gap-8">
+      <div className="flex items-center justify-end gap-8">
         {walletConnected ? (
           <>
             {walletConnectLoading ? (

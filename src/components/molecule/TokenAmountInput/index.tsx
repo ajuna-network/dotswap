@@ -51,12 +51,15 @@ const TokenAmountInput = ({
   });
 
   const [tokenPriceUSD, setTokenPriceUSD] = useState<string>("");
+  const [spotPriceLoaded, setSpotPriceLoaded] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!tokenText || !showUSDValue || !tokenBalance) return;
+    if (!showUSDValue) return;
+    setSpotPriceLoaded(false);
     getSpotPrice(tokenText).then((data: string | void) => {
       if (typeof data === "string") {
         setTokenPriceUSD((parseFloat(data) * parseFloat(tokenBalance || "0")).toFixed(2));
+        setSpotPriceLoaded(true);
       }
     });
   }, [tokenText, tokenBalance]);
@@ -128,7 +131,16 @@ const TokenAmountInput = ({
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
           Balance: {tokenBalance || 0}
-          {tokenPriceUSD && showUSDValue && <span>&nbsp;(${tokenPriceUSD})</span>}
+          {showUSDValue ? (
+            tokenPriceUSD && spotPriceLoaded ? (
+              <span>&nbsp;(${tokenPriceUSD})</span>
+            ) : (
+              <>
+                &nbsp;
+                <LottieSmall />
+              </>
+            )
+          ) : null}
           {tokenText &&
             onMaxClick &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&

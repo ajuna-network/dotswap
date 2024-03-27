@@ -15,6 +15,7 @@ import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
+import { getWalletBySource } from "@talismn/connect-wallets";
 
 export const setupPolkadotApi = async () => {
   const { rpcUrl } = useGetNetwork();
@@ -265,6 +266,11 @@ export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) 
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: {} as WalletAccount });
   dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: {} as TokenBalanceData });
   dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: [] });
+  dispatch({ type: ActionType.SET_ASSETS_LIST, payload: [] });
+  dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
+  dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
+  dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: "0" });
+  dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
 };
 
 export const connectWalletAndFetchBalance = async (
@@ -362,23 +368,25 @@ export const fetchRelayBalance = async (address: string, tokenBalancesDecimals: 
 
     if (!data) {
       return {
-        chainB: {
-          chainName: "",
-          chainType: "",
+        chainName: "",
+        chainType: "",
+        balances: {
+          free: "0",
+          reserved: "0",
+          frozen: "0",
         },
-        balance: "",
       };
     }
 
-    const { free, chainName } = data;
-
-    if (free && chainName) {
+    if (data) {
       return {
-        chainB: {
-          chainName: chainName,
-          chainType: chainName.indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
+        chainName: data.chainName,
+        chainType: data.chainName.indexOf("Asset Hub") !== 1 ? "Asset Hub" : "Relay Chain",
+        balances: {
+          free: data.free.toString(),
+          reserved: data.reserved.toString(),
+          frozen: data.frozen.toString(),
         },
-        balance: free.toString(),
       };
     }
   } catch (error) {
@@ -395,18 +403,36 @@ export const fetchRelayBalance = async (address: string, tokenBalancesDecimals: 
  * @param setSelectedChain - A function to update the state with the fetched chain information. This function modifies the 'chainB' part of the state to reflect the current chain's details.
  */
 
-export const fetchAssetHubBalance = async (api: ApiPromise | null) => {
+export const fetchAssetHubBalance = async (api: ApiPromise | null, address: string, tokenBalancesDecimals: string) => {
   if (!api) return;
 
   const chainInfo = await api.rpc.system.chain();
+  const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, api, undefined);
 
   const chainName =
     chainInfo.indexOf("Asset Hub") !== -1 ? chainInfo.toString().replace(" Asset Hub", "") : chainInfo.toString();
+
+  if (!data || !chainName) {
+    return {
+      chainName: "",
+      chainType: "",
+      balances: {
+        free: "0",
+        reserved: "0",
+        frozen: "0",
+      },
+    };
+  }
 
   try {
     return {
       chainName: chainName,
       chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
+      balances: {
+        free: data.free.toString(),
+        reserved: data.reserved.toString(),
+        frozen: data.frozen.toString(),
+      },
     };
   } catch (error) {
     console.error("Error fetching chain info:", error);

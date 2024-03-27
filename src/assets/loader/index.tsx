@@ -10,6 +10,10 @@ export const LottieMedium = () => (
   <Lottie animationData={dotLoader} loop={true} autoplay={true} style={{ height: 30, width: 30 }} />
 );
 
+export const Lottie33px = () => (
+  <Lottie animationData={dotLoader} loop={true} autoplay={true} style={{ height: 33, width: 33 }} />
+);
+
 export const LottieLarge = () => (
   <Lottie animationData={poolsLoader} loop={true} autoplay={true} style={{ height: 90, width: 90 }} />
 );
