@@ -62,33 +62,19 @@ const AccordionAssetItem = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (e.key === "Enter") {
-      if (children) {
-        if (!alwaysOpen) {
-          toggleAccordionAssetItem();
-        }
-      }
-    } else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-      if (e.target instanceof HTMLButtonElement) {
-        return;
-      }
-      if (children) {
-        if (!alwaysOpen) {
-          toggleAccordionAssetItem();
-        }
-      }
+    const isEnterKey = e.key === "Enter";
+    const isArrowKey = e.key === "ArrowDown" || e.key === "ArrowUp";
+
+    if ((isEnterKey || isArrowKey) && children && !alwaysOpen && !(e.target instanceof HTMLButtonElement)) {
+      toggleAccordionAssetItem();
     }
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-    if (e.target instanceof HTMLButtonElement) {
-      return;
-    }
-    if (children) {
-      if (!alwaysOpen) {
-        toggleAccordionAssetItem();
-      }
+    if (e.target instanceof HTMLButtonElement) return;
+    if (children && !alwaysOpen) {
+      toggleAccordionAssetItem();
     }
   };
 
@@ -108,12 +94,8 @@ const AccordionAssetItem = ({
         ref={titleElm}
         className={`flex w-full flex-row justify-between p-8 ${children ? "cursor-pointer" : "cursor-default"}`}
         data-height={accordionHeight.titleElmHeight}
-        onClick={(e) => {
-          handleClick(e);
-        }}
-        onKeyDown={(e) => {
-          handleKeyDown(e);
-        }}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
         tabIndex={0}
         role="button"
       >
