@@ -277,7 +277,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       });
       tokenSelectModal(nativeToken);
     }
-  }, [!isPopupEdit, assetLoading, api]);
+  }, [assetLoading, api]);
 
   const handleTokenValueChange = async (value: string) => {
     const payloadTokenValue = await tokenValue(value);
