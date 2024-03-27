@@ -136,6 +136,5 @@ const ConnectWallet = () => {
     </>
   );
 };
-// small change
 
 export default ConnectWallet;
