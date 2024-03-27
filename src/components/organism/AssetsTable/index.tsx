@@ -196,7 +196,7 @@ const AssetsTable = () => {
               })}
           </AccordionList>
 
-          <AccordionList nested alwaysOpen title="Other Assets" className="rounded-b-2xl bg-white">
+          <AccordionList nested title="Other Assets" className="rounded-b-2xl bg-white">
             {assetLoading ? (
               <div className="flex flex-col items-center justify-center py-8">Loading...</div>
             ) : otherAssets.length > 0 ? (
