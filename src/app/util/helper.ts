@@ -238,3 +238,24 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //   const json = await res.json();
 //   return json[name].usd;
 // };
+//
+// fees for AssetHubKusama -> Kusama Relay Chain
+// source chain fee: 0.000087322311 KSM
+// destination chain fee: 0.001032999966 KSM
+export const getCrossInFees = () => {
+  return {
+    originChainFee: "0.000087322311",
+    destinationChainFee: "0.001032999966",
+  };
+};
+
+//
+// fees for Kusama Relay Chain -> AssetHubKusama
+// source chain fee: 0.00060714529 KSM
+// destination chain fee: 0.000119766667 KSM
+export const getCrossOutFees = () => {
+  return {
+    originChainFee: "0.00060714529",
+    destinationChainFee: "0.000119766667",
+  };
+};

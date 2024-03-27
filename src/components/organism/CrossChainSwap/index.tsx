@@ -14,10 +14,16 @@ import { useAppContext } from "../../../state";
 import { LottieMedium } from "../../../assets/loader";
 import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
-import { formatDecimalsFromToken } from "../../../app/util/helper";
+import {
+  formatDecimalsFromToken,
+  formatInputTokenValue,
+  getCrossInFees,
+  getCrossOutFees,
+} from "../../../app/util/helper";
 import { fetchRelayBalance, fetchAssetHubBalance } from "../../../services/polkadotWalletServices";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import TokenIcon from "../../atom/TokenIcon";
+import { executeCrossIn, executeCrossOut } from "../../../services/crosschain";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -265,16 +271,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     }
   }, [selectedAccount]);
 
-  const handleTokenValueChange = async (value: string) => {
-    const payloadTokenValue = await tokenValue(value);
-    dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
-  };
-
-  const handleCrosschain = () => {
-    dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: true });
-    setReviewModalOpen(true);
-  };
-
   useEffect(() => {
     if (!isPopupEdit && !selectedToken.tokenSymbol && !assetLoading) {
       setSelectedToken({
@@ -286,6 +282,54 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       tokenSelectModal(nativeToken);
     }
   }, [!isPopupEdit, assetLoading, api]);
+
+  const handleTokenValueChange = async (value: string) => {
+    const payloadTokenValue = await tokenValue(value);
+    dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
+    if (value !== "" && value !== "0") {
+      const { originChainFee, destinationChainFee } =
+        selectedChain.chainA.chainType === "Asset Hub" ? getCrossInFees() : getCrossOutFees();
+      dispatch({
+        type: ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE,
+        payload: originChainFee,
+      });
+      dispatch({
+        type: ActionType.SET_CROSSCHAIN_DESTINATION_CHAIN_FEE,
+        payload: destinationChainFee,
+      });
+    }
+  };
+
+  const handleCrosschain = () => {
+    dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: true });
+    setReviewModalOpen(true);
+  };
+
+  const handleCrosschainExec = async () => {
+    dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+    setReviewModalOpen(false);
+    if (api) {
+      if (selectedChain.chainA.chainType === "Relay Chain") {
+        await executeCrossOut(
+          selectedAccount,
+          formatInputTokenValue(crosschainExactTokenAmount, selectedToken.decimals),
+          crosschainDestinationWalletAddress,
+          rpcUrlRelay,
+          dispatch
+        );
+      } else if (selectedChain.chainB.chainType === "Relay Chain") {
+        await executeCrossIn(
+          api,
+          formatInputTokenValue(crosschainExactTokenAmount, selectedToken.decimals),
+          selectedAccount,
+          crosschainDestinationWalletAddress,
+          dispatch
+        );
+      } else {
+        // TODO: implement teleportation across parachains
+      }
+    }
+  };
 
   return (
     <div className="flex w-full max-w-[552px] flex-col items-center justify-center gap-5">
@@ -418,7 +462,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         tokenSymbol={selectedToken.tokenSymbol}
         nativeChainName={selectedChain.chainA.chainName + " " + selectedChain.chainA.chainType}
         destinationChainName={selectedChain.chainB.chainType}
-        destinationBalance="43"
+        destinationBalance={
+          selectedChain.chainA.chainType === "Asset Hub"
+            ? !selectedToken.tokenBalance
+              ? "0"
+              : selectedChain.balance
+            : selectedToken?.tokenBalance
+        }
         transactionType={
           selectedChain.chainA.chainType === "Asset Hub"
             ? CrosschainTransactionTypes.crossIn
@@ -429,7 +479,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           setReviewModalOpen(false);
         }}
         onConfirmTransaction={() => {
-          console.log("confirm transaction"); //TODO: implement confirm transaction
+          handleCrosschainExec();
         }}
       />
     </div>

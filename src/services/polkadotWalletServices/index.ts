@@ -3,7 +3,7 @@ import "@polkadot/api-augment";
 import { formatBalance } from "@polkadot/util";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import type { AnyJson } from "@polkadot/types/types/codec";
-import { getWallets } from "@talismn/connect-wallets";
+import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { TokenBalanceData } from "../../app/types";
@@ -36,7 +36,7 @@ export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: str
   const { nonce, data: balance } = await api.query.system.account(walletAddress);
   const nextNonce = await api.rpc.system.accountNextIndex(walletAddress);
   const tokenMetadata = api.registry.getChainProperties();
-  const existentialDeposit = await api.consts.balances.existentialDeposit;
+  const existentialDeposit = api.consts.balances.existentialDeposit;
 
   const allAssets = await api.query.assets.asset.entries();
 
@@ -273,6 +273,10 @@ export const connectWalletAndFetchBalance = async (
   account: WalletAccount
 ) => {
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
+  const wallet = getWalletBySource(account.wallet?.extensionName);
+  if (!account.wallet?.signer) {
+    await wallet?.enable("DOT-ACP");
+  }
   LocalStorage.set("wallet-connected", account);
   try {
     await setTokenBalance(dispatch, api, account);

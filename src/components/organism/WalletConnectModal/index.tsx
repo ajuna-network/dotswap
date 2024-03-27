@@ -53,6 +53,7 @@ const WalletConnectModal = ({
                         onClick={async () => {
                           await wallet?.enable("DOT-ACP");
                           const accounts: WalletAccount[] = await wallet?.getAccounts();
+                          console.log("accounts", accounts);
                           handleContinueClick(accounts);
                         }}
                       >
