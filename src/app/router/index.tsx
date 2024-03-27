@@ -10,12 +10,14 @@ import {
   DASHBOARD_ROUTE,
   CROSS_CHAIN_ROUTE,
   SUPPORT_ROUTE,
+  TEST_ROUTE,
 } from "./routes";
 import MainLayout from "../../layout/MainLayout.tsx";
 import NotFoundPage from "../../pages/NotFoundPage";
 import DashboardPage from "../../pages/DashboardPage/index.tsx";
 import CrossChainPage from "../../pages/CrossChainPage/index.tsx";
 import SupportPage from "../../pages/SupportPage/index.tsx";
+import TestPage from "../../pages/TestPage/index.tsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +66,10 @@ const router = createBrowserRouter([
       {
         path: SUPPORT_ROUTE,
         element: <SupportPage />,
+      },
+      {
+        path: TEST_ROUTE,
+        element: <TestPage />,
       },
     ],
   },

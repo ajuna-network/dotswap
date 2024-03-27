@@ -6,6 +6,7 @@ export default {
       fontFamily: {
         "unbounded-variable": ["UnboundedVariable", "sans-serif"],
         "titillium-web": ["TitilliumWeb", "sans-serif"],
+        "fira-sans": ["Fira Sans", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
       colors: {

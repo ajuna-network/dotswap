@@ -11,6 +11,7 @@ const CROSS_CHAIN_ROUTE = "cross-chain";
 const SUPPORT_ROUTE = "support";
 const POOLS_ADD_LIQUIDITY = "/pools/add-liquidity";
 const POOLS_PAGE = "/pools";
+const TEST_ROUTE = "/test";
 
 const SEO_ROUTES = {
   [POOLS_ROUTE]: {
@@ -36,4 +37,5 @@ export {
   ADD_LIQUIDITY_TO_EXISTING,
   REMOVE_LIQUIDITY_FROM_EXISTING,
   SUPPORT_ROUTE,
+  TEST_ROUTE,
 };
