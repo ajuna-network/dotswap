@@ -128,9 +128,8 @@ export enum CrosschainTransactionTypes {
   crossIn = "crossIn",
   crossOut = "crossOut",
 }
-
-export enum NotificationTypes {
-  success = "success",
-  failed = "failed",
-  pending = "pending",
+export enum ToasterType {
+  SUCCESS = "success",
+  ERROR = "error",
+  PENDING = "pending",
 }

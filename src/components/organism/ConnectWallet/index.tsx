@@ -15,7 +15,7 @@ import LocalStorage from "../../../app/util/localStorage.ts";
 import { ModalStepProps } from "../../../app/types/index.ts";
 import type { Timeout } from "react-number-format/types/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
-import dotAcpToast from "../../../app/util/toast.ts";
+import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
 
 const ConnectWallet = () => {

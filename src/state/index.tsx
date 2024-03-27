@@ -3,10 +3,11 @@ import { WalletState, WalletAction } from "../store/wallet/interface";
 import { PoolsState, PoolAction } from "../store/pools/interface";
 import { SwapAction, SwapState } from "../store/swap/interface";
 import { CrosschainAction, CrosschainState } from "../store/crosschain/interface";
+import { NotificationAction, NotificationState } from "../store/notifications/interface";
 
 interface AppContextType {
-  state: WalletState & PoolsState & SwapState & CrosschainState;
-  dispatch: Dispatch<WalletAction | PoolAction | SwapAction | CrosschainAction>;
+  state: WalletState & PoolsState & SwapState & CrosschainState & NotificationState;
+  dispatch: Dispatch<WalletAction | PoolAction | SwapAction | CrosschainAction | NotificationAction>;
 }
 
 interface AppStateProviderProps {

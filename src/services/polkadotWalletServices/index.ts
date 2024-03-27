@@ -15,7 +15,6 @@ import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
-import { getWalletBySource } from "@talismn/connect-wallets";
 
 export const setupPolkadotApi = async () => {
   const { rpcUrl } = useGetNetwork();
