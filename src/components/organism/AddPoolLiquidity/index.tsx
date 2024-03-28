@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
-import { POOLS_PAGE } from "../../../app/router/routes";
+import { SWAP_ROUTE } from "../../../app/router/routes";
 import { InputEditedProps, TokenDecimalsErrorProps } from "../../../app/types";
 import { ActionType, ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/types/enum";
 import {
@@ -17,8 +17,6 @@ import {
 } from "../../../app/util/helper";
 import dotAcpToast from "../../../app/util/toast";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
-import DotToken from "../../../assets/img/dot-token.svg?react";
-import AssetTokenIcon from "../../../assets/img/test-token.svg?react";
 import { LottieMedium } from "../../../assets/loader";
 import { setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
 import { addLiquidity, checkAddPoolLiquidityGasFee, getPoolReserves } from "../../../services/poolServices";
@@ -31,6 +29,9 @@ import CreatePool from "../CreatePool";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
+import { SwapOrPools } from "../../../app/types/enum";
+import { urlTo } from "../../../app/util/helper";
+import TokenIcon from "../../atom/TokenIcon";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -111,7 +112,9 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   const selectedAssetTokenNumber = new Decimal(selectedTokenAssetValue?.tokenValue || 0);
 
   const navigateToPools = () => {
-    navigate(POOLS_PAGE);
+    navigate(urlTo("/" + SWAP_ROUTE), {
+      state: { pageType: SwapOrPools.pools },
+    });
   };
 
   const populateAssetToken = () => {
@@ -517,7 +520,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
           <TokenAmountInput
             tokenText={selectedTokenA?.nativeTokenSymbol}
-            tokenIcon={<DotToken />}
+            tokenIcon={<TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />}
             tokenBalance={selectedTokenA.tokenBalance}
             tokenId={selectedTokenA.tokenId}
             tokenDecimals={selectedTokenA.nativeTokenDecimals}
@@ -530,8 +533,15 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           />
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
-            tokenIcon={<DotToken />}
-            tokenBalance={selectedTokenB.assetTokenBalance}
+            tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
+            tokenBalance={
+              selectedTokenB.assetTokenBalance && selectedTokenB.assetTokenBalance !== "0"
+                ? formatDecimalsFromToken(
+                    selectedTokenB.assetTokenBalance.replace(/[, ]/g, ""),
+                    selectedTokenB.decimals
+                  )
+                : "0"
+            }
             tokenId={selectedTokenB.assetTokenId}
             tokenDecimals={selectedTokenB.decimals}
             tokenValue={selectedTokenAssetValue?.tokenValue}
@@ -671,8 +681,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             }
             tokenSymbolA={
               inputEdited.inputType === InputEditedType.exactIn
-                ? selectedTokenB.tokenSymbol
-                : selectedTokenA.nativeTokenSymbol
+                ? selectedTokenA.nativeTokenSymbol
+                : selectedTokenB.tokenSymbol
             }
             tokenSymbolB={
               inputEdited.inputType === InputEditedType.exactIn
@@ -701,12 +711,12 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             tokenA={{
               value: exactNativeTokenAddLiquidity,
               symbol: selectedTokenA.nativeTokenSymbol,
-              icon: <DotToken />,
+              icon: <TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />,
             }}
             tokenB={{
               value: exactAssetTokenAddLiquidity,
               symbol: selectedTokenB.tokenSymbol,
-              icon: <AssetTokenIcon width={24} height={24} />,
+              icon: <TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />,
             }}
             actionLabel={t("modal.added")}
           />

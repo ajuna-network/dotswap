@@ -1,17 +1,18 @@
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import { PoolCardProps } from "../../app/types";
-import TokenIcon from "../../assets/img/token-icon.svg?react";
+import PlaceholderIcon from "../../assets/img/token-icon.svg?react";
+import TokenIcon from "../../components/atom/TokenIcon";
 import { LottieLarge } from "../../assets/loader";
 import { useAppContext } from "../../state";
-import PoolDataCard from "./PoolDataCard";
+import PoolDataCard from "../../components/molecule/PoolDataCard/PoolDataCard";
 import { createPoolCardsArray } from "../../services/poolServices";
 
 const PoolsPage = () => {
   const { state, dispatch } = useAppContext();
   const { selectedAccount, pools, poolsCards, api, tokenBalances } = state;
 
-  const [isPoolsLoading, setPoolsIsLoading] = useState<boolean>(true);
+  const [isPoolsLoading, setPoolsIsLoading] = useState<boolean>(selectedAccount ? true : false);
 
   useEffect(() => {
     const updatePoolsCards = async () => {
@@ -43,8 +44,8 @@ const PoolsPage = () => {
                   nativeTokens={item.totalTokensLocked.nativeToken.formattedValue}
                   assetTokens={item.totalTokensLocked.assetToken.formattedValue}
                   lpTokenAsset={item.lpTokenAsset}
-                  assetTokenIcon={item.totalTokensLocked.assetToken.icon}
-                  nativeTokenIcon={item.totalTokensLocked.nativeToken.icon}
+                  assetTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[1]} width="32" height="32" />}
+                  nativeTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[0]} width="32" height="32" />}
                   assetTokenId={item.assetTokenId}
                   lpTokenId={item.lpTokenId}
                 />
@@ -54,7 +55,7 @@ const PoolsPage = () => {
         </div>
       ) : (
         <div className="flex h-full w-full flex-col items-center justify-center gap-4 rounded-2xl bg-white p-6">
-          <TokenIcon />
+          <PlaceholderIcon />
           <div className="text-center text-gray-300">
             {selectedAccount ? t("poolsPage.noActiveLiquidityPositions") : t("poolsPage.connectWalletToView")}
           </div>

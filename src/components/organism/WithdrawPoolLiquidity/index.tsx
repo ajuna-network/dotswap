@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
-import { POOLS_PAGE } from "../../../app/router/routes";
+import { SWAP_ROUTE } from "../../../app/router/routes";
 import { LpTokenAsset } from "../../../app/types";
 import {
   ActionType,
@@ -22,8 +22,6 @@ import {
 } from "../../../app/util/helper";
 import dotAcpToast from "../../../app/util/toast";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
-import DotToken from "../../../assets/img/dot-token.svg?react";
-import AssetTokenIcon from "../../../assets/img/test-token.svg?react";
 import { LottieMedium } from "../../../assets/loader";
 import { assetTokenData, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
 import { checkWithdrawPoolLiquidityGasFee, getPoolReserves, removeLiquidity } from "../../../services/poolServices";
@@ -35,6 +33,9 @@ import TokenAmountInput from "../../molecule/TokenAmountInput";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
+import { SwapOrPools } from "../../../app/types/enum";
+import { urlTo } from "../../../app/util/helper";
+import TokenIcon from "../../atom/TokenIcon";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -100,7 +101,9 @@ const WithdrawPoolLiquidity = () => {
   const [priceImpact, setPriceImpact] = useState<string>("");
 
   const navigateToPools = () => {
-    navigate(POOLS_PAGE);
+    navigate(urlTo("/" + SWAP_ROUTE), {
+      state: { pageType: SwapOrPools.pools },
+    });
   };
 
   const populateAssetToken = () => {
@@ -454,7 +457,7 @@ const WithdrawPoolLiquidity = () => {
         <TokenAmountInput
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
-          tokenIcon={<DotToken />}
+          tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
               ? new Decimal(selectedTokenNativeValue?.tokenValue).mul(withdrawAmountPercentage).div(100).toFixed()
@@ -470,7 +473,7 @@ const WithdrawPoolLiquidity = () => {
         <TokenAmountInput
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
-          tokenIcon={<DotToken />}
+          tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
           tokenValue={formattedTokenBValue()}
           onClick={() => setIsModalOpen(true)}
           onSetTokenValue={() => null}
@@ -647,12 +650,12 @@ const WithdrawPoolLiquidity = () => {
           tokenA={{
             value: exactNativeTokenWithdraw,
             symbol: selectedTokenA.nativeTokenSymbol,
-            icon: <DotToken />,
+            icon: <TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width={"24"} height={"24"} />,
           }}
           tokenB={{
             value: exactAssetTokenWithdraw,
             symbol: selectedTokenB.tokenSymbol,
-            icon: <AssetTokenIcon width={24} height={24} />,
+            icon: <TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width={"24"} height={"24"} />,
           }}
         />
       </div>

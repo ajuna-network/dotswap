@@ -58,11 +58,12 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
                       id: item.tokenId,
                       assetSymbol: item.assetTokenMetadata.symbol,
                       decimals: item.assetTokenMetadata.decimals,
-                      assetTokenBalance:
-                        formatDecimalsFromToken(
-                          Number(item.tokenAsset.balance?.replace(/[, ]/g, "")),
-                          item.assetTokenMetadata.decimals as string
-                        ) || "0",
+                      assetTokenBalance: !item.tokenId
+                        ? item.tokenAsset.balance
+                        : formatDecimalsFromToken(
+                            Number(item.tokenAsset.balance?.replace(/[, ]/g, "")),
+                            item.assetTokenMetadata.decimals as string
+                          ) || "0",
                     })
                   }
                 >

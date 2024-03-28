@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { useNavigate } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
-import { POOLS_PAGE } from "../../../app/router/routes";
+import { SWAP_ROUTE } from "../../../app/router/routes";
 import { TokenDecimalsErrorProps } from "../../../app/types";
 import { ActionType, ButtonVariants, TransactionTypes } from "../../../app/types/enum";
 import {
@@ -30,6 +30,8 @@ import AddPoolLiquidity from "../AddPoolLiquidity";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
+import { SwapOrPools } from "../../../app/types/enum";
+import { urlTo } from "../../../app/util/helper";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -109,7 +111,9 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
   const selectedAssetTokenNumber = new Decimal(selectedTokenAssetValue?.tokenValue || 0);
 
   const navigateToPools = () => {
-    navigate(POOLS_PAGE);
+    navigate(urlTo("/" + SWAP_ROUTE), {
+      state: { pageType: SwapOrPools.pools },
+    });
   };
 
   const handlePool = async () => {

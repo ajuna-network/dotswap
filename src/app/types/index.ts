@@ -87,10 +87,19 @@ export type SelectedChain = {
   chainA: {
     chainName: string;
     chainType: string;
+    balances: {
+      free: string;
+      reserved: string;
+      frozen: string;
+    };
   };
   chainB: {
     chainName: string;
     chainType: string;
+    balances: {
+      free: string;
+      reserved: string;
+      frozen: string;
+    };
   };
-  balance: string;
 };

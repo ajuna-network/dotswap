@@ -43,6 +43,8 @@ const AssetItemChild = ({
         const floatUsdLockedTokenBalance = parseFloat(data?.reserved) * parseFloat(tokenSpotPrice);
         const chainName = data?.chainName;
 
+        console.log(data, `${tokenSymbol}: ${rpcUrl ? "relay chain" : "asset hub"}`); // TODO: remove after testing locked balance
+
         setBalances({
           freeTokenBalance: floatFreeTokenBalance,
           usdFreeTokenBalance: floatUsdFreeTokenBalance,
@@ -66,13 +68,13 @@ const AssetItemChild = ({
             <div className="text-medium leading-none">{isRelayChain === true ? "Relay" : "Parachain"}</div>
           </div>
         </div>
-        <div className="flex items-start justify-start gap-8">
+        <div className="flex items-start justify-end gap-8">
           {balances && balances.lockedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="font-titillium-web text-small font-normal uppercase text-dark-200">Locked</div>
-              <div className="text-small font-semibold">
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Locked</div>
+              <div className="text-base font-semibold">
                 {balances && balances.lockedTokenBalance !== 0
-                  ? balances.lockedTokenBalance +
+                  ? balances.lockedTokenBalance.toFixed(2) +
                     " " +
                     tokenSymbol +
                     " ($" +
@@ -84,10 +86,15 @@ const AssetItemChild = ({
           ) : null}
 
           <div className="flex flex-col">
-            <div className="font-titillium-web text-small font-normal uppercase text-dark-200">Available balance</div>
-            <div className="text-small font-semibold">
+            <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Available balance</div>
+            <div className="text-base font-semibold">
               {balances
-                ? balances.freeTokenBalance + " " + tokenSymbol + " ($" + balances.usdFreeTokenBalance.toFixed(2) + ")"
+                ? balances.freeTokenBalance.toFixed(2) +
+                  " " +
+                  tokenSymbol +
+                  " ($" +
+                  balances.usdFreeTokenBalance.toFixed(2) +
+                  ")"
                 : "0"}
             </div>
           </div>

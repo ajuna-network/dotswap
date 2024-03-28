@@ -56,8 +56,27 @@ const AccordionAssetItem = ({
         ) || "0";
 
   const totalBalance = parseFloat(formattedBalance) + parseFloat(token.tokenAsset.relayBalance || "0");
+  const formattedTotalBalance = token.tokenId !== "" ? totalBalance : totalBalance.toFixed(2);
 
   const usdTotalBalance = (parseFloat(token.spotPrice) * totalBalance).toFixed(2);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const isEnterKey = e.key === "Enter";
+    const isArrowKey = e.key === "ArrowDown" || e.key === "ArrowUp";
+
+    if ((isEnterKey || isArrowKey) && children && !alwaysOpen && !(e.target instanceof HTMLButtonElement)) {
+      toggleAccordionAssetItem();
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.target instanceof HTMLButtonElement) return;
+    if (children && !alwaysOpen) {
+      toggleAccordionAssetItem();
+    }
+  };
 
   return (
     <div
@@ -73,8 +92,12 @@ const AccordionAssetItem = ({
     >
       <div
         ref={titleElm}
-        className="flex w-full flex-row justify-between p-8"
+        className={`flex w-full flex-row justify-between p-8 ${children ? "cursor-pointer" : "cursor-default"}`}
         data-height={accordionHeight.titleElmHeight}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
       >
         <div
           className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}
@@ -85,11 +108,13 @@ const AccordionAssetItem = ({
           </div>
           <div className="flex w-2/4 items-center justify-start">
             <div className="flex flex-col">
-              <div className="font-titillium-web text-small font-normal uppercase text-dark-200">
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
                 Total Available Balance
               </div>
-              <div className="font-titillium-web text-small font-semibold">
-                {totalBalance && totalBalance !== 0 ? totalBalance + " " + token.assetTokenMetadata.symbol : "0"}
+              <div className="font-titillium-web text-base font-semibold">
+                {totalBalance && totalBalance !== 0
+                  ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
+                  : "0"}
                 {token.spotPrice ? " ($" + usdTotalBalance + ")" : ""}
               </div>
             </div>

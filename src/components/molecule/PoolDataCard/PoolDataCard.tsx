@@ -1,19 +1,20 @@
-import Button from "../../components/atom/Button";
-import { ButtonVariants, LiquidityPageType } from "../../app/types/enum";
-import AddIconPink from "../../assets/img/add-icon-pink.svg?react";
-import { LpTokenAsset } from "../../app/types";
+import Button from "../../atom/Button";
+import { ButtonVariants, LiquidityPageType } from "../../../app/types/enum";
+import AddIconPink from "../../../assets/img/add-icon-pink.svg?react";
+import { LpTokenAsset } from "../../../app/types";
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
-import { ADD_LIQUIDITY_TO_EXISTING, REMOVE_LIQUIDITY_FROM_EXISTING } from "../../app/router/routes";
-import { urlTo } from "../../app/util/helper";
-import { useAppContext } from "../../state";
+import { ADD_LIQUIDITY_TO_EXISTING, REMOVE_LIQUIDITY_FROM_EXISTING } from "../../../app/router/routes";
+import { urlTo } from "../../../app/util/helper";
+import { useAppContext } from "../../../state";
+import { ReactNode } from "react";
 
 type PoolDataCardProps = {
   tokenPair: string;
   nativeTokens: string;
-  nativeTokenIcon: string;
+  nativeTokenIcon: ReactNode;
   assetTokens: string;
-  assetTokenIcon: string;
+  assetTokenIcon: ReactNode;
   lpTokenAsset: LpTokenAsset | null;
   assetTokenId: string;
   lpTokenId: string | null;
@@ -63,12 +64,8 @@ const PoolDataCard = ({
       <div className="flex gap-2">
         <div className="relative flex basis-2/5 flex-col font-unbounded-variable">
           <div className="relative flex">
-            <span className="">
-              <img src={nativeTokenIcon} alt="native icon" width={32} height={32} />
-            </span>
-            <span className="relative right-2">
-              <img src={assetTokenIcon} alt="asset icon" width={32} height={32} />
-            </span>
+            <span className="">{nativeTokenIcon}</span>
+            <span className="relative right-2">{assetTokenIcon}</span>
           </div>
           {tokenPair}
         </div>
@@ -113,12 +110,12 @@ const PoolDataCard = ({
       <div className="flex gap-2">
         <div className="flex basis-1/2 flex-col items-center justify-end">
           <div className="flex flex-col items-start">
-            <span className="flex gap-1 text-large font-medium">
-              <img src={nativeTokenIcon} alt="assetToken" width={16} height={16} />
+            <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
+              {nativeTokenIcon}
               {nativeTokens}
             </span>
-            <span className="flex gap-1 text-large font-medium">
-              <img src={assetTokenIcon} alt="assetToken" width={16} height={16} />
+            <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
+              {assetTokenIcon}
               {assetTokens}
             </span>
           </div>

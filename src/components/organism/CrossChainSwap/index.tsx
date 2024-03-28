@@ -73,42 +73,39 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     handleTokenValueChange("");
   }, [api]);
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances.tokenDecimals || !api) return;
-    if (selectedChain.chainA.chainName !== "" && selectedChain.chainB.chainName !== "") return;
+    try {
+      const [chainA, chainB] = await Promise.all([
+        fetchAssetHubBalance(api, crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString()),
+        fetchRelayBalance(crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString(), rpcUrlRelay),
+      ]);
 
-    const fetchData = async () => {
-      try {
-        const [chainA, chainB] = await Promise.all([
-          fetchAssetHubBalance(api),
-          fetchRelayBalance(crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString(), rpcUrlRelay),
-        ]);
+      if (!chainA || !chainB) return;
 
-        if (!chainA || !chainB) return;
+      dispatch({
+        type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
+        payload: {
+          chainA: chainA,
+          chainB: chainB,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-        dispatch({
-          type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
-          payload: {
-            chainA: chainA,
-            chainB: chainB.chainB,
-            balance: chainB.balance,
-          },
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  useEffect(() => {
     fetchData();
-  }, [crosschainDestinationWalletAddress, tokenBalances, api]);
+  }, [crosschainDestinationWalletAddress, tokenBalances, api, assetLoading, selectedAccount]);
 
   const handleChainSwitch = () => {
-    handleTokenValueChange("");
+    // handleTokenValueChange("");
     dispatch({
       type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
       payload: {
         chainA: selectedChain.chainB,
         chainB: selectedChain.chainA,
-        balance: selectedChain.balance,
       },
     });
   };
@@ -187,9 +184,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
   const getCrosschainButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(
-      selectedChain.chainA.chainType !== "Asset Hub" ? selectedChain.balance : tokenBalances?.balance || 0
-    );
+    const tokenBalanceDecimal = new Decimal(selectedChain.chainB.balances.free);
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
@@ -257,6 +252,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     selectedToken.tokenBalance,
     selectedToken.tokenSymbol,
     crosschainExactTokenAmount,
+    selectedChain.chainA.chainType,
+    crosschainLoading,
   ]);
 
   useEffect(() => {
@@ -272,7 +269,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   }, [selectedAccount]);
 
   useEffect(() => {
-    if (!isPopupEdit && !selectedToken.tokenSymbol && !assetLoading) {
+    if (!selectedToken.tokenSymbol && !assetLoading) {
       setSelectedToken({
         tokenSymbol: nativeToken.assetTokenMetadata.symbol || "",
         tokenId: "",
@@ -281,7 +278,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       });
       tokenSelectModal(nativeToken);
     }
-  }, [!isPopupEdit, assetLoading, api]);
+  }, [assetLoading, api]);
 
   const handleTokenValueChange = async (value: string) => {
     const payloadTokenValue = await tokenValue(value);
@@ -306,7 +303,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleCrosschainExec = async () => {
-    dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
     setReviewModalOpen(false);
     if (api) {
       if (selectedChain.chainA.chainType === "Relay Chain") {
@@ -316,7 +312,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           crosschainDestinationWalletAddress,
           rpcUrlRelay,
           dispatch
-        );
+        )
+          .then(() => {
+            fetchData();
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+          })
+          .catch((error) => {
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+            console.error("Error executing crosschain:", error);
+          });
       } else if (selectedChain.chainB.chainType === "Relay Chain") {
         await executeCrossIn(
           api,
@@ -324,7 +328,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           selectedAccount,
           crosschainDestinationWalletAddress,
           dispatch
-        );
+        )
+          .then(() => {
+            fetchData();
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+          })
+          .catch((error) => {
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+            console.error("Error executing crosschain:", error);
+          });
       } else {
         // TODO: implement teleportation across parachains
       }
@@ -373,6 +385,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           onClick={() => {
             handleChainSwitch();
           }}
+          disabled={!selectedAccount || crosschainLoading || !tokenBalances?.assets}
         >
           <CrossChainBtnIcon width={42} height={42} />
         </button>
@@ -382,14 +395,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           <div>
             <TokenAmountInput
               tokenText={selectedToken?.tokenSymbol}
-              tokenBalance={
-                selectedChain.chainA.chainType !== "Asset Hub"
-                  ? !selectedToken.tokenBalance
-                    ? "0"
-                    : selectedChain.balance
-                  : selectedToken?.tokenBalance
-              }
-              showUSDValue
+              tokenBalance={selectedToken.tokenBalance ? selectedChain.chainB.balances?.free : "0"}
+              showUSDValue={selectedToken.tokenBalance !== ""}
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
               labelText={t("crosschainPage.transfer")}
@@ -417,11 +424,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               disabled={getCrosschainButtonProperties.disabled || crosschainLoading}
               variant={ButtonVariants.btnInteractivePink}
             >
-              {!selectedAccount && assetLoading ? <LottieMedium /> : getCrosschainButtonProperties.label}
+              {!selectedAccount || assetLoading || crosschainLoading ? (
+                <LottieMedium />
+              ) : (
+                getCrosschainButtonProperties.label
+              )}
             </Button>
           </div>
         </div>
-        {selectedTokenValue.tokenValue !== "" && !tooManyDecimalsError.isError ? (
+        {selectedTokenValue.tokenValue !== "" && !tooManyDecimalsError.isError && selectedToken.tokenBalance !== "" ? (
           <div className="flex w-full flex-col gap-3 rounded-2xl bg-purple-50 px-4 py-3">
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.originChainFee")}</div>
@@ -439,7 +450,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               <div className="text-gray-300">{t("crosschainPage.route")}</div>
               <div className="flex items-center justify-center gap-[2px] rounded-full bg-pink px-1 py-[2px]">
                 <DotToken width={16} height={16} />
-                <span className="text-white">XCM</span>
+                <span className="text-white">{selectedChain.chainA.chainType === "Asset Hub" ? "UMP" : "DMP"}</span>
               </div>
             </div>
           </div>
@@ -462,13 +473,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         tokenSymbol={selectedToken.tokenSymbol}
         nativeChainName={selectedChain.chainA.chainName + " " + selectedChain.chainA.chainType}
         destinationChainName={selectedChain.chainB.chainType}
-        destinationBalance={
-          selectedChain.chainA.chainType === "Asset Hub"
-            ? !selectedToken.tokenBalance
-              ? "0"
-              : selectedChain.balance
-            : selectedToken?.tokenBalance
-        }
+        destinationBalance={selectedChain.chainA.balances.free}
         transactionType={
           selectedChain.chainA.chainType === "Asset Hub"
             ? CrosschainTransactionTypes.crossIn

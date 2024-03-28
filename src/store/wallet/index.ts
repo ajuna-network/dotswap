@@ -8,11 +8,14 @@ export const initialWalletState: WalletState = {
   selectedAccount: {} as WalletAccount,
   tokenBalances: null,
   assetsList: [],
+  otherAssets: [],
   walletConnectLoading: false,
   extensions: [],
   assetLoading: true,
   blockHashFinalized: "",
   lpFee: "",
+  nativeTokenSpotPrice: "0",
+  walletBalanceUSD: 0,
 };
 
 export const walletReducer = (state: WalletState, action: WalletAction): WalletState => {
@@ -33,10 +36,16 @@ export const walletReducer = (state: WalletState, action: WalletAction): WalletS
       return { ...state, extensions: action.payload };
     case ActionType.SET_ASSET_LOADING:
       return { ...state, assetLoading: action.payload };
+    case ActionType.SET_OTHER_ASSETS:
+      return { ...state, otherAssets: action.payload };
     case ActionType.SET_BLOCK_HASH_FINALIZED:
       return { ...state, blockHashFinalized: action.payload };
     case ActionType.SET_LP_FEE:
       return { ...state, lpFee: action.payload };
+    case ActionType.SET_NATIVE_TOKEN_SPOT_PRICE:
+      return { ...state, nativeTokenSpotPrice: action.payload };
+    case ActionType.SET_WALLET_BALANCE_USD:
+      return { ...state, walletBalanceUSD: action.payload };
 
     default:
       return state;
