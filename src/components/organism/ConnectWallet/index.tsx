@@ -81,7 +81,7 @@ const ConnectWallet = () => {
     const wallets = getSupportedWallets();
     setSupportedWallets(wallets);
   }, []);
-
+  // comment
   return (
     <>
       <div className="flex items-center justify-end gap-8">
