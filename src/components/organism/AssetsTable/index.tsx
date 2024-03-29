@@ -201,15 +201,7 @@ const AssetsTable = () => {
               <div className="flex flex-col items-center justify-center py-8">Loading...</div>
             ) : otherAssets.length > 0 ? (
               otherAssets.map((token: AssetListToken) => {
-                return (
-                  <AccordionAssetItem
-                    key={token.tokenId}
-                    token={token}
-                    handleSwapModal={(tokenId) => {
-                      handleSwapModal(tokenId);
-                    }}
-                  />
-                );
+                return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
               <div className="flex flex-col items-center justify-center py-8">No other assets found</div>

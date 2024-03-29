@@ -39,11 +39,9 @@ const AssetItemChild = ({
       (data: any) => {
         const floatFreeTokenBalance = parseFloat(data?.free);
         const floatUsdFreeTokenBalance = parseFloat(data?.free) * parseFloat(tokenSpotPrice);
-        const floatLockedTokenBalance = parseFloat(data?.reserved);
-        const floatUsdLockedTokenBalance = parseFloat(data?.reserved) * parseFloat(tokenSpotPrice);
+        const floatLockedTokenBalance = parseFloat(data?.frozen);
+        const floatUsdLockedTokenBalance = parseFloat(data?.frozen) * parseFloat(tokenSpotPrice);
         const chainName = data?.chainName;
-
-        console.log(data, `${tokenSymbol}: ${rpcUrl ? "relay chain" : "asset hub"}`); // TODO: remove after testing locked balance
 
         setBalances({
           freeTokenBalance: floatFreeTokenBalance,
@@ -65,7 +63,7 @@ const AssetItemChild = ({
             <div className="text-heading-6 leading-none">
               {balances.chainName !== "" ? balances.chainName : "Not connected to a chain"}
             </div>
-            <div className="text-medium leading-none">{isRelayChain === true ? "Relay" : "Parachain"}</div>
+            <div className="text-medium leading-none">{isRelayChain === true ? "Relay chain" : "Parachain"}</div>
           </div>
         </div>
         <div className="flex items-start justify-end gap-8">

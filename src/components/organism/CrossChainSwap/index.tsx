@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import Decimal from "decimal.js";
-import { ButtonVariants } from "../../../app/types/enum";
+import { ButtonVariants, ToasterType } from "../../../app/types/enum";
 import Button from "../../atom/Button";
 import CrossChainBtnIcon from "../../../assets/img/cross-chain-button.svg?react";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
@@ -24,6 +24,7 @@ import { fetchRelayBalance, fetchAssetHubBalance } from "../../../services/polka
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import TokenIcon from "../../atom/TokenIcon";
 import { executeCrossIn, executeCrossOut } from "../../../services/crosschain";
+import NotificationsModal from "../NotificationsModal";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -304,6 +305,26 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const handleCrosschainExec = async () => {
     setReviewModalOpen(false);
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_DATA,
+      payload: {
+        notificationModalOpen: true,
+        notificationType: ToasterType.PENDING,
+        notificationTitle: selectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
+        notificationMessage: "Proceed in your wallet",
+        notificationChainDetails: {
+          originChain: selectedChain.chainA.chainName + " " + selectedChain.chainA.chainType,
+          destinationChain: selectedChain.chainB.chainType,
+        },
+        notificationTransactionDetails: {
+          fromToken: {
+            symbol: selectedToken.tokenSymbol,
+            amount: parseFloat(crosschainExactTokenAmount),
+          },
+        },
+      },
+    });
+
     if (api) {
       if (selectedChain.chainA.chainType === "Relay Chain") {
         await executeCrossOut(
@@ -424,11 +445,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               disabled={getCrosschainButtonProperties.disabled || crosschainLoading}
               variant={ButtonVariants.btnInteractivePink}
             >
-              {!selectedAccount || assetLoading || crosschainLoading ? (
-                <LottieMedium />
-              ) : (
-                getCrosschainButtonProperties.label
-              )}
+              {!selectedAccount || crosschainLoading ? <LottieMedium /> : getCrosschainButtonProperties.label}
             </Button>
           </div>
         </div>
@@ -487,6 +504,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           handleCrosschainExec();
         }}
       />
+      <NotificationsModal />
     </div>
   );
 };

@@ -34,7 +34,6 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
   const destinationBalanceAfter = (
     parseFloat(destinationBalance) +
     parseFloat(crosschainExactTokenAmount) -
-    parseFloat(crosschainOriginChainFee) -
     parseFloat(crosschainDestinationChainFee)
   ).toFixed(6);
 

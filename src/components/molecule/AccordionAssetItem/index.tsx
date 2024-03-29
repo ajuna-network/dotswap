@@ -14,7 +14,7 @@ type AccordionAssetItemProps = {
   children?: React.ReactNode;
   alwaysOpen?: boolean;
   defaultOpen?: boolean;
-  handleSwapModal: (tokenId: string) => void | undefined;
+  handleSwapModal?: (tokenId: string) => void | undefined;
 };
 
 const AccordionAssetItem = ({
@@ -131,15 +131,17 @@ const AccordionAssetItem = ({
                 Crosschain
               </Button>
             )}
-            <Button
-              onClick={() => {
-                handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
-              }}
-              variant={ButtonVariants.btnSecondaryGray}
-              className="max-w-max"
-            >
-              Swap
-            </Button>
+            {handleSwapModal && (
+              <Button
+                onClick={() => {
+                  handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
+                }}
+                variant={ButtonVariants.btnSecondaryGray}
+                className="max-w-max"
+              >
+                Swap
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex w-10 flex-row items-center justify-end">
