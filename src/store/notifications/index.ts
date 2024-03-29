@@ -2,6 +2,7 @@ import { ActionType } from "../../app/types/enum";
 import { NotificationAction, NotificationState } from "./interface";
 
 export const initialNotificationState: NotificationState = {
+  notificationModalOpen: false,
   notificationType: null,
   notificationTitle: null,
   notificationTransactionDetails: null,
@@ -12,6 +13,8 @@ export const initialNotificationState: NotificationState = {
 
 export const notificationReducer = (state: NotificationState, action: NotificationAction): NotificationState => {
   switch (action.type) {
+    case ActionType.SET_NOTIFICATION_MODAL_OPEN:
+      return { ...state, notificationModalOpen: action.payload };
     case ActionType.SET_NOTIFICATION_TYPE:
       return { ...state, notificationType: action.payload };
     case ActionType.SET_NOTIFICATION_TITLE:
@@ -53,6 +56,16 @@ export const notificationReducer = (state: NotificationState, action: Notificati
         notificationLink: state.notificationLink
           ? { ...state.notificationLink, href: action.payload }
           : { text: "View in block explorer", href: action.payload },
+      };
+    case ActionType.SET_NOTIFICATION_DATA:
+      return {
+        notificationModalOpen: action.payload.notificationModalOpen || false,
+        notificationType: action.payload.notificationType || null,
+        notificationTitle: action.payload.notificationTitle || null,
+        notificationTransactionDetails: action.payload.notificationTransactionDetails || null,
+        notificationChainDetails: action.payload.notificationChainDetails || null,
+        notificationMessage: action.payload.notificationMessage || null,
+        notificationLink: action.payload.notificationLink || null,
       };
     default:
       return state;

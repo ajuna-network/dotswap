@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import Modal from "../../atom/Modal";
 import { LottieMedium } from "../../../assets/loader";
 import ArrowRight from "../../../assets/img/arrow-right.svg?react";
@@ -10,16 +10,17 @@ import TokenIcon from "../../atom/TokenIcon";
 import { useAppContext } from "../../../state";
 import { ToasterType } from "../../../app/types/enum";
 import dotAcpToast from "../../../app/util/toast";
+import { ActionType } from "../../../app/types/enum";
 
 const NotificationsModal: FC = () => {
-  const { state } = useAppContext();
-  const [modalOpen, setModalOpen] = useState(true);
+  const { state, dispatch } = useAppContext();
 
   const onModalClose = () => {
-    setModalOpen(false);
+    dispatch({ type: ActionType.SET_NOTIFICATION_MODAL_OPEN, payload: false });
   };
 
   const {
+    notificationModalOpen,
     notificationType,
     notificationTitle,
     notificationLink,
@@ -29,7 +30,7 @@ const NotificationsModal: FC = () => {
   } = state;
 
   useEffect(() => {
-    if (!modalOpen) {
+    if (!notificationModalOpen) {
       switch (notificationType) {
         case ToasterType.SUCCESS:
           dotAcpToast.success(notificationMessage ?? "", undefined, notificationLink?.href);
@@ -44,7 +45,7 @@ const NotificationsModal: FC = () => {
           break;
       }
     }
-  }, [modalOpen, notificationType]);
+  }, [notificationModalOpen, notificationType]);
 
   const renderNotificationIcon = () => {
     switch (notificationType) {
@@ -87,7 +88,7 @@ const NotificationsModal: FC = () => {
     return (
       <div className="flex items-center gap-2 py-2">
         <div className="flex items-center gap-1">
-          <TokenIcon tokenSymbol={notificationTransactionDetails.fromToken?.symbol ?? "DOT"} width="16" height="16" />
+          <TokenIcon tokenSymbol={notificationTransactionDetails.fromToken?.symbol ?? ""} width="16" height="16" />
           <p>{notificationTransactionDetails.fromToken?.amount ?? ""}</p>
           <p className="uppercase">{notificationTransactionDetails.fromToken?.symbol ?? ""}</p>
         </div>
@@ -154,7 +155,7 @@ const NotificationsModal: FC = () => {
   };
 
   return (
-    <Modal isOpen={modalOpen} onClose={onModalClose}>
+    <Modal isOpen={notificationModalOpen} onClose={onModalClose}>
       <div className="min-w-modal max-w-full">
         <div className="flex flex-col items-center gap-3 py-10">
           {renderNotificationIcon()}
