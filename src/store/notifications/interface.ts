@@ -34,6 +34,7 @@ export type NotificationAction =
   | { type: ActionType.SET_NOTIFICATION_TITLE; payload: string }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_DETAILS; payload: NotificationTransactionDetails | null }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM; payload: NotificationToken }
+  | { type: ActionType.SET_NOTIFICATION_MESSAGE; payload: string }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_TO; payload: NotificationToken | null }
   | { type: ActionType.SET_NOTIFICATION_CHAINS_DETAILS; payload: NotificationChainDetails }
   | { type: ActionType.SET_NOTIFICATION_LINK; payload: NotificationLink }

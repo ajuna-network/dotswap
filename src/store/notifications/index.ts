@@ -36,6 +36,8 @@ export const notificationReducer = (state: NotificationState, action: Notificati
       };
     case ActionType.SET_NOTIFICATION_CHAINS_DETAILS:
       return { ...state, notificationChainDetails: action.payload };
+    case ActionType.SET_NOTIFICATION_MESSAGE:
+      return { ...state, notificationMessage: action.payload };
     case ActionType.SET_NOTIFICATION_LINK:
       return { ...state, notificationLink: action.payload };
     case ActionType.SET_NOTIFICATION_LINK_TEXT:
