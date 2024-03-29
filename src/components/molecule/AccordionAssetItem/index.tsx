@@ -60,6 +60,24 @@ const AccordionAssetItem = ({
 
   const usdTotalBalance = (parseFloat(token.spotPrice) * totalBalance).toFixed(2);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const isEnterKey = e.key === "Enter";
+    const isArrowKey = e.key === "ArrowDown" || e.key === "ArrowUp";
+
+    if ((isEnterKey || isArrowKey) && children && !alwaysOpen && !(e.target instanceof HTMLButtonElement)) {
+      toggleAccordionAssetItem();
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.target instanceof HTMLButtonElement) return;
+    if (children && !alwaysOpen) {
+      toggleAccordionAssetItem();
+    }
+  };
+
   return (
     <div
       className={`acItem flex w-full flex-col overflow-hidden transition-all duration-300 ease-in-out ${className}`}
@@ -74,8 +92,12 @@ const AccordionAssetItem = ({
     >
       <div
         ref={titleElm}
-        className="flex w-full flex-row justify-between p-8"
+        className={`flex w-full flex-row justify-between p-8 ${children ? "cursor-pointer" : "cursor-default"}`}
         data-height={accordionHeight.titleElmHeight}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
       >
         <div
           className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}

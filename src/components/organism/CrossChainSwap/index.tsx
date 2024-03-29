@@ -73,29 +73,29 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     handleTokenValueChange("");
   }, [api]);
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances.tokenDecimals || !api) return;
+    try {
+      const [chainA, chainB] = await Promise.all([
+        fetchAssetHubBalance(api, crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString()),
+        fetchRelayBalance(crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString(), rpcUrlRelay),
+      ]);
 
-    const fetchData = async () => {
-      try {
-        const [chainA, chainB] = await Promise.all([
-          fetchAssetHubBalance(api, crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString()),
-          fetchRelayBalance(crosschainDestinationWalletAddress, tokenBalances.tokenDecimals.toString(), rpcUrlRelay),
-        ]);
+      if (!chainA || !chainB) return;
 
-        if (!chainA || !chainB) return;
+      dispatch({
+        type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
+        payload: {
+          chainA: chainA,
+          chainB: chainB,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-        dispatch({
-          type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
-          payload: {
-            chainA: chainA,
-            chainB: chainB,
-          },
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  useEffect(() => {
     fetchData();
   }, [crosschainDestinationWalletAddress, tokenBalances, api, assetLoading, selectedAccount]);
 
@@ -253,6 +253,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     selectedToken.tokenSymbol,
     crosschainExactTokenAmount,
     selectedChain.chainA.chainType,
+    crosschainLoading,
   ]);
 
   useEffect(() => {
@@ -302,7 +303,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleCrosschainExec = async () => {
-    dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
     setReviewModalOpen(false);
     if (api) {
       if (selectedChain.chainA.chainType === "Relay Chain") {
@@ -312,7 +312,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           crosschainDestinationWalletAddress,
           rpcUrlRelay,
           dispatch
-        );
+        )
+          .then(() => {
+            fetchData();
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+          })
+          .catch((error) => {
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+            console.error("Error executing crosschain:", error);
+          });
       } else if (selectedChain.chainB.chainType === "Relay Chain") {
         await executeCrossIn(
           api,
@@ -320,7 +328,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           selectedAccount,
           crosschainDestinationWalletAddress,
           dispatch
-        );
+        )
+          .then(() => {
+            fetchData();
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+          })
+          .catch((error) => {
+            dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
+            console.error("Error executing crosschain:", error);
+          });
       } else {
         // TODO: implement teleportation across parachains
       }
@@ -408,7 +424,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               disabled={getCrosschainButtonProperties.disabled || crosschainLoading}
               variant={ButtonVariants.btnInteractivePink}
             >
-              {!selectedAccount && assetLoading ? <LottieMedium /> : getCrosschainButtonProperties.label}
+              {!selectedAccount || assetLoading || crosschainLoading ? (
+                <LottieMedium />
+              ) : (
+                getCrosschainButtonProperties.label
+              )}
             </Button>
           </div>
         </div>
