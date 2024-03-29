@@ -107,6 +107,15 @@ export default {
       borderRadius: {
         medium: "100px",
       },
+      translate: {
+        toasters: "104px",
+      },
+      minWidth: {
+        modal: "450px",
+      },
+      maxWidth: {
+        notification: "280px",
+      },
     },
   },
   plugins: [],

@@ -55,7 +55,7 @@ const Toaster: FC<ToasterProps> = ({ description, type = ToasterType.SUCCESS, cl
                 href={blockExplorerLink}
                 target="_blank"
                 rel={"noreferrer"}
-                className="cursor-pointer border-b border-solid border-black pb-0.5 font-unbounded-variable text-small leading-[1.2] tracking-[0.06em] text-black text-opacity-90"
+                className="cursor-pointer border-b border-solid border-black pb-0.5 font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90"
               >
                 View in block explorer
               </a>
