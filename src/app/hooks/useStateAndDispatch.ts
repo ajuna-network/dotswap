@@ -26,7 +26,7 @@ const useStateAndDispatch = () => {
   const [swapState, dispatchSwap] = useReducer(swapReducer, initialSwapState);
   const [crosschainState, dispatchCrosschain] = useReducer(crosschainReducer, initialCrosschainState);
   const [notificationState, dispatchNotification] = useReducer(notificationReducer, initialNotificationState);
-  //comment
+
   const state = { ...walletState, ...poolsState, ...swapState, ...crosschainState, ...notificationState };
 
   const dispatch = (action: WalletAction | PoolAction | SwapAction | CrosschainAction | NotificationAction) => {
