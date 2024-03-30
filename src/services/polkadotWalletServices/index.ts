@@ -154,9 +154,7 @@ export const setTokenBalance = async (
       const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
       dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
     } catch (error) {
-      const chain = await api.rpc.system.chain();
       dotAcpToast.error(`Wallet connection error: ${error}`);
-      console.log("ovaj api je za: ", chain);
     } finally {
       dispatch({ type: ActionType.SET_ASSET_LOADING, payload: false });
     }
