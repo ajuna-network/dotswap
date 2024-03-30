@@ -242,20 +242,24 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 // fees for AssetHubKusama -> Kusama Relay Chain
 // source chain fee: 0.000087322311 KSM
 // destination chain fee: 0.001032999966 KSM
-export const getCrossInFees = () => {
-  return {
-    originChainFee: "0.000087322311",
-    destinationChainFee: "0.001032999966",
-  };
+export const getCrossInDestinationFee = () => {
+  return "0.001032999966";
 };
 
 //
 // fees for Kusama Relay Chain -> AssetHubKusama
 // source chain fee: 0.00060714529 KSM
 // destination chain fee: 0.000119766667 KSM
-export const getCrossOutFees = () => {
-  return {
-    originChainFee: "0.00060714529",
-    destinationChainFee: "0.000119766667",
-  };
+export const getCrossOutDestinationFee = () => {
+  return "0.000119766667";
+};
+
+// function for calculating max amount
+// free balance - origin chain fee
+// KSM has 12 decimal places, in the future we should probably make this dynamic
+export const calculateMaxAmount = (freeBalance: string, originChainFee: string) => {
+  console.log(`freeBalance: ${freeBalance}, originChainFee: ${originChainFee}`);
+  const freeBalanceDecimal = new Decimal(freeBalance);
+  const originChainFeeDecimal = new Decimal(originChainFee);
+  return freeBalanceDecimal.minus(originChainFeeDecimal).toString();
 };

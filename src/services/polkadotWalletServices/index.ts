@@ -31,6 +31,18 @@ export const setupPolkadotApi = async () => {
   return api;
 };
 
+export const setupKusamaRelayChainApi = async () => {
+  const { rpcUrlRelay } = useGetNetwork();
+  const api = await ApiPromise.create({ provider: new WsProvider(rpcUrlRelay) });
+  const [chain, nodeName, nodeVersion] = await Promise.all([
+    api.rpc.system.chain(),
+    api.rpc.system.name(),
+    api.rpc.system.version(),
+  ]);
+  console.log(`Successfully connected to ${chain} using ${nodeName} v${nodeVersion}`);
+  return api;
+};
+
 export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: string) => {
   const now = await api.query.timestamp.now();
   const { nonce, data: balance } = await api.query.system.account(walletAddress);
@@ -139,7 +151,9 @@ export const setTokenBalance = async (
       const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
       dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
     } catch (error) {
+      const chain = await api.rpc.system.chain();
       dotAcpToast.error(`Wallet connection error: ${error}`);
+      console.log("ovaj api je za: ", chain);
     } finally {
       dispatch({ type: ActionType.SET_ASSET_LOADING, payload: false });
     }

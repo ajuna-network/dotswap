@@ -22,6 +22,7 @@ export interface WalletState {
 
 export type WalletAction =
   | { type: ActionType.SET_API; payload: ApiPromise }
+  | { type: ActionType.SET_KUSAMA_API; payload: ApiPromise }
   | { type: ActionType.SET_ACCOUNTS; payload: WalletAccount[] }
   | { type: ActionType.SET_SELECTED_ACCOUNT; payload: WalletAccount }
   | { type: ActionType.SET_TOKEN_BALANCES; payload: TokenBalanceData }
