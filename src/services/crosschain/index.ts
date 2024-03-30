@@ -1,23 +1,45 @@
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { Builder } from "@paraspell/sdk";
+import { ApiPromise } from "@polkadot/api";
+import { Builder, Extrinsic } from "@paraspell/sdk";
 import { getWalletBySource, type WalletAccount } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
+import { CrosschainAction, CrosschainExtrinsic } from "../../store/crosschain/interface";
+import Decimal from "decimal.js";
 import { NotificationAction } from "../../store/notifications/interface";
-import { CrosschainAction } from "../../store/crosschain/interface";
 import { ActionType, ToasterType } from "../../app/types/enum";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ISubmittableResult } from "@polkadot/types/types";
+
+// Relay chain -> parachain
+export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
+  const extrinsic = await Builder(api).to("AssetHubKusama").amount(amount).address(destinationAddress).build();
+  return extrinsic;
+};
+
+// Parachain -> relay chain
+export const createCrossInExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
+  const extrinsic = await Builder(api).from("AssetHubKusama").amount(amount).address(destinationAddress).build();
+  return extrinsic;
+};
+
+export const calculateOriginFee = async (account: WalletAccount, extrinsic: CrosschainExtrinsic) => {
+  if (extrinsic) {
+    const wallet = getWalletBySource(account.wallet?.extensionName);
+    if (!wallet?.signer) throw new Error("Wallet signer is not defined.");
+    const paymentInfo = await extrinsic.paymentInfo(account.address, { signer: wallet.signer });
+    return new Decimal(paymentInfo.partialFee.toString()).dividedBy(Math.pow(10, 12)).toFixed();
+  } else {
+    return "";
+  }
+};
 
 async function setupCallAndSign(
-  api: ApiPromise,
   walletAccount: WalletAccount,
-  amount: string,
-  destinationAddress: string,
-  method: "to" | "from",
+  extrinsic: Extrinsic,
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) {
-  const call = await Builder(api)[method]("AssetHubKusama").amount(amount).address(destinationAddress).build();
   const wallet = getWalletBySource(walletAccount.wallet?.extensionName);
   if (!wallet?.signer) throw new Error("Wallet signer is not defined.");
-  return await call
+  return await extrinsic
     .signAsync(walletAccount.address, { signer: wallet.signer })
     .then((res) => {
       dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.PENDING });
@@ -46,13 +68,13 @@ async function setupCallAndSign(
 }
 
 async function sendTransaction(
-  call: any,
+  extrinsic: SubmittableExtrinsic<"promise", ISubmittableResult>,
   api: ApiPromise,
   dispatch: Dispatch<CrosschainAction | NotificationAction>,
   subScanURL: string
 ) {
   return new Promise((resolve, reject) => {
-    call.send(({ status, dispatchError, txHash }: { status: any; dispatchError: any; txHash: any }) => {
+    extrinsic.send(({ status, dispatchError, txHash }) => {
       if (status.isFinalized) {
         if (dispatchError) {
           if (dispatchError.isModule) {
@@ -78,15 +100,12 @@ async function sendTransaction(
 }
 
 export const executeCrossOut = async (
+  kusamaApi: ApiPromise,
   walletAccount: WalletAccount,
-  amount: string,
-  destinationAddress: string,
-  rpcUrl: string,
+  extrinsic: Extrinsic,
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
-  const wsProvider = new WsProvider(rpcUrl);
-  const kusamaApi = await ApiPromise.create({ provider: wsProvider });
-  const signer = await setupCallAndSign(kusamaApi, walletAccount, amount, destinationAddress, "to", dispatch);
+  const signer = await setupCallAndSign(walletAccount, extrinsic, dispatch);
   const subScanURL = "https://kusama.subscan.io/";
   if (!signer) return;
   return await sendTransaction(signer, kusamaApi, dispatch, subScanURL);
@@ -94,12 +113,11 @@ export const executeCrossOut = async (
 
 export const executeCrossIn = async (
   api: ApiPromise,
-  amount: string,
   account: WalletAccount,
-  destinationAddress: string,
+  extrinsic: Extrinsic,
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
-  const signer = await setupCallAndSign(api, account, amount, destinationAddress, "from", dispatch);
+  const signer = await setupCallAndSign(account, extrinsic, dispatch);
   const subScanURL = "https://assethub-kusama.subscan.io/";
   if (!signer) return;
   return await sendTransaction(signer, api, dispatch, subScanURL);
