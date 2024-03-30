@@ -3,7 +3,6 @@ import { Builder, Extrinsic } from "@paraspell/sdk";
 import { getWalletBySource, type WalletAccount } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
 import { CrosschainAction, CrosschainExtrinsic } from "../../store/crosschain/interface";
-import dotAcpToast from "../../app/util/toast";
 import Decimal from "decimal.js";
 import { NotificationAction } from "../../store/notifications/interface";
 import { ActionType, ToasterType } from "../../app/types/enum";
@@ -31,42 +30,6 @@ export const calculateOriginFee = async (account: WalletAccount, extrinsic: Cros
   } else {
     return "";
   }
-};
-
-export const signAndSendTransaction = async (
-  api: ApiPromise,
-  walletAccount: WalletAccount,
-  extrinsic: Extrinsic,
-  dispatch: Dispatch<CrosschainAction>
-) => {
-  const wallet = getWalletBySource(walletAccount.wallet?.extensionName);
-  if (!wallet?.signer) throw new Error("Wallet signer is not defined.");
-  await extrinsic.signAsync(walletAccount.address, { signer: wallet.signer });
-  return await new Promise((resolve, reject) => {
-    void extrinsic.send(({ status, dispatchError, txHash }) => {
-      if (status.isFinalized) {
-        // Check if there are any dispatch errors
-        if (dispatchError !== undefined) {
-          if (dispatchError.isModule) {
-            const decoded = api.registry.findMetaError(dispatchError.asModule);
-            const { docs, name, section } = decoded;
-
-            dotAcpToast.error(dispatchError.toString());
-            reject(new Error(`${section}.${name}: ${docs.join(" ")}`));
-          } else {
-            dotAcpToast.error(dispatchError.toString());
-            reject(new Error(dispatchError.toString()));
-          }
-        } else {
-          // No dispatch error, transaction should be successful
-          dispatch({ type: ActionType.SET_CROSSCHAIN_TRANSFER_FINALIZED, payload: true });
-
-          dotAcpToast.success(`Current status: ${status.type}`);
-          resolve(txHash.toString());
-        }
-      }
-    });
-  });
 };
 
 async function setupCallAndSign(
