@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import Modal from "../../atom/Modal";
 import { LottieMedium } from "../../../assets/loader";
 import ArrowRight from "../../../assets/img/arrow-right.svg?react";
@@ -14,6 +14,7 @@ import { ActionType } from "../../../app/types/enum";
 
 const NotificationsModal: FC = () => {
   const { state, dispatch } = useAppContext();
+  const [notificationViewed, setNotificationViewed] = useState(false);
 
   const onModalClose = () => {
     dispatch({ type: ActionType.SET_NOTIFICATION_MODAL_OPEN, payload: false });
@@ -30,7 +31,7 @@ const NotificationsModal: FC = () => {
   } = state;
 
   useEffect(() => {
-    if (!notificationModalOpen) {
+    if (!notificationModalOpen && !notificationViewed) {
       switch (notificationType) {
         case ToasterType.SUCCESS:
           dotAcpToast.success(notificationMessage ?? "", undefined, notificationLink?.href);
@@ -45,7 +46,17 @@ const NotificationsModal: FC = () => {
           break;
       }
     }
+
+    if (!notificationModalOpen) {
+      setNotificationViewed(false);
+    }
   }, [notificationModalOpen, notificationType]);
+
+  useEffect(() => {
+    if (notificationModalOpen) {
+      setNotificationViewed(true);
+    }
+  }, [notificationModalOpen]);
 
   const renderNotificationIcon = () => {
     switch (notificationType) {
