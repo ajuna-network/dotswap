@@ -10,26 +10,31 @@ import {
   swapReducer,
   walletReducer,
   crosschainReducer,
+  initialNotificationState,
 } from "../../store";
 import { setupPolkadotApi } from "../../services/polkadotWalletServices";
 import { ActionType } from "../types/enum";
 import dotAcpToast from "../util/toast";
 import { SwapAction } from "../../store/swap/interface";
 import { CrosschainAction } from "../../store/crosschain/interface";
+import { notificationReducer } from "../../store/notifications";
+import { NotificationAction } from "../../store/notifications/interface";
 
 const useStateAndDispatch = () => {
   const [walletState, dispatchWallet] = useReducer(walletReducer, initialWalletState);
   const [poolsState, dispatchPools] = useReducer(poolsReducer, initialPoolsState);
   const [swapState, dispatchSwap] = useReducer(swapReducer, initialSwapState);
   const [crosschainState, dispatchCrosschain] = useReducer(crosschainReducer, initialCrosschainState);
+  const [notificationState, dispatchNotification] = useReducer(notificationReducer, initialNotificationState);
 
-  const state = { ...walletState, ...poolsState, ...swapState, ...crosschainState };
+  const state = { ...walletState, ...poolsState, ...swapState, ...crosschainState, ...notificationState };
 
-  const dispatch = (action: WalletAction | PoolAction | SwapAction | CrosschainAction) => {
+  const dispatch = (action: WalletAction | PoolAction | SwapAction | CrosschainAction | NotificationAction) => {
     dispatchWallet(action as WalletAction);
     dispatchPools(action as PoolAction);
     dispatchSwap(action as SwapAction);
     dispatchCrosschain(action as CrosschainAction);
+    dispatchNotification(action as NotificationAction);
   };
 
   useEffect(() => {

@@ -6,6 +6,7 @@ export default {
       fontFamily: {
         "unbounded-variable": ["UnboundedVariable", "sans-serif"],
         "titillium-web": ["TitilliumWeb", "sans-serif"],
+        "fira-sans": ["Fira Sans", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
       colors: {
@@ -23,9 +24,15 @@ export default {
         pink: {
           DEFAULT: "#E6007A",
         },
+        red: {
+          900: "#D50B3E",
+        },
         ghost: {
           100: "#E6007A1A",
           200: "#E6007A33",
+        },
+        blue: {
+          900: "#0075AD",
         },
         purple: {
           50: "#FBFCFE",
@@ -47,9 +54,11 @@ export default {
           700: "#0094D4",
         },
         green: {
+          100: "#EEFBF4",
           500: "#56F39A",
           600: "#51E591",
           700: "#48CC81",
+          900: "#17663A",
         },
         lime: {
           500: "#D3FF33",
@@ -71,6 +80,7 @@ export default {
         },
         warning: "#FFF9E9",
         alert: "#F53D6B",
+        success: "#2DCA72",
         "gradient-half-gray": "linear-gradient(to bottom, white 50%, #FBFCFE 50%);",
       },
       backgroundImage: {
@@ -79,6 +89,8 @@ export default {
       boxShadow: {
         "modal-box-shadow":
           "0px 0px 0px 0px rgba(226, 228, 233, 0.10), 3px 12px 27px 0px rgba(226, 228, 233, 0.10), 13px 48px 50px 0px rgba(226, 228, 233, 0.09), 29px 108px 67px 0px rgba(226, 228, 233, 0.05), 52px 193px 80px 0px rgba(226, 228, 233, 0.01), 82px 301px 87px 0px rgba(226, 228, 233, 0.00)",
+        "toaster-box-shadow":
+          "52px 193px 80px rgba(226, 228, 233, 0.01), 29px 108px 67px rgba(226, 228, 233, 0.05), 13px 48px 50px rgba(226, 228, 233, 0.09), 3px 12px 27px rgba(226, 228, 233, 0.1), 0px 0px 0px rgba(226, 228, 233, 0.1);",
       },
       fontSize: {
         "heading-1": "48px",
@@ -91,6 +103,18 @@ export default {
         large: "16px",
         medium: "13px",
         small: "11px",
+      },
+      borderRadius: {
+        medium: "100px",
+      },
+      translate: {
+        toasters: "104px",
+      },
+      minWidth: {
+        modal: "450px",
+      },
+      maxWidth: {
+        notification: "280px",
       },
     },
   },

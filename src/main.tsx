@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <HelmetProvider>
           <App />
         </HelmetProvider>
-        <Toaster position="bottom-right" />
+        <Toaster position="top-right" containerClassName="translate-y-toasters" />
       </ErrorBoundary>
     </I18nextProvider>
   </React.StrictMode>

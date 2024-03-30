@@ -66,24 +66,27 @@ export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: str
 
   for (const item of allChainAssets) {
     const cleanedTokenId = item?.tokenId?.[0]?.replace(/[, ]/g, "");
+
     assetTokensDataPromises.push(
       Promise.all([
         api.query.assets.account(cleanedTokenId, walletAddress),
         api.query.assets.metadata(cleanedTokenId),
       ]).then(([tokenAsset, assetTokenMetadata]) => {
-        if (whitelist.includes(cleanedTokenId)) {
+        const tokenAssetData = tokenAsset.toHuman()
+          ? (tokenAsset.toHuman() as any)
+          : {
+              balance: "",
+              extra: "",
+              reason: "",
+              status: "",
+            };
+        if (whitelist.includes(cleanedTokenId) || tokenAssetData.balance !== "") {
           const resultObject = {
             tokenId: cleanedTokenId,
             assetTokenMetadata: assetTokenMetadata.toHuman(),
-            tokenAsset: tokenAsset.toHuman()
-              ? tokenAsset.toHuman()
-              : {
-                  balance: "",
-                  extra: "",
-                  reason: "",
-                  status: "",
-                },
+            tokenAsset: tokenAssetData,
           };
+
           return resultObject;
         }
         return null;
