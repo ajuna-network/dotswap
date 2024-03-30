@@ -67,6 +67,16 @@ export const notificationReducer = (state: NotificationState, action: Notificati
         notificationMessage: action.payload.notificationMessage || null,
         notificationLink: action.payload.notificationLink || null,
       };
+    case ActionType.RESET_NOTIFICATION_STATE:
+      return {
+        notificationModalOpen: false,
+        notificationType: null,
+        notificationTitle: null,
+        notificationTransactionDetails: null,
+        notificationChainDetails: null,
+        notificationMessage: null,
+        notificationLink: null,
+      };
     default:
       return state;
   }

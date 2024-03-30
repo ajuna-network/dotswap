@@ -42,4 +42,5 @@ export type NotificationAction =
   | { type: ActionType.SET_NOTIFICATION_LINK; payload: NotificationLink }
   | { type: ActionType.SET_NOTIFICATION_LINK_TEXT; payload: string }
   | { type: ActionType.SET_NOTIFICATION_LINK_HREF; payload: string }
-  | { type: ActionType.SET_NOTIFICATION_DATA; payload: NotificationState };
+  | { type: ActionType.SET_NOTIFICATION_DATA; payload: NotificationState }
+  | { type: ActionType.RESET_NOTIFICATION_STATE };

@@ -75,6 +75,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const selectedChain = crosschainSelectedChain;
 
+  // Temporary notification clear until new notifications are implemented app-wide
+
+  useEffect(() => {
+    return () => {
+      dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
+    };
+  }, []);
+
   useEffect(() => {
     setSelectedToken({
       tokenSymbol: "",
