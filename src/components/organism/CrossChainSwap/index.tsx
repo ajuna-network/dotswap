@@ -33,6 +33,7 @@ import {
   calculateOriginFee,
   createCrossInExtrinsic,
   createCrossOutExtrinsic,
+  executeCrossIn,
   executeCrossOut,
 } from "../../../services/crosschain";
 
@@ -410,7 +411,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             console.error("Error executing crosschain:", error);
           });
       } else if (selectedChain.chainB.chainType === "Relay Chain" && api) {
-        await executeCrossOut(api, selectedAccount, crosschainExtrinsic, dispatch)
+        await executeCrossIn(api, selectedAccount, crosschainExtrinsic, dispatch)
           .then(() => {
             fetchData();
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
