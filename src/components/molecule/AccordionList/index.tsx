@@ -29,6 +29,25 @@ const AccordionList = ({
     setIsOpen(!isOpen);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const isEnterKey = e.key === "Enter";
+    const isArrowKey = e.key === "ArrowDown" || e.key === "ArrowUp";
+
+    if ((isEnterKey || isArrowKey) && children && !alwaysOpen && !(e.target instanceof HTMLButtonElement)) {
+      toggleAccordionList();
+    }
+  };
+
+  const conditionalAttributes = alwaysOpen
+    ? {}
+    : {
+        onClick: toggleAccordionList,
+        onKeyDown: handleKeyDown,
+        role: "button",
+        tabIndex: 0,
+      };
+
   useEffect(() => {
     setAccordionHeight({
       titleElmHeight: titleElm.current?.clientHeight || 0,
@@ -61,17 +80,15 @@ const AccordionList = ({
             ref={titleElm}
             className="flex w-full flex-row justify-between p-8"
             data-height={accordionHeight.titleElmHeight}
+            {...conditionalAttributes}
           >
             <div className="font-unbounded-variable text-heading-6 font-normal">{title}</div>
             {!alwaysOpen && children && (
-              <button
+              <div
                 className={`flex items-center justify-center transition-all duration-300 ease-in-out ${isOpen ? "rotate-180 transform opacity-100" : "opacity-40"}`}
-                onClick={() => {
-                  toggleAccordionList();
-                }}
               >
                 <DownArrow />
-              </button>
+              </div>
             )}
           </div>
         )}
