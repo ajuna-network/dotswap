@@ -106,7 +106,7 @@ export const executeCrossOut = async (
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
   const signer = await setupCallAndSign(walletAccount, extrinsic, dispatch);
-  const subScanURL = "https://kusama.subscan.io/";
+  const subScanURL = "https://assethub-kusama.subscan.io/";
   if (!signer) return;
   return await sendTransaction(signer, kusamaApi, dispatch, subScanURL);
 };
@@ -118,7 +118,7 @@ export const executeCrossIn = async (
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
   const signer = await setupCallAndSign(account, extrinsic, dispatch);
-  const subScanURL = "https://assethub-kusama.subscan.io/";
+  const subScanURL = "https://kusama.subscan.io/";
   if (!signer) return;
   return await sendTransaction(signer, api, dispatch, subScanURL);
 };
