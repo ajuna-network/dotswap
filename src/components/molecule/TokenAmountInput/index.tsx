@@ -81,11 +81,14 @@ const TokenAmountInput = ({
       )}
     >
       <div className="flex">
-        <label htmlFor="token-amount" className="absolute top-4 text-small font-normal text-gray-200">
+        <label
+          htmlFor={`token-amount-${labelText?.toLowerCase().replace(/\s+/g, "-")}`}
+          className="absolute top-4 text-small font-normal text-gray-200"
+        >
           {labelText}
         </label>
         <NumericFormat
-          id="token-amount"
+          id={`token-amount-${labelText?.toLowerCase().replace(/\s+/g, "-")}`}
           getInputRef={inputRef}
           allowNegative={false}
           fixedDecimalScale
