@@ -1749,8 +1749,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           }
           tokenSymbolA={
             inputEdited.inputType === InputEditedType.exactIn
-              ? selectedTokens.tokenB.tokenSymbol
-              : selectedTokens.tokenA.tokenSymbol
+              ? selectedTokens.tokenA.tokenSymbol
+              : selectedTokens.tokenB.tokenSymbol
           }
           tokenSymbolB={
             inputEdited.inputType === InputEditedType.exactIn
