@@ -7,6 +7,7 @@ import { ButtonVariants } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
 import { getSpotPrice } from "../../../app/util/helper";
+import { formatDecimalsFromToken } from "../../../app/util/helper";
 
 type TokenAmountInputProps = {
   tokenText: string;
@@ -31,6 +32,8 @@ const TokenAmountInput = ({
   tokenIcon,
   tokenText,
   tokenBalance,
+  tokenId,
+  tokenDecimals,
   disabled,
   tokenValue,
   labelText,
@@ -130,7 +133,10 @@ const TokenAmountInput = ({
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
-          Balance: {tokenBalance || 0}
+          Balance:{" "}
+          {tokenId && tokenText && Number(tokenBalance) !== 0
+            ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)
+            : tokenBalance || 0}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
               <span>&nbsp;(${tokenPriceUSD})</span>
