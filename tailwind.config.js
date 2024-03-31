@@ -11,7 +11,7 @@ export default {
       },
       spacing: {
         sidebar: "194px",
-        toaster: "260px",
+        toaster: "280px",
       },
       colors: {
         primary: {
