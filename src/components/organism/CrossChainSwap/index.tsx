@@ -501,6 +501,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               onMaxClick={() => {
                 handleMaxClick();
               }}
+              maxVisible={true}
             />
           </div>
           <DestinationWalletAddress

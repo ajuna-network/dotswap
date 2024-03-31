@@ -21,6 +21,7 @@ const AmountPercentage: FC<AmountPercentageProps> = ({ maxValue, onChange, disab
       <div className="flex items-center gap-[6px]">
         <div className="relative w-[75px]">
           <NumericFormat
+            id="amount-percentage"
             value={value}
             isAllowed={(values) => {
               const { formattedValue, floatValue } = values;

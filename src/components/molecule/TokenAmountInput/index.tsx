@@ -6,7 +6,7 @@ import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
-import { getSpotPrice } from "../../../app/util/helper";
+import { generateRandomString, getSpotPrice } from "../../../app/util/helper";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
 
 type TokenAmountInputProps = {
@@ -69,6 +69,8 @@ const TokenAmountInput = ({
     });
   }, [tokenText, tokenBalance]);
 
+  const formId = `token-amount-${generateRandomString(4)}`;
+
   return (
     <div
       ref={wrapperRef}
@@ -81,14 +83,11 @@ const TokenAmountInput = ({
       )}
     >
       <div className="flex">
-        <label
-          htmlFor={`token-amount-${labelText?.toLowerCase().replace(/\s+/g, "-")}`}
-          className="absolute top-4 text-small font-normal text-gray-200"
-        >
+        <label htmlFor={formId} className="absolute top-4 text-small font-normal text-gray-200">
           {labelText}
         </label>
         <NumericFormat
-          id={`token-amount-${labelText?.toLowerCase().replace(/\s+/g, "-")}`}
+          id={formId}
           getInputRef={inputRef}
           allowNegative={false}
           fixedDecimalScale
