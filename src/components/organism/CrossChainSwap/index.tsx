@@ -400,6 +400,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           },
         },
       });
+      // Refactor this to go into finally
       setSelectedTokenValue({ tokenValue: "" });
       if (selectedChain.chainA.chainType === "Relay Chain" && kusamaApi) {
         await executeCrossOut(kusamaApi, selectedAccount, crosschainExtrinsic, dispatch)
