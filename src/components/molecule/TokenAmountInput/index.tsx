@@ -26,6 +26,7 @@ type TokenAmountInputProps = {
   onClick: () => void;
   onSetTokenValue: (value: string) => void;
   onMaxClick?: () => void;
+  maxVisible?: boolean;
 };
 
 const TokenAmountInput = ({
@@ -44,6 +45,7 @@ const TokenAmountInput = ({
   onSetTokenValue,
   onClick,
   onMaxClick,
+  maxVisible,
 }: TokenAmountInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLInputElement>(null);
@@ -149,6 +151,7 @@ const TokenAmountInput = ({
           ) : null}
           {tokenText &&
             onMaxClick &&
+            maxVisible &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP == "true" && (
               <button

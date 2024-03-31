@@ -15,6 +15,8 @@ const checkIfExactError = (errorValue: string) => {
   return errorValue === t("swapPage.palletSlippageError");
 };
 
+const { assethubSubscanUrl, nativeTokenSymbol } = useGetNetwork();
+
 const exactSwapAmounts = (
   itemEvents: any,
   tokenADecimals: string,
@@ -82,11 +84,7 @@ export const swapNativeForAssetExactIn = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        dotAcpToast.pending("Submitted. Waiting finalization.");
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -101,10 +99,12 @@ export const swapNativeForAssetExactIn = async (
             dotAcpToast.error(response.dispatchError.toString());
             dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
           }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+        } else if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+          dotAcpToast.success(
+            "Swap completed.",
+            undefined,
+            `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`
+          );
           exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
 
           dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
@@ -182,11 +182,7 @@ export const swapNativeForAssetExactOut = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        dotAcpToast.pending("Submitted. Waiting finalization.");
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -201,11 +197,14 @@ export const swapNativeForAssetExactOut = async (
             dotAcpToast.error(response.dispatchError.toString());
             dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
           }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+        } else if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
           exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
+
+          dotAcpToast.success(
+            "Swap completed.",
+            undefined,
+            `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`
+          );
 
           dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
           dispatch({ type: ActionType.SET_SWAP_FINALIZED, payload: true });
@@ -290,11 +289,7 @@ export const swapAssetForAssetExactIn = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        dotAcpToast.pending("Submitted. Waiting finalization.");
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -309,10 +304,12 @@ export const swapAssetForAssetExactIn = async (
             dotAcpToast.error(response.dispatchError.toString());
             dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
           }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+        } else if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+          dotAcpToast.success(
+            "Swap completed.",
+            undefined,
+            `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`
+          );
           exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
 
           dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
@@ -398,11 +395,7 @@ export const swapAssetForAssetExactOut = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        dotAcpToast.pending("Submitted. Waiting finalization.");
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -417,10 +410,12 @@ export const swapAssetForAssetExactOut = async (
             dotAcpToast.error(response.dispatchError.toString());
             dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
           }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+        } else if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
+          dotAcpToast.success(
+            "Swap completed.",
+            undefined,
+            `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`
+          );
           exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
 
           dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });

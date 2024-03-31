@@ -1593,6 +1593,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           disabled={!selectedAccount || swapLoading || !tokenBalances?.assets || poolsTokenMetadata.length === 0}
           assetLoading={assetLoading}
           onMaxClick={onMaxClick}
+          maxVisible={!!selectedTokens.tokenB.tokenSymbol}
         />
 
         <TokenAmountInput
