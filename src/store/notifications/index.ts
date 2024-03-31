@@ -3,6 +3,7 @@ import { NotificationAction, NotificationState } from "./interface";
 
 export const initialNotificationState: NotificationState = {
   notificationModalOpen: false,
+  notificationAction: null,
   notificationType: null,
   notificationTitle: null,
   notificationTransactionDetails: null,
@@ -17,6 +18,8 @@ export const notificationReducer = (state: NotificationState, action: Notificati
       return { ...state, notificationModalOpen: action.payload };
     case ActionType.SET_NOTIFICATION_TYPE:
       return { ...state, notificationType: action.payload };
+    case ActionType.SET_NOTIFICATION_ACTION:
+      return { ...state, notificationAction: action.payload };
     case ActionType.SET_NOTIFICATION_TITLE:
       return { ...state, notificationTitle: action.payload };
     case ActionType.SET_NOTIFICATION_TRANSACTION_DETAILS:
@@ -60,6 +63,7 @@ export const notificationReducer = (state: NotificationState, action: Notificati
     case ActionType.SET_NOTIFICATION_DATA:
       return {
         notificationModalOpen: action.payload.notificationModalOpen || false,
+        notificationAction: action.payload.notificationAction || null,
         notificationType: action.payload.notificationType || null,
         notificationTitle: action.payload.notificationTitle || null,
         notificationTransactionDetails: action.payload.notificationTransactionDetails || null,
@@ -70,6 +74,7 @@ export const notificationReducer = (state: NotificationState, action: Notificati
     case ActionType.RESET_NOTIFICATION_STATE:
       return {
         notificationModalOpen: false,
+        notificationAction: null,
         notificationType: null,
         notificationTitle: null,
         notificationTransactionDetails: null,

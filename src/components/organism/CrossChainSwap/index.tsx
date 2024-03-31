@@ -385,6 +385,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         type: ActionType.SET_NOTIFICATION_DATA,
         payload: {
           notificationModalOpen: true,
+          notificationAction: selectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
           notificationTitle: selectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
           notificationMessage: "Proceed in your wallet",

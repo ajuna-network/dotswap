@@ -22,6 +22,7 @@ const NotificationsModal: FC = () => {
 
   const {
     notificationModalOpen,
+    notificationAction,
     notificationType,
     notificationTitle,
     notificationLink,
@@ -30,14 +31,26 @@ const NotificationsModal: FC = () => {
     notificationTransactionDetails,
   } = state;
 
+  const buildToasterMessage = () => {
+    const fromTokenDetails = notificationTransactionDetails?.fromToken;
+    const toTokenDetails = notificationTransactionDetails?.toToken;
+
+    return (
+      `${notificationAction ? notificationAction + " " : ""}${fromTokenDetails?.amount} ${fromTokenDetails?.symbol}` +
+      `${toTokenDetails ? " -> " + toTokenDetails.amount + " " + toTokenDetails.symbol : ""}`
+    );
+  };
+
   useEffect(() => {
     if (!notificationModalOpen && !notificationViewed) {
+      const toasterMessage = buildToasterMessage();
+
       switch (notificationType) {
         case ToasterType.SUCCESS:
-          dotAcpToast.success(notificationMessage ?? "", undefined, notificationLink?.href);
+          dotAcpToast.success(toasterMessage ?? "", undefined, notificationLink?.href);
           break;
         case ToasterType.PENDING:
-          dotAcpToast.pending(notificationMessage ?? "");
+          dotAcpToast.pending(toasterMessage ?? "");
           break;
         case ToasterType.ERROR:
           dotAcpToast.error(notificationMessage ?? "");
@@ -50,7 +63,7 @@ const NotificationsModal: FC = () => {
     if (!notificationModalOpen) {
       setNotificationViewed(false);
     }
-  }, [notificationModalOpen, notificationType]);
+  }, [notificationModalOpen, notificationType, notificationMessage]);
 
   useEffect(() => {
     if (notificationModalOpen) {
