@@ -401,8 +401,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           },
         },
       });
-      // Refactor this to go into finally
-      setSelectedTokenValue({ tokenValue: "" });
       if (selectedChain.chainA.chainType === "Relay Chain" && kusamaApi) {
         await executeCrossOut(kusamaApi, selectedAccount, crosschainExtrinsic, dispatch)
           .then(() => {
@@ -412,6 +410,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           .catch((error) => {
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
             console.error("Error executing crosschain:", error);
+          })
+          .finally(() => {
+            setSelectedTokenValue({ tokenValue: "" });
           });
       } else if (selectedChain.chainB.chainType === "Relay Chain" && api) {
         await executeCrossIn(api, selectedAccount, crosschainExtrinsic, dispatch)
@@ -422,6 +423,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           .catch((error) => {
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
             console.error("Error executing crosschain:", error);
+          })
+          .finally(() => {
+            setSelectedTokenValue({ tokenValue: "" });
           });
       } else {
         // TODO: implement teleportation across parachains
