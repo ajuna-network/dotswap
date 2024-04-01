@@ -128,7 +128,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   useEffect(() => {
     fetchData();
-  }, [crosschainDestinationWalletAddress, tokenBalances, api, assetLoading, selectedAccount]);
+  }, [tokenBalances, api, assetLoading, selectedAccount]);
 
   const handleChainSwitch = () => {
     // handleTokenValueChange("");
