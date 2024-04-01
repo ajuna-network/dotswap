@@ -30,7 +30,7 @@ const Toaster: FC<ToasterProps> = ({ description, type = ToasterType.SUCCESS, cl
   return (
     <div
       className={classNames(
-        "flex items-center rounded-br-lg rounded-tr-lg border-l-2 p-4 tracking-[0.2px] shadow-toaster-box-shadow",
+        "flex w-full max-w-toaster items-center rounded-br-lg rounded-tr-lg border-l-2 p-4 tracking-[0.2px] shadow-toaster-box-shadow",
         {
           "border-success bg-green-100": type === ToasterType.SUCCESS,
           "border-blue-400 bg-blue-200": type === ToasterType.PENDING,

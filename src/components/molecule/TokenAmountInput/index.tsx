@@ -6,7 +6,8 @@ import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
-import { getSpotPrice } from "../../../app/util/helper";
+import { generateRandomString, getSpotPrice } from "../../../app/util/helper";
+import { formatDecimalsFromToken } from "../../../app/util/helper";
 
 type TokenAmountInputProps = {
   tokenText: string;
@@ -25,12 +26,15 @@ type TokenAmountInputProps = {
   onClick: () => void;
   onSetTokenValue: (value: string) => void;
   onMaxClick?: () => void;
+  maxVisible?: boolean;
 };
 
 const TokenAmountInput = ({
   tokenIcon,
   tokenText,
   tokenBalance,
+  tokenId,
+  tokenDecimals,
   disabled,
   tokenValue,
   labelText,
@@ -41,6 +45,7 @@ const TokenAmountInput = ({
   onSetTokenValue,
   onClick,
   onMaxClick,
+  maxVisible,
 }: TokenAmountInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLInputElement>(null);
@@ -64,6 +69,8 @@ const TokenAmountInput = ({
     });
   }, [tokenText, tokenBalance]);
 
+  const formId = `token-amount-${generateRandomString(4)}`;
+
   return (
     <div
       ref={wrapperRef}
@@ -76,11 +83,11 @@ const TokenAmountInput = ({
       )}
     >
       <div className="flex">
-        <label htmlFor="token-amount" className="absolute top-4 text-small font-normal text-gray-200">
+        <label htmlFor={formId} className="absolute top-4 text-small font-normal text-gray-200">
           {labelText}
         </label>
         <NumericFormat
-          id="token-amount"
+          id={formId}
           getInputRef={inputRef}
           allowNegative={false}
           fixedDecimalScale
@@ -130,7 +137,10 @@ const TokenAmountInput = ({
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
-          Balance: {tokenBalance || 0}
+          Balance:{" "}
+          {tokenId && tokenText && Number(tokenBalance) !== 0
+            ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)
+            : tokenBalance || 0}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
               <span>&nbsp;(${tokenPriceUSD})</span>
@@ -143,6 +153,7 @@ const TokenAmountInput = ({
           ) : null}
           {tokenText &&
             onMaxClick &&
+            maxVisible &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&
             process.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP == "true" && (
               <button

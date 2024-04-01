@@ -9,6 +9,10 @@ export default {
         "fira-sans": ["Fira Sans", "sans-serif"],
         inter: ["Inter", "sans-serif"],
       },
+      spacing: {
+        sidebar: "194px",
+        toaster: "280px",
+      },
       colors: {
         primary: {
           500: "#E6007A",

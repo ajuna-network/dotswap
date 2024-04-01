@@ -177,6 +177,14 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     },
   };
 
+  useEffect(() => {
+    const updatePoolsCards = async () => {
+      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
+    };
+
+    updatePoolsCards().then();
+  }, [pools, selectedAccount, tokenBalances]);
+
   const tokenADecimal = new Decimal(selectedTokenAValue.tokenValue || 0);
   const tokenBDecimal = new Decimal(selectedTokenBValue.tokenValue || 0);
 
@@ -1459,11 +1467,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
             tokenSymbol: token.assetTokenMetadata.symbol,
             tokenId: token.tokenId,
             decimals: token.assetTokenMetadata.decimals,
-            tokenBalance:
-              formatDecimalsFromToken(
-                Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
-                token.assetTokenMetadata.decimals as string
-              ) || "0",
+            tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, ""),
           },
         };
       });
@@ -1471,6 +1475,36 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       setTokenSelected({ tokenSelected: TokenPosition.tokenA });
     }
   }, [tokenId, assetLoading, tokenBalances]);
+
+  useEffect(() => {
+    if (!tokenBalances) return;
+
+    setSelectedTokens((prev) => {
+      const tokenBalanceA =
+        prev.tokenA.tokenSymbol === nativeTokenSymbol
+          ? tokenBalances.balance.toString()
+          : tokenBalances.assets
+              .find((item: any) => item.tokenId === prev.tokenA.tokenId)
+              ?.tokenAsset.balance?.replace(/[, ]/g, "");
+      const tokenBalanceB =
+        prev.tokenB.tokenSymbol === nativeTokenSymbol
+          ? tokenBalances.balance.toString()
+          : tokenBalances.assets
+              .find((item: any) => item.tokenId === prev.tokenB.tokenId)
+              ?.tokenAsset.balance?.replace(/[, ]/g, "");
+      return {
+        ...prev,
+        tokenA: {
+          ...prev.tokenA,
+          tokenBalance: tokenBalanceA,
+        },
+        tokenB: {
+          ...prev.tokenB,
+          tokenBalance: tokenBalanceB,
+        },
+      };
+    });
+  }, [tokenBalances]);
 
   return (
     <div className="flex max-w-[460px] flex-col gap-4">
@@ -1559,6 +1593,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           disabled={!selectedAccount || swapLoading || !tokenBalances?.assets || poolsTokenMetadata.length === 0}
           assetLoading={assetLoading}
           onMaxClick={onMaxClick}
+          maxVisible={!!selectedTokens.tokenB.tokenSymbol}
         />
 
         <TokenAmountInput
@@ -1749,8 +1784,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           }
           tokenSymbolA={
             inputEdited.inputType === InputEditedType.exactIn
-              ? selectedTokens.tokenB.tokenSymbol
-              : selectedTokens.tokenA.tokenSymbol
+              ? selectedTokens.tokenA.tokenSymbol
+              : selectedTokens.tokenB.tokenSymbol
           }
           tokenSymbolB={
             inputEdited.inputType === InputEditedType.exactIn

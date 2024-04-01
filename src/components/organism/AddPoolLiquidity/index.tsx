@@ -586,6 +586,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
               <div className="flex basis-1/3">
                 <div className="relative flex">
                   <NumericFormat
+                    id="slippage"
                     value={slippageValue}
                     isAllowed={(values) => {
                       const { formattedValue, floatValue } = values;

@@ -33,6 +33,7 @@ import {
   calculateOriginFee,
   createCrossInExtrinsic,
   createCrossOutExtrinsic,
+  executeCrossIn,
   executeCrossOut,
 } from "../../../services/crosschain";
 
@@ -74,6 +75,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   });
 
   const selectedChain = crosschainSelectedChain;
+
+  //TODO Temporary notification clear until new notifications are implemented app-wide
+
+  useEffect(() => {
+    return () => {
+      dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
+    };
+  }, []);
 
   useEffect(() => {
     setSelectedToken({
@@ -376,6 +385,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         type: ActionType.SET_NOTIFICATION_DATA,
         payload: {
           notificationModalOpen: true,
+          notificationAction: selectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
           notificationTitle: selectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
           notificationMessage: "Proceed in your wallet",
@@ -400,9 +410,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           .catch((error) => {
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
             console.error("Error executing crosschain:", error);
+          })
+          .finally(() => {
+            setSelectedTokenValue({ tokenValue: "" });
           });
       } else if (selectedChain.chainB.chainType === "Relay Chain" && api) {
-        await executeCrossOut(api, selectedAccount, crosschainExtrinsic, dispatch)
+        await executeCrossIn(api, selectedAccount, crosschainExtrinsic, dispatch)
           .then(() => {
             fetchData();
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
@@ -410,6 +423,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           .catch((error) => {
             dispatch({ type: ActionType.SET_CROSSCHAIN_LOADING, payload: false });
             console.error("Error executing crosschain:", error);
+          })
+          .finally(() => {
+            setSelectedTokenValue({ tokenValue: "" });
           });
       } else {
         // TODO: implement teleportation across parachains
@@ -485,6 +501,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               onMaxClick={() => {
                 handleMaxClick();
               }}
+              maxVisible={false}
             />
           </div>
           <DestinationWalletAddress

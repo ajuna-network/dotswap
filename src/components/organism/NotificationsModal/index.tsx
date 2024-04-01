@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import Modal from "../../atom/Modal";
 import { LottieMedium } from "../../../assets/loader";
 import ArrowRight from "../../../assets/img/arrow-right.svg?react";
@@ -14,6 +14,7 @@ import { ActionType } from "../../../app/types/enum";
 
 const NotificationsModal: FC = () => {
   const { state, dispatch } = useAppContext();
+  const [notificationViewed, setNotificationViewed] = useState(false);
 
   const onModalClose = () => {
     dispatch({ type: ActionType.SET_NOTIFICATION_MODAL_OPEN, payload: false });
@@ -21,6 +22,7 @@ const NotificationsModal: FC = () => {
 
   const {
     notificationModalOpen,
+    notificationAction,
     notificationType,
     notificationTitle,
     notificationLink,
@@ -29,14 +31,26 @@ const NotificationsModal: FC = () => {
     notificationTransactionDetails,
   } = state;
 
+  const buildToasterMessage = () => {
+    const fromTokenDetails = notificationTransactionDetails?.fromToken;
+    const toTokenDetails = notificationTransactionDetails?.toToken;
+
+    return (
+      `${notificationAction ? notificationAction + " " : ""}${fromTokenDetails?.amount} ${fromTokenDetails?.symbol}` +
+      `${toTokenDetails ? " -> " + toTokenDetails.amount + " " + toTokenDetails.symbol : ""}`
+    );
+  };
+
   useEffect(() => {
-    if (!notificationModalOpen) {
+    if (!notificationModalOpen && !notificationViewed) {
+      const toasterMessage = buildToasterMessage();
+
       switch (notificationType) {
         case ToasterType.SUCCESS:
-          dotAcpToast.success(notificationMessage ?? "", undefined, notificationLink?.href);
+          dotAcpToast.success(toasterMessage ?? "", undefined, notificationLink?.href);
           break;
         case ToasterType.PENDING:
-          dotAcpToast.pending(notificationMessage ?? "");
+          dotAcpToast.pending(toasterMessage ?? "");
           break;
         case ToasterType.ERROR:
           dotAcpToast.error(notificationMessage ?? "");
@@ -45,7 +59,17 @@ const NotificationsModal: FC = () => {
           break;
       }
     }
-  }, [notificationModalOpen, notificationType]);
+
+    if (!notificationModalOpen) {
+      setNotificationViewed(false);
+    }
+  }, [notificationModalOpen, notificationType, notificationMessage]);
+
+  useEffect(() => {
+    if (notificationModalOpen) {
+      setNotificationViewed(true);
+    }
+  }, [notificationModalOpen]);
 
   const renderNotificationIcon = () => {
     switch (notificationType) {
