@@ -1484,13 +1484,13 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         prev.tokenA.tokenSymbol === nativeTokenSymbol
           ? tokenBalances.balance.toString()
           : tokenBalances.assets
-              .find((item: any) => item.tokenId === prev.tokenA.tokenId)
+              ?.find((item: any) => item.tokenId === prev.tokenA.tokenId)
               ?.tokenAsset.balance?.replace(/[, ]/g, "");
       const tokenBalanceB =
         prev.tokenB.tokenSymbol === nativeTokenSymbol
           ? tokenBalances.balance.toString()
           : tokenBalances.assets
-              .find((item: any) => item.tokenId === prev.tokenB.tokenId)
+              ?.find((item: any) => item.tokenId === prev.tokenB.tokenId)
               ?.tokenAsset.balance?.replace(/[, ]/g, "");
       return {
         ...prev,

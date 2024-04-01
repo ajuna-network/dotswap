@@ -66,7 +66,7 @@ const NotificationsModal: FC = () => {
   }, [notificationModalOpen, notificationType, notificationMessage]);
 
   useEffect(() => {
-    if (notificationModalOpen) {
+    if (notificationModalOpen && notificationType !== ToasterType.PENDING) {
       setNotificationViewed(true);
     }
   }, [notificationModalOpen]);
