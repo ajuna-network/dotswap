@@ -38,10 +38,10 @@ const Toaster: FC<ToasterProps> = ({ description, type = ToasterType.SUCCESS, cl
         }
       )}
     >
-      <div className="flex gap-3">
+      <div className="flex w-full gap-3">
         {handleIcon(type)}
         <div
-          className={classNames("flex flex-col gap-1", {
+          className={classNames("flex flex-1 flex-col gap-1", {
             "text-green-900": type === ToasterType.SUCCESS,
             "text-blue-900": type === ToasterType.PENDING,
             "text-red-900": type === ToasterType.ERROR,
