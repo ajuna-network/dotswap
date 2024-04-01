@@ -146,7 +146,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       payload: destinationChainFee,
     });
   };
-
+  // comment here
   // In the event where the user has not selected a token, or if the input field is empty, we will create a crosschain extrinsic with a default value of 0.001
   // This is to be able to calculate the origin chain fee, we must always have an extrinsic to query the payment info from the chain with the latest info
   const createExtrinsic = async () => {
