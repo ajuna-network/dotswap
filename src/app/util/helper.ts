@@ -257,11 +257,13 @@ export const getCrossOutDestinationFee = () => {
 // function for calculating max amount
 // free balance - origin chain fee
 // KSM has 12 decimal places, in the future we should probably make this dynamic
+// Note: we have added a safety buffer of 0.1 KSM
 export const calculateMaxAmount = (freeBalance: string, originChainFee: string) => {
-  console.log(`freeBalance: ${freeBalance}, originChainFee: ${originChainFee}`);
+  const buffer = new Decimal("0.1");
+  const existentialDeposit = new Decimal("0.000333");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
-  return freeBalanceDecimal.minus(originChainFeeDecimal).toString();
+  return freeBalanceDecimal.minus(originChainFeeDecimal).minus(existentialDeposit).minus(buffer).toString();
 };
 
 export const generateRandomString = (length: number) => {

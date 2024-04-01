@@ -147,28 +147,52 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     });
   };
 
+  // In the event where the user has not selected a token, or if the input field is empty, we will create a crosschain extrinsic with a default value of 0.001
+  // This is to be able to calculate the origin chain fee, we must always have an extrinsic to query the payment info from the chain with the latest info
   const createExtrinsic = async () => {
     let extrinsic = null;
-    if (
-      selectedTokenValue.tokenValue !== "" &&
-      selectedTokenValue.tokenValue !== "0" &&
-      !tooManyDecimalsError.isError &&
-      selectedToken.tokenBalance !== ""
-    ) {
-      extrinsic =
-        selectedChain.chainA.chainType === "Asset Hub" && api
-          ? await createCrossInExtrinsic(
-              api,
-              formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
-              crosschainDestinationWalletAddress
-            )
-          : kusamaApi
-            ? await createCrossOutExtrinsic(
-                kusamaApi,
+    if (!tooManyDecimalsError.isError && selectedToken.tokenBalance !== "") {
+      if (selectedTokenValue.tokenValue === "" || selectedTokenValue.tokenValue === "0") {
+        extrinsic =
+          selectedChain.chainA.chainType === "Asset Hub" && api
+            ? await createCrossInExtrinsic(
+                api,
+                formatInputTokenValue(selectedChain.chainA.balances.free, selectedToken.decimals),
+                crosschainDestinationWalletAddress
+              )
+            : kusamaApi
+              ? await createCrossOutExtrinsic(
+                  kusamaApi,
+                  formatInputTokenValue(selectedChain.chainA.balances.free, selectedToken.decimals),
+                  crosschainDestinationWalletAddress
+                )
+              : null;
+      } else {
+        extrinsic =
+          selectedChain.chainA.chainType === "Asset Hub" && api
+            ? await createCrossInExtrinsic(
+                api,
                 formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
                 crosschainDestinationWalletAddress
               )
-            : null;
+            : kusamaApi
+              ? await createCrossOutExtrinsic(
+                  kusamaApi,
+                  formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
+                  crosschainDestinationWalletAddress
+                )
+              : null;
+      }
+    } else {
+      selectedChain.chainA.chainType === "Asset Hub" && api
+        ? await createCrossInExtrinsic(api, formatInputTokenValue("0.001", "12"), crosschainDestinationWalletAddress)
+        : kusamaApi
+          ? await createCrossOutExtrinsic(
+              kusamaApi,
+              formatInputTokenValue("0.001", "12"),
+              crosschainDestinationWalletAddress
+            )
+          : null;
     }
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXTRINSIC, payload: extrinsic });
   };
@@ -356,8 +380,24 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     }
   }, [assetLoading, api]);
 
-  const handleTokenValueChange = async (value: string) => {
-    const payloadTokenValue = await tokenValue(value);
+  // maxTriggered flag is set to true when the user clicks on the max button
+  // This will calculate the max amount that can be transferred based on the available balance
+  // And update the input field with the calculated amount after which the extrinsic will be created
+  // and the origin chain fee will be calculated
+  // TODO: handle change in origin chain fee and reflect it in the max amount calculation
+  const handleTokenValueChange = async (value: string, maxTriggered?: boolean) => {
+    const payloadTokenValue = maxTriggered
+      ? await tokenValue(
+          calculateMaxAmount(
+            selectedChain.chainB.balances.free,
+            crosschainOriginChainFee
+              ? crosschainOriginChainFee
+              : selectedChain.chainB.chainType === "AssetHub"
+                ? "0.000087322311"
+                : "0.00061047862"
+          )
+        )
+      : await tokenValue(value);
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
 
     const destinationChainFee =
@@ -369,8 +409,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleMaxClick = () => {
-    const maxAvailableBalance = calculateMaxAmount(selectedChain.chainB.balances.free, crosschainOriginChainFee);
-    handleTokenValueChange(maxAvailableBalance);
+    handleTokenValueChange("0", true);
   };
 
   const handleCrosschain = () => {
