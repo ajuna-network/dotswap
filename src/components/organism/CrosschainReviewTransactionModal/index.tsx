@@ -29,7 +29,13 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
 }) => {
   const { state } = useAppContext();
 
-  const { crosschainExactTokenAmount, crosschainOriginChainFee, crosschainDestinationChainFee } = state;
+  const {
+    crosschainExactTokenAmount,
+    crosschainOriginChainFee,
+    crosschainDestinationChainFee,
+    crosschainDestinationWalletAddress,
+    selectedAccount,
+  } = state;
 
   const destinationBalanceAfter = (
     parseFloat(destinationBalance) +
@@ -67,14 +73,16 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
       <div className="flex w-full flex-col">
         <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
         <div className="flex flex-col gap-3">
-          <div className="flex justify-between">
-            <span className="font-inter text-medium capitalize text-gray-300">
-              {t(`crosschainReviewTransactionModal.currentBalance`)}
-            </span>
-            <span className="font-inter text-medium text-gray-400">
-              {destinationBalance} {tokenSymbol}
-            </span>
-          </div>
+          {selectedAccount.address === crosschainDestinationWalletAddress && (
+            <div className="flex justify-between">
+              <span className="font-inter text-medium capitalize text-gray-300">
+                {t(`crosschainReviewTransactionModal.currentBalance`)}
+              </span>
+              <span className="font-inter text-medium text-gray-400">
+                {destinationBalance} {tokenSymbol}
+              </span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="font-inter text-medium capitalize text-gray-300">
               {t(`crosschainReviewTransactionModal.transferringAmount`)}
@@ -99,15 +107,19 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {crosschainDestinationChainFee} {tokenSymbol}
             </span>
           </div>
-          <hr className="mb-0 mt-3 w-full border-[0.7px] border-gray-50" />
-          <div className="flex justify-between">
-            <span className="font-inter text-medium capitalize text-gray-300">
-              {destinationChainName} {t(`crosschainReviewTransactionModal.newBalance`)}
-            </span>
-            <span className="font-inter text-medium text-gray-400">
-              {destinationBalanceAfter} {tokenSymbol}
-            </span>
-          </div>
+          {selectedAccount.address === crosschainDestinationWalletAddress && (
+            <>
+              <hr className="mb-0 mt-3 w-full border-[0.7px] border-gray-50" />
+              <div className="flex justify-between">
+                <span className="font-inter text-medium capitalize text-gray-300">
+                  {destinationChainName} {t(`crosschainReviewTransactionModal.newBalance`)}
+                </span>
+                <span className="font-inter text-medium text-gray-400">
+                  {destinationBalanceAfter} {tokenSymbol}
+                </span>
+              </div>
+            </>
+          )}
         </div>
         <hr className="mb-3 mt-5 w-full border-[0.7px] border-gray-50" />
         <div className="flex flex-row justify-center gap-[6px]">
