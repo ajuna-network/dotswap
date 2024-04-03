@@ -37,8 +37,12 @@ const ConnectWallet = () => {
   };
 
   const handleConnect = async (account: WalletAccount) => {
-    try {
+    if (selectAccountModalOpen) {
+      dispatch({ type: ActionType.SET_ASSETS_LIST, payload: [] });
+      dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
       setSelectAccountModalOpen(false);
+    }
+    try {
       setWalletConnectOpen(false);
       if (!api || !relayApi) return;
       await connectWalletAndFetchBalance(dispatch, api, relayApi, account);
