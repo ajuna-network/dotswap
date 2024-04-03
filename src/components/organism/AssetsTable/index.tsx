@@ -13,6 +13,7 @@ import ConnectWallet from "../ConnectWallet";
 import { LottieLarge } from "../../../assets/loader";
 import LocalStorage from "../../../app/util/localStorage.ts";
 import { WalletAction } from "../../../store/wallet/interface.ts";
+import { t } from "i18next";
 
 const AssetsTable = () => {
   const { state, dispatch } = useAppContext();
@@ -135,7 +136,7 @@ const AssetsTable = () => {
       <div className="flex w-full justify-between px-8 py-4">
         <div className="flex flex-col items-start justify-center">
           <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
-            My Total Assets
+            {t("dashboardPage.myTotalAssets")}
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + totalBalance.toFixed(2)}
@@ -143,7 +144,7 @@ const AssetsTable = () => {
         </div>
         <div className="flex flex-col items-start justify-center">
           <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
-            {tokenBalances?.tokenSymbol} Price
+            {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + parseFloat(tokenBalances?.spotPrice || "0").toFixed(2)}
@@ -154,8 +155,7 @@ const AssetsTable = () => {
         <div className="flex w-full flex-1 flex-col gap-6">
           <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white">
             <div className="font-unbounded-variable text-medium font-normal text-dark-300">
-              {walletConnected ? "Loading assets..." : "To see your asset list first connect your wallet."}
-              {/* TODO: translate */}
+              {walletConnected ? t("dashboardPage.loadingAssets") : t("dashboardPage.connectWallet")}
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4">
               {walletConnected ? (
@@ -170,7 +170,7 @@ const AssetsTable = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <AccordionList title="Asset List" nested alwaysOpen className="rounded-t-2xl bg-white">
+          <AccordionList title={t("dashboardPage.assetList")} nested alwaysOpen className="rounded-t-2xl bg-white">
             {assetsList &&
               assetsList.length > 0 &&
               assetsList.map((token: AssetListToken) => {
@@ -200,15 +200,15 @@ const AssetsTable = () => {
               })}
           </AccordionList>
 
-          <AccordionList nested title="Other Assets" className="rounded-b-2xl bg-white">
+          <AccordionList nested title={t("dashboardPage.otherAssets")} className="rounded-b-2xl bg-white">
             {assetLoading ? (
-              <div className="flex flex-col items-center justify-center py-8">Loading...</div>
+              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.loadingAssets")}</div>
             ) : otherAssets.length > 0 ? (
               otherAssets.map((token: AssetListToken) => {
                 return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-8">No other assets found</div>
+              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssetsFound")}</div>
             )}
           </AccordionList>
         </div>

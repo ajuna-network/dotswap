@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import DotToken from "../../../assets/img/dot-token.svg?react";
 import AssetHubToken from "../../../assets/img/asset-hub.svg?react";
 import { useAppContext } from "../../../state";
+import { t } from "i18next";
 
 type AssetItemChildProps = {
   isRelayChain?: boolean;
@@ -68,16 +69,16 @@ const AssetItemChild = ({
         <div className="flex items-start justify-start gap-3 font-normal">
           {!isRelayChain ? <AssetHubToken width={24} height={24} /> : <DotToken width={24} height={24} />}
           <div className="flex flex-col gap-1">
-            <div className="text-heading-6 leading-none">
-              {balances.chainName !== "" ? balances.chainName : "Not connected to a chain"}
-            </div>
+            <div className="text-heading-6 leading-none">{balances.chainName !== "" ? balances.chainName : ""}</div>
             <div className="text-medium leading-none">{isRelayChain === true ? "Relay chain" : "Parachain"}</div>
           </div>
         </div>
         <div className="flex items-start justify-end gap-8">
           {balances && balances.lockedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Locked</div>
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+                {t("assetItem.locked")}
+              </div>
               <div className="text-base font-semibold">
                 {balances && balances.lockedTokenBalance !== 0
                   ? balances.lockedTokenBalance.toFixed(2) +
@@ -93,7 +94,9 @@ const AssetItemChild = ({
 
           {balances && balances.reservedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Reserved</div>
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+                {t("assetItem.reserved")}
+              </div>
               <div className="text-base font-semibold">
                 {balances && balances.reservedTokenBalance !== 0
                   ? balances.reservedTokenBalance.toFixed(2) +
@@ -108,7 +111,9 @@ const AssetItemChild = ({
           ) : null}
 
           <div className="flex flex-col">
-            <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Available balance</div>
+            <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+              {t("assetItem.available")}
+            </div>
             <div className="text-base font-semibold">
               {balances
                 ? balances.freeTokenBalance.toFixed(2) +
