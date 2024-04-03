@@ -3,7 +3,7 @@ import CloseIcon from "../../../assets/img/closeButtonIcon.svg?react";
 
 const InfoMessage = ({ title, message, handleClose }: { title: string; message: string; handleClose: () => void }) => {
   return (
-    <div className="flex max-w-[450px] gap-2 border-l-2 border-solid border-purple-300 bg-purple-100 p-4">
+    <div className="flex max-w-[450px] gap-2 rounded-r-lg border-l-2 border-solid border-purple-300 bg-purple-100 p-4">
       <div className="flex items-start justify-start p-1">
         <InfoIcon />
       </div>

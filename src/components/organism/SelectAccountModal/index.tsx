@@ -50,31 +50,29 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
         <div className="flex w-full items-start justify-start text-medium">Select Account</div>
         {accounts?.map((account: WalletAccount, index: any) => {
           return (
-            <div key={index} className="flex flex-col rounded-lg bg-purple-50 px-4 py-3">
+            <div key={index} className="flex flex-col rounded-lg px-4 py-3">
               <div className="flex items-center gap-4">
-                <div className="flex flex-1 items-center gap-2">
+                <div className="flex flex-1 items-center gap-2 rounded-lg bg-purple-50 p-4">
                   <RandomTokenIcon />
                   <div className="flex w-full flex-col items-start">
                     <div className="text-base font-medium text-gray-300">{account?.name}</div>
                     <div className="text-xs font-normal text-gray-300">{reduceAddress(account?.address, 6, 6)}</div>
                   </div>
-                  {selectedAccount?.address === account?.address && (
-                    <button
-                      className="flex -rotate-90 justify-end text-xs font-normal text-gray-300"
-                      onClick={handleDisconnect}
-                    >
-                      <ArrowDownIcon />
+                  <button
+                    className="flex -rotate-90 justify-end text-xs font-normal text-gray-300"
+                    onClick={handleDisconnect}
+                  >
+                    <ArrowDownIcon />
+                  </button>
+                </div>
+
+                <div className="w-14 rounded-lg bg-purple-50 p-4">
+                  {selectedAccount?.address !== account?.address && (
+                    <button className="flex justify-end" onClick={() => handleConnect(account)}>
+                      <LogoutIcon />
                     </button>
                   )}
                 </div>
-                {selectedAccount?.address !== account?.address && (
-                  <button
-                    className="flex justify-end text-xs font-normal text-gray-300"
-                    onClick={() => handleConnect(account)}
-                  >
-                    <LogoutIcon />
-                  </button>
-                )}
               </div>
             </div>
           );
