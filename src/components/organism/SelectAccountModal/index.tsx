@@ -4,10 +4,11 @@ import LogoutIcon from "../../../assets/img/logout-icon.svg?react";
 import ArrowDownIcon from "../../../assets/img/arrow-left.svg?react";
 import type { WalletAccount } from "@talismn/connect-wallets";
 import { useAppContext } from "../../../state/index.tsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getWalletBySource } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { reduceAddress } from "../../../app/util/helper";
+import InfoMessage from "../../atom/InfoMessage/index.tsx";
 
 interface SelectAccountModalProps {
   open: boolean;
@@ -37,13 +38,19 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
     }
   }, [accounts, selectedAccount]);
 
+  const [infoModal, setInfoModal] = useState(true);
+
+  const handleClose = () => {
+    setInfoModal(false);
+  };
+
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
-      <div className="flex min-w-[450px] flex-col gap-5 p-4">
-        <div className="flex w-full items-start justify-start">Select Account</div>
+      <div className="flex min-w-[450px] flex-col gap-1 py-7">
+        <div className="flex w-full items-start justify-start text-medium">Select Account</div>
         {accounts?.map((account: WalletAccount, index: any) => {
           return (
-            <div key={index} className="flex flex-col rounded-lg bg-purple-100 px-4 py-3">
+            <div key={index} className="flex flex-col rounded-lg bg-purple-50 px-4 py-3">
               <div className="flex items-center gap-4">
                 <div className="flex flex-1 items-center gap-2">
                   <RandomTokenIcon />
@@ -73,6 +80,13 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
           );
         })}
       </div>
+      {infoModal && (
+        <InfoMessage
+          title={"Need to see all your accounts?"}
+          message="Head over to your wallet and customize which accounts can access DEDSwap."
+          handleClose={handleClose}
+        />
+      )}
     </Modal>
   );
 };
