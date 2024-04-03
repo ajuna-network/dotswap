@@ -571,7 +571,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           <div>
             <TokenAmountInput
               tokenText={selectedToken?.tokenSymbol}
-              tokenBalance={selectedToken.tokenBalance ? availableBalanceA.toString() : "0"}
+              tokenBalance={
+                selectedToken.tokenBalance ? availableBalanceA.toFixed(Number(selectedToken.decimals)).toString() : "0"
+              }
               showUSDValue={selectedToken.tokenBalance !== ""}
               spotPrice={selectedToken.tokenId !== "" ? "" : tokenBalances?.spotPrice}
               tokenId={selectedToken?.tokenId}
