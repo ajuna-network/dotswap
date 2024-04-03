@@ -20,7 +20,7 @@ import { LottieSmall } from "../../../assets/loader/index.tsx";
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
-  const { walletConnectLoading, api } = state;
+  const { walletConnectLoading, api, relayApi } = state;
 
   const [walletAccount, setWalletAccount] = useState<WalletAccount>({} as WalletAccount);
   const [modalStep, setModalStep] = useState<ModalStepProps>({ step: WalletConnectSteps.stepExtensions });
@@ -36,7 +36,8 @@ const ConnectWallet = () => {
   const handleConnect = async (account: WalletAccount) => {
     try {
       setWalletConnectOpen(false);
-      await connectWalletAndFetchBalance(dispatch, api, account);
+      if (!api || !relayApi) return;
+      await connectWalletAndFetchBalance(dispatch, api, relayApi, account);
     } catch (error) {
       dotAcpToast.error(`Error connecting: ${error}`);
     }

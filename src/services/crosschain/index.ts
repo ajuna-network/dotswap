@@ -8,6 +8,7 @@ import { NotificationAction } from "../../store/notifications/interface";
 import { ActionType, ToasterType } from "../../app/types/enum";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
+import useGetNetwork from "../../app/hooks/useGetNetwork";
 
 // Relay chain -> parachain
 export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
@@ -100,15 +101,15 @@ async function sendTransaction(
 }
 
 export const executeCrossOut = async (
-  kusamaApi: ApiPromise,
+  api: ApiPromise,
   walletAccount: WalletAccount,
   extrinsic: Extrinsic,
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
   const signer = await setupCallAndSign(walletAccount, extrinsic, dispatch);
-  const subScanURL = "https://kusama.subscan.io/";
-  if (!signer) return;
-  return await sendTransaction(signer, kusamaApi, dispatch, subScanURL);
+  const { relaySubscanUrl } = useGetNetwork();
+  if (!signer || !relaySubscanUrl) return;
+  return await sendTransaction(signer, api, dispatch, relaySubscanUrl);
 };
 
 export const executeCrossIn = async (
@@ -118,7 +119,7 @@ export const executeCrossIn = async (
   dispatch: Dispatch<CrosschainAction | NotificationAction>
 ) => {
   const signer = await setupCallAndSign(account, extrinsic, dispatch);
-  const subScanURL = "https://assethub-kusama.subscan.io/";
-  if (!signer) return;
-  return await sendTransaction(signer, api, dispatch, subScanURL);
+  const { assethubSubscanUrl } = useGetNetwork();
+  if (!signer || !assethubSubscanUrl) return;
+  return await sendTransaction(signer, api, dispatch, assethubSubscanUrl);
 };

@@ -2,7 +2,6 @@ import { ActionType } from "../../app/types/enum";
 import { CrosschainAction, CrosschainState } from "./interface";
 
 export const initialCrosschainState: CrosschainState = {
-  kusamaApi: null,
   crosschainFinalized: false,
   crosschainOriginChainFee: "",
   crosschainDestinationChainFee: "",
@@ -34,8 +33,6 @@ export const initialCrosschainState: CrosschainState = {
 
 export const crosschainReducer = (state: CrosschainState, action: CrosschainAction): CrosschainState => {
   switch (action.type) {
-    case ActionType.SET_KUSAMA_API:
-      return { ...state, kusamaApi: action.payload };
     case ActionType.SET_CROSSCHAIN_TRANSFER_FINALIZED:
       return { ...state, crosschainFinalized: action.payload };
     case ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE:

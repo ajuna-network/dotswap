@@ -8,10 +8,11 @@ import { useAppContext } from "../../state";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SWAP_ROUTE } from "../../app/router/routes";
 import { urlTo } from "../../app/util/helper";
+import { createPoolCardsArray } from "../../services/poolServices";
 
 const SwapPage: FC = () => {
   const { state, dispatch } = useAppContext();
-  const { api } = state;
+  const { api, pools, selectedAccount, tokenBalances } = state;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,6 +33,14 @@ const SwapPage: FC = () => {
     });
     setSwapOrPools(SwapOrPools.pools);
   };
+
+  useEffect(() => {
+    const updatePoolsCards = async () => {
+      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
+    };
+
+    updatePoolsCards().then();
+  }, [pools, selectedAccount, tokenBalances]);
 
   useEffect(() => {
     if (api) {

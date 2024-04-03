@@ -6,6 +6,7 @@ type NetworkConfig = {
   rpcUrl: string;
   parents: number;
   assethubSubscanUrl?: string;
+  relaySubscanUrl?: string;
 };
 
 export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
@@ -15,6 +16,7 @@ export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
     rpcUrl: "wss://westmint-rpc.polkadot.io/",
     parents: 1,
     assethubSubscanUrl: "https://westmint.statescan.io/#",
+    relaySubscanUrl: "https://westend.subscan.io",
   },
   [NetworkKeys.Rococo]: {
     nativeTokenSymbol: "ROC",
@@ -22,6 +24,7 @@ export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
     rpcUrl: "wss://rococo-asset-hub-rpc.polkadot.io/",
     parents: 1,
     assethubSubscanUrl: "https://assethub-rococo.subscan.io",
+    relaySubscanUrl: "https://rococo.subscan.io",
   },
   [NetworkKeys.Kusama]: {
     nativeTokenSymbol: "KSM",
@@ -29,5 +32,6 @@ export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
     rpcUrl: "wss://kusama-asset-hub-rpc.polkadot.io/",
     parents: 1,
     assethubSubscanUrl: "https://assethub-kusama.subscan.io",
+    relaySubscanUrl: "https://kusama.subscan.io",
   },
 };

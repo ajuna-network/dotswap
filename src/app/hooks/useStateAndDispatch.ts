@@ -12,7 +12,7 @@ import {
   crosschainReducer,
   initialNotificationState,
 } from "../../store";
-import { setupPolkadotApi } from "../../services/polkadotWalletServices";
+import { setupPolkadotRelayApi, setupPolkadotApi } from "../../services/polkadotWalletServices";
 import { ActionType } from "../types/enum";
 import dotAcpToast from "../util/toast";
 import { SwapAction } from "../../store/swap/interface";
@@ -40,8 +40,9 @@ const useStateAndDispatch = () => {
   useEffect(() => {
     const callApiSetup = async () => {
       try {
-        const polkaApi = await setupPolkadotApi();
-        dispatch({ type: ActionType.SET_API, payload: polkaApi });
+        const [api, relayApi] = await Promise.all([setupPolkadotApi(), setupPolkadotRelayApi()]);
+        dispatch({ type: ActionType.SET_RELAY_API, payload: relayApi });
+        dispatch({ type: ActionType.SET_API, payload: api });
       } catch (error) {
         dotAcpToast.error(`Error setting up Polkadot API: ${error}`);
       }

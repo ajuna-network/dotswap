@@ -169,6 +169,10 @@
     "destinationChainFee": "Destination chain fee",
     "route": "Route"
   },
+  "mobilePage": {
+    "title": "DOT ACP",
+    "subtitle": "This application is not optimized for mobile devices. Please use a desktop browser."
+  },
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"

@@ -108,9 +108,7 @@ const AccordionAssetItem = ({
           </div>
           <div className="flex w-2/4 items-center justify-start">
             <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
-                Total Available Balance
-              </div>
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Total Balance</div>
               <div className="font-titillium-web text-base font-semibold">
                 {totalBalance && totalBalance !== 0
                   ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
