@@ -173,7 +173,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   useEffect(() => {
     const destinationChainFee =
-      selectedChain.chainB.chainType === "Asset Hub" ? getCrossInDestinationFee() : getCrossOutDestinationFee();
+      selectedChain.chainA.chainType === "Asset Hub" ? getCrossInDestinationFee() : getCrossOutDestinationFee();
     dispatch({
       type: ActionType.SET_CROSSCHAIN_DESTINATION_CHAIN_FEE,
       payload: destinationChainFee,
