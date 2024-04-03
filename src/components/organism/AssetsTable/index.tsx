@@ -69,8 +69,6 @@ const AssetsTable = () => {
     });
 
     dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: totalUsdBalance });
-
-    return totalUsdBalance;
   };
 
   const setTokens = async () => {

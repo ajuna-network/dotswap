@@ -18,6 +18,7 @@ import type { Timeout } from "react-number-format/types/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
+import { TokenBalanceData } from "../../../app/types/index.ts";
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
@@ -40,6 +41,8 @@ const ConnectWallet = () => {
     if (selectAccountModalOpen) {
       dispatch({ type: ActionType.SET_ASSETS_LIST, payload: [] });
       dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
+      dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+      dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: {} as TokenBalanceData });
       setSelectAccountModalOpen(false);
     }
     try {
