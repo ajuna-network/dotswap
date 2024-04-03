@@ -1,16 +1,18 @@
 import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
 import RandomTokenIcon from "../../../assets/img/random-token-icon.svg?react";
-import { useState } from "react";
 import { WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
+import { ActionType } from "../../../app/types/enum";
+import { useAppContext } from "../../../state/index.tsx";
 
 interface WalletConnectModalProps {
   open: boolean;
   title: string;
   modalStep: ModalStepProps;
   supportedWallets: Wallet[];
+  walletAccounts: WalletAccount[];
   setModalStep: (step: ModalStepProps) => void;
   handleConnect: (account: WalletAccount) => void;
   onClose: () => void;
@@ -23,16 +25,17 @@ const WalletConnectModal = ({
   title,
   modalStep,
   supportedWallets,
+  walletAccounts,
   onClose,
   onBack,
   setModalStep,
   handleConnect,
 }: WalletConnectModalProps) => {
-  const [walletAccounts, setWalletAccounts] = useState<WalletAccount[]>([]);
+  const { dispatch } = useAppContext();
 
   const handleContinueClick = (accounts: WalletAccount[]) => {
     setModalStep({ step: WalletConnectSteps.stepAddresses });
-    setWalletAccounts(accounts);
+    dispatch({ type: ActionType.SET_ACCOUNTS, payload: accounts });
   };
 
   return (

@@ -122,9 +122,9 @@ const AssetsTable = () => {
   };
 
   useEffect(() => {
-    if (!tokenBalances) return;
+    if (!tokenBalances || !selectedAccount.address) return;
     setTokens();
-  }, [tokenBalances, api, selectedAccount]);
+  }, [tokenBalances, selectedAccount.address]);
 
   const handleSwapModal = (tokenId: string) => {
     setTokenId(tokenId);
@@ -208,7 +208,7 @@ const AssetsTable = () => {
                 return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssetsFound")}</div>
+              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssets")}</div>
             )}
           </AccordionList>
         </div>

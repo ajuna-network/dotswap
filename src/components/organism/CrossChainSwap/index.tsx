@@ -184,7 +184,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // This is to be able to calculate the origin chain fee, we must always have an extrinsic to query the payment info from the chain with the latest info
   const createExtrinsic = async () => {
     let extrinsic = null;
-    if (!tooManyDecimalsError.isError && selectedToken.tokenBalance !== "") {
+    if (!tooManyDecimalsError.isError && selectedToken.tokenBalance !== "" && selectedTokenValue.tokenValue !== "") {
       if (selectedTokenValue.tokenValue === "" || selectedTokenValue.tokenValue === "0") {
         extrinsic =
           selectedChain.chainA.chainType === "Asset Hub" && api
@@ -231,8 +231,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   useEffect(() => {
+    if (!api || !relayApi) return;
     createExtrinsic();
-  }, [crosschainExactTokenAmount, selectedToken.tokenBalance, crosschainSelectedChain]);
+  }, [crosschainExactTokenAmount, selectedToken.tokenBalance, crosschainSelectedChain, api, relayApi]);
 
   const setOriginChainFee = async () => {
     const originChainFee = await calculateOriginFee(selectedAccount, crosschainExtrinsic);
@@ -411,7 +412,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       });
       tokenSelectModal(nativeToken);
     }
-  }, [assetLoading, api]);
+  }, [assetLoading, api, selectedAccount]);
 
   // maxTriggered flag is set to true when the user clicks on the max button
   // This will calculate the max amount that can be transferred based on the available balance

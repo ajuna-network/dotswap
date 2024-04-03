@@ -165,7 +165,7 @@ export const setTokenBalance = async (
   relayApi: any,
   selectedAccount: WalletAccount
 ) => {
-  if (api) {
+  if (api && relayApi && selectedAccount?.address) {
     try {
       const walletTokens: any = await getWalletTokensBalance(api, relayApi, selectedAccount?.address, dispatch);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
@@ -311,12 +311,13 @@ export const connectWalletAndFetchBalance = async (
   relayApi: ApiPromise,
   account: WalletAccount
 ) => {
-  dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
+  dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
     await wallet?.enable("DOT-ACP");
   }
   LocalStorage.set("wallet-connected", account);
+  dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   try {
     await setTokenBalance(dispatch, api, relayApi, account);
   } catch (error) {

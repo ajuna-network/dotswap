@@ -17,7 +17,7 @@ const App: FC = () => {
     if (walletConnected && api && relayApi) {
       connectWalletAndFetchBalance(dispatch, api, relayApi, walletConnected).then();
     }
-  }, [api]);
+  }, [api, relayApi]);
 
   return (
     <AppStateProvider state={state} dispatch={dispatch}>
