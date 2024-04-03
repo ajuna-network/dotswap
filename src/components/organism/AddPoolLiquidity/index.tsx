@@ -334,7 +334,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         return { label: t("button.enterAmount"), disabled: true };
       }
 
-      if (selectedNativeTokenNumber.gt(tokenBalances.balanceAsset.free)) {
+      if (selectedNativeTokenNumber.gt(selectedTokenA.tokenBalance)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -342,7 +342,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
       }
 
       const fee = convertToBaseUnit(poolGasFee);
-      if (selectedNativeTokenNumber.plus(fee).gt(tokenBalances.balanceAsset.free)) {
+      if (selectedNativeTokenNumber.plus(fee).gt(selectedTokenA.tokenBalance)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -430,7 +430,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         nativeTokenSymbol: tokenBalances.tokenSymbol,
         nativeTokenDecimals: tokenBalances.tokenDecimals,
         tokenId: "",
-        tokenBalance: tokenBalances.balanceAsset.free.toString(),
+        tokenBalance: (Number(tokenBalances.balanceAsset.free) - Number(tokenBalances.balanceAsset.frozen)).toString(),
       });
     }
   }, [tokenBalances]);
@@ -534,14 +534,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
-            tokenBalance={
-              selectedTokenB.assetTokenBalance && selectedTokenB.assetTokenBalance !== "0"
-                ? formatDecimalsFromToken(
-                    selectedTokenB.assetTokenBalance.replace(/[, ]/g, ""),
-                    selectedTokenB.decimals
-                  )
-                : "0"
-            }
+            tokenBalance={selectedTokenB.assetTokenBalance ? selectedTokenB.assetTokenBalance : "0"}
             tokenId={selectedTokenB.assetTokenId}
             tokenDecimals={selectedTokenB.decimals}
             tokenValue={selectedTokenAssetValue?.tokenValue}
