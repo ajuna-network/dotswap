@@ -190,13 +190,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           selectedChain.chainA.chainType === "Asset Hub" && api
             ? await createCrossInExtrinsic(
                 api,
-                formatInputTokenValue(selectedChain.chainA.balances.free, selectedToken.decimals),
+                formatInputTokenValue(availableBalanceA, selectedToken.decimals),
                 crosschainDestinationWalletAddress
               )
             : relayApi
               ? await createCrossOutExtrinsic(
                   relayApi,
-                  formatInputTokenValue(selectedChain.chainA.balances.free, selectedToken.decimals),
+                  formatInputTokenValue(availableBalanceA, selectedToken.decimals),
                   crosschainDestinationWalletAddress
                 )
               : null;
@@ -317,8 +317,21 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
+  const [availableBalanceA, setAvailableBalanceA] = useState<number>(
+    Number(selectedChain.chainA.balances.free) - Number(selectedChain.chainA.balances.frozen)
+  );
+
+  const [availableBalanceB, setAvailableBalanceB] = useState<number>(
+    Number(selectedChain.chainB.balances.free) - Number(selectedChain.chainB.balances.frozen)
+  );
+
+  useEffect(() => {
+    setAvailableBalanceA(Number(selectedChain.chainA.balances.free) - Number(selectedChain.chainA.balances.frozen));
+    setAvailableBalanceB(Number(selectedChain.chainB.balances.free) - Number(selectedChain.chainB.balances.frozen));
+  }, [selectedChain]);
+
   const getCrosschainButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(selectedChain.chainA.balances.free);
+    const tokenBalanceDecimal = new Decimal(availableBalanceA);
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
@@ -423,7 +436,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     const payloadTokenValue = maxTriggered
       ? await tokenValue(
           calculateMaxAmount(
-            selectedChain.chainB.balances.free,
+            availableBalanceB.toString(),
             crosschainOriginChainFee
               ? crosschainOriginChainFee
               : selectedChain.chainB.chainType === "AssetHub"
@@ -558,7 +571,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           <div>
             <TokenAmountInput
               tokenText={selectedToken?.tokenSymbol}
-              tokenBalance={selectedToken.tokenBalance ? selectedChain.chainA.balances?.free : "0"}
+              tokenBalance={selectedToken.tokenBalance ? availableBalanceA.toString() : "0"}
               showUSDValue={selectedToken.tokenBalance !== ""}
               spotPrice={selectedToken.tokenId !== "" ? "" : tokenBalances?.spotPrice}
               tokenId={selectedToken?.tokenId}

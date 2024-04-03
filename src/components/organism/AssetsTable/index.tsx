@@ -75,11 +75,11 @@ const AssetsTable = () => {
     if (tokenBalances && tokenBalances.assets && api) {
       const balance =
         Number(tokenBalances.balanceAsset.free) +
-        Number(tokenBalances.balanceAsset.reserved) +
+        Number(tokenBalances.balanceAsset.reserved) -
         Number(tokenBalances.balanceAsset.frozen);
       const relayBalance =
         Number(tokenBalances.balanceRelay.free) +
-        Number(tokenBalances.balanceRelay.reserved) +
+        Number(tokenBalances.balanceRelay.reserved) -
         Number(tokenBalances.balanceRelay.frozen);
       const nativeToken: AssetListToken = {
         tokenId: "",

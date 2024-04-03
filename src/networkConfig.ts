@@ -15,7 +15,7 @@ export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
     rpcUrlRelay: "",
     rpcUrl: "wss://westmint-rpc.polkadot.io/",
     parents: 1,
-    assethubSubscanUrl: "https://westmint.statescan.io/#",
+    assethubSubscanUrl: "https://westmint.statescan.io",
     relaySubscanUrl: "https://westend.subscan.io",
   },
   [NetworkKeys.Rococo]: {

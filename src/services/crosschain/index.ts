@@ -91,7 +91,7 @@ async function sendTransaction(
           dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
           dispatch({
             type: ActionType.SET_NOTIFICATION_LINK_HREF,
-            payload: `${subScanURL}extrinsic/${txHash.toString()}`,
+            payload: `${subScanURL}/extrinsic/${txHash.toString()}`,
           });
           resolve(txHash.toString());
         }
