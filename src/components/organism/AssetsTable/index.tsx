@@ -22,7 +22,6 @@ const AssetsTable = () => {
 
   const walletConnected = LocalStorage.get("wallet-connected");
 
-  const [totalBalance, setTotalBalance] = useState<number>(walletBalanceUSD);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   const [tokenId, setTokenId] = useState("");
 
@@ -110,9 +109,7 @@ const AssetsTable = () => {
 
       const assetTokens = [nativeToken, ...whitelistedTokensUpdated];
 
-      const totalUsdBalance = await calculateBalance(assetTokens, dispatch);
-
-      setTotalBalance(totalUsdBalance);
+      await calculateBalance(assetTokens, dispatch);
 
       console.log(tokenBalances, "tokenBalances"); // TODO: remove
 
@@ -139,7 +136,7 @@ const AssetsTable = () => {
             {t("dashboardPage.myTotalAssets")}
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
-            {!walletConnected ? "$0.00" : "$" + totalBalance.toFixed(2)}
+            {!walletConnected ? "$0.00" : "$" + walletBalanceUSD.toFixed(2)}
           </div>
         </div>
         <div className="flex flex-col items-start justify-center">
