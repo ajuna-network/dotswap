@@ -339,8 +339,12 @@ export const updateWalletMetadata = async (api: ApiPromise, account: WalletAccou
       genesisHash: api.genesisHash.toHex(),
       metaCalls: base64Encode(api.runtimeMetadata.asCallsOnly.toU8a()),
       specVersion: api.runtimeVersion.specVersion.toNumber(),
-      // @ts-expect-error Invalid Polkadot types
-      types: getSpecTypes(api.registry, chain, api.runtimeVersion.specName, api.runtimeVersion.specVersion),
+      types: getSpecTypes(
+        api.registry.get(),
+        chain,
+        api.runtimeVersion.specName.toString(),
+        api.runtimeVersion.specVersion
+      ),
     });
 
     if (!result) throw new Error("Failed to update metadata");
