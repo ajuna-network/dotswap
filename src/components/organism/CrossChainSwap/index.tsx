@@ -414,7 +414,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             availableBalanceB.toString(),
             crosschainOriginChainFee
               ? crosschainOriginChainFee
-              : crosschainSelectedChain.chainB.chainType === "AssetHub"
+              : crosschainSelectedChain.chainA.chainType === "AssetHub"
                 ? "0.000087322311"
                 : "0.00061047862"
           )
@@ -423,7 +423,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
 
     const destinationChainFee =
-      crosschainSelectedChain.chainB.chainType === "Asset Hub"
+      crosschainSelectedChain.chainA.chainType === "Asset Hub"
         ? getCrossInDestinationFee()
         : getCrossOutDestinationFee();
     dispatch({
