@@ -218,6 +218,20 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setOriginChainFee();
   }, [crosschainExtrinsic]);
 
+  const assetHubChainAvailableBalance =
+    Number(tokenBalances?.balanceAsset?.free) - Number(tokenBalances?.balanceAsset?.frozen);
+  const relayChainAvailableBalance =
+    Number(tokenBalances?.balanceRelay?.free) - Number(tokenBalances?.balanceRelay?.frozen);
+
+  const availableBalanceA =
+    crosschainSelectedChain.chainA.chainType === "Asset Hub"
+      ? assetHubChainAvailableBalance
+      : relayChainAvailableBalance;
+  const availableBalanceB =
+    crosschainSelectedChain.chainB.chainType === "Asset Hub"
+      ? assetHubChainAvailableBalance
+      : relayChainAvailableBalance;
+
   const nativeToken = {
     tokenId: "",
     assetTokenMetadata: {
@@ -226,7 +240,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       decimals: tokenBalances?.tokenDecimals,
     },
     tokenAsset: {
-      balance: tokenBalances?.balanceAsset?.free,
+      balance: availableBalanceA.toString(),
     },
   };
 
@@ -290,20 +304,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   });
 
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
-
-  const assetHubChainAvailableBalance =
-    Number(tokenBalances?.balanceAsset?.free) - Number(tokenBalances?.balanceAsset?.frozen);
-  const relayChainAvailableBalance =
-    Number(tokenBalances?.balanceRelay?.free) - Number(tokenBalances?.balanceRelay?.frozen);
-
-  const availableBalanceA =
-    crosschainSelectedChain.chainA.chainType === "Asset Hub"
-      ? assetHubChainAvailableBalance
-      : relayChainAvailableBalance;
-  const availableBalanceB =
-    crosschainSelectedChain.chainB.chainType === "Asset Hub"
-      ? assetHubChainAvailableBalance
-      : relayChainAvailableBalance;
 
   const getCrosschainButtonProperties = useMemo(() => {
     const tokenBalanceDecimal = new Decimal(availableBalanceA);
