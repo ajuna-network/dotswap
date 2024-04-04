@@ -76,7 +76,7 @@ const WalletConnectModal = ({
               return (
                 <div key={index} className="flex cursor-pointer flex-col rounded-lg bg-purple-100 px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <Identicon value={account?.address} size={24} theme="polkadot" className="!cursor-default" />
+                    <Identicon value={account?.address} size={24} theme="polkadot" className="!cursor-pointer" />
                     <button className="flex flex-col items-start" onClick={() => handleConnect(account)}>
                       <div className="text-base font-medium text-gray-300">{account?.name}</div>
                       <div className="text-xs font-normal text-gray-300">{account?.address}</div>

@@ -65,7 +65,12 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
                   }`}
                   onClick={(e) => handleAccountClick(account, e)}
                 >
-                  <Identicon value={account?.address} size={32} theme="polkadot" className="!cursor-pinter" />
+                  <Identicon
+                    value={account?.address}
+                    size={32}
+                    theme="polkadot"
+                    className={selectedAccount?.address === account?.address ? "!cursor-default" : "!cursor-pointer"}
+                  />
                   <div className="flex w-full flex-col items-start justify-center">
                     <div className="text-base font-medium leading-none text-gray-300">{account?.name}</div>
                     <div className="text-xs font-normal text-gray-300">{reduceAddress(account?.address, 6, 6)}</div>
@@ -73,11 +78,15 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
                 </button>
 
                 {selectedAccount?.address === account?.address && (
-                  <div className="h-14 w-14 rounded-lg bg-purple-50 p-4">
-                    <button className="flex justify-end" onClick={handleDisconnect} title={"Disconnect Wallet"}>
+                  <button
+                    className="h-14 w-14 rounded-lg bg-purple-50 p-4"
+                    onClick={handleDisconnect}
+                    title={"Disconnect Wallet"}
+                  >
+                    <div className="flex items-center justify-center">
                       <LogoutIcon />
-                    </button>
-                  </div>
+                    </div>
+                  </button>
                 )}
               </div>
             </div>
