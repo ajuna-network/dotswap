@@ -11,20 +11,10 @@ export const initialCrosschainState: CrosschainState = {
     chainA: {
       chainName: "Kusama",
       chainType: "Relay Chain",
-      balances: {
-        free: "0",
-        reserved: "0",
-        frozen: "0",
-      },
     },
     chainB: {
       chainName: "Kusama",
       chainType: "Asset Hub",
-      balances: {
-        free: "0",
-        reserved: "0",
-        frozen: "0",
-      },
     },
   },
   crosschainDestinationWalletAddress: "",

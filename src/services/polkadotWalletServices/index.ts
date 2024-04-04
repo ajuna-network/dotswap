@@ -40,12 +40,7 @@ export const setupPolkadotRelayApi = async () => {
   return api;
 };
 
-export const getWalletTokensBalance = async (
-  api: ApiPromise,
-  relayApi: ApiPromise,
-  walletAddress: string,
-  dispatch: Dispatch<CrosschainAction>
-) => {
+export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromise, walletAddress: string) => {
   try {
     // Fetch assets
     const tokenMetadata = api.registry.getChainProperties();
@@ -110,22 +105,6 @@ export const getWalletTokensBalance = async (
       frozen: balances?.frozen || "0",
     };
 
-    dispatch({
-      type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
-      payload: {
-        chainA: {
-          chainName: "Kusama",
-          chainType: "Relay Chain",
-          balances: balanceRelay,
-        },
-        chainB: {
-          chainName: "Kusama",
-          chainType: "Asset Hub",
-          balances: balanceAsset,
-        },
-      },
-    });
-
     // Return data
     return {
       balanceAsset: balanceAsset,
@@ -167,7 +146,7 @@ export const setTokenBalance = async (
 ) => {
   if (api && relayApi && selectedAccount?.address) {
     try {
-      const walletTokens: any = await getWalletTokensBalance(api, relayApi, selectedAccount?.address, dispatch);
+      const walletTokens: any = await getWalletTokensBalance(api, relayApi, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
 
       const lpFee = await api.consts.assetConversion.lpFee;
