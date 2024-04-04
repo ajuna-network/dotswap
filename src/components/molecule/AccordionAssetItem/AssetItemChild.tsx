@@ -42,7 +42,7 @@ const AssetItemChild = ({
         ? { ...crosschainSelectedChain.chainA }
         : { ...crosschainSelectedChain.chainB };
 
-    const balances = !isRelayChain ? assetHub.balances : relayChain.balances;
+    const balances = !isRelayChain ? tokenBalances.balanceAsset : tokenBalances.balanceRelay;
     const chainName = !isRelayChain ? assetHub.chainName + " " + assetHub.chainType : relayChain.chainName;
 
     const floatFreeTokenBalance = Number(balances.free) - Number(balances.frozen);
@@ -61,7 +61,7 @@ const AssetItemChild = ({
       usdLockedTokenBalance: floatUsdLockedTokenBalance,
       chainName: chainName || "",
     });
-  }, [selectedAccount, tokenBalances, api, crosschainSelectedChain]);
+  }, [selectedAccount, tokenBalances, api]);
 
   return (
     <div className={`flex w-full flex-col transition-all duration-300 ease-in-out ${className}`}>

@@ -103,14 +103,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         type: ActionType.SET_TOKEN_BALANCES,
         payload: {
           ...tokenBalances,
-          balanceAsset: {
-            ...tokenBalances.balanceAsset,
-            free: chainB.balances.free,
-          },
-          balanceRelay: {
-            ...tokenBalances.balanceRelay,
-            free: chainA.balances.free,
-          },
+          balanceAsset: chainA.balances,
+          balanceRelay: chainB.balances,
         },
       });
 
@@ -119,17 +113,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         payload: {
           chainA: {
             ...selectedChain.chainA,
-            balances: {
-              ...selectedChain.chainA.balances,
-              free: selectedChain.chainA.chainType === "Relay Chain" ? chainB.balances.free : chainA.balances.free,
-            },
+            balances: selectedChain.chainA.chainType === "Relay Chain" ? chainB.balances : chainA.balances,
           },
           chainB: {
             ...selectedChain.chainB,
-            balances: {
-              ...selectedChain.chainB.balances,
-              free: selectedChain.chainB.chainType === "Relay Chain" ? chainB.balances.free : chainA.balances.free,
-            },
+            balances: selectedChain.chainB.chainType === "Relay Chain" ? chainB.balances : chainA.balances,
           },
         },
       });
