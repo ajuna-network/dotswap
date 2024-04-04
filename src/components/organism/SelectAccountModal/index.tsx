@@ -1,7 +1,5 @@
 import Modal from "../../atom/Modal";
-import RandomTokenIcon from "../../../assets/img/random-token-icon.svg?react";
 import LogoutIcon from "../../../assets/img/logout-icon.svg?react";
-import ArrowDownIcon from "../../../assets/img/arrow-left.svg?react";
 import type { WalletAccount } from "@talismn/connect-wallets";
 import { useAppContext } from "../../../state/index.tsx";
 import { useEffect, useState } from "react";
@@ -9,6 +7,7 @@ import { getWalletBySource } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { reduceAddress } from "../../../app/util/helper";
 import InfoMessage from "../../atom/InfoMessage/index.tsx";
+import Identicon from "@polkadot/react-identicon";
 
 interface SelectAccountModalProps {
   open: boolean;
@@ -44,35 +43,42 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
     setInfoModal(false);
   };
 
+  const handleAccountClick = (account: WalletAccount, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (selectedAccount?.address === account?.address) {
+      return;
+    }
+    handleConnect(account);
+  };
+
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
       <div className="flex min-w-[450px] flex-col gap-1 py-7">
         <div className="flex w-full items-start justify-start text-medium">Select Account</div>
         {accounts?.map((account: WalletAccount, index: any) => {
           return (
-            <div key={index} className="flex flex-col rounded-lg px-4 py-3">
-              <div className="flex items-center gap-4">
-                <div className="flex flex-1 items-center gap-2 rounded-lg bg-purple-50 p-4">
-                  <RandomTokenIcon />
-                  <div className="flex w-full flex-col items-start">
-                    <div className="text-base font-medium text-gray-300">{account?.name}</div>
+            <div key={index} className="flex flex-col rounded-lg">
+              <div className="flex items-center gap-3">
+                <button
+                  className={`flex flex-1 items-center gap-2 rounded-lg bg-purple-50 p-4 py-3 ${
+                    selectedAccount?.address === account?.address ? "cursor-default" : ""
+                  }`}
+                  onClick={(e) => handleAccountClick(account, e)}
+                >
+                  <Identicon value={account?.address} size={32} theme="polkadot" className="!cursor-pinter" />
+                  <div className="flex w-full flex-col items-start justify-center">
+                    <div className="text-base font-medium leading-none text-gray-300">{account?.name}</div>
                     <div className="text-xs font-normal text-gray-300">{reduceAddress(account?.address, 6, 6)}</div>
                   </div>
-                  <button
-                    className="flex -rotate-90 justify-end text-xs font-normal text-gray-300"
-                    onClick={handleDisconnect}
-                  >
-                    <ArrowDownIcon />
-                  </button>
-                </div>
+                </button>
 
-                <div className="w-14 rounded-lg bg-purple-50 p-4">
-                  {selectedAccount?.address !== account?.address && (
-                    <button className="flex justify-end" onClick={() => handleConnect(account)}>
+                {selectedAccount?.address === account?.address && (
+                  <div className="h-14 w-14 rounded-lg bg-purple-50 p-4">
+                    <button className="flex justify-end" onClick={handleDisconnect} title={"Disconnect Wallet"}>
                       <LogoutIcon />
                     </button>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           );

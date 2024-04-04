@@ -1,4 +1,3 @@
-import AccountImage from "../../../assets/img/account-image-icon.svg?react";
 import { ActionType, ButtonVariants, WalletConnectSteps } from "../../../app/types/enum.ts";
 import { reduceAddress } from "../../../app/util/helper";
 import {
@@ -19,6 +18,7 @@ import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
 import { TokenBalanceData } from "../../../app/types/index.ts";
+import Identicon from "@polkadot/react-identicon";
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
@@ -121,8 +121,7 @@ const ConnectWallet = () => {
                   <div className="text-small">{reduceAddress(walletAccount?.address, 6, 6)}</div>
                 </div>
                 <div className="flex items-center justify-center">
-                  <AccountImage />
-                  {/* <img src={walletConnected?.wallet?.logo.src} alt={walletConnected?.wallet?.logo.alt} width={32} height={32}/> */}
+                  <Identicon value={walletAccount?.address} size={32} theme="polkadot" className="!cursor-pointer" />
                 </div>
               </button>
             )}
