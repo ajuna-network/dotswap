@@ -48,6 +48,7 @@
     "support": "Support"
   },
   "modal": {
+    "updateMetadata": "For better experience, it's recommended to upgrade metadata.",
     "connectWallet": "Connect a Wallet",
     "selectToken": "Select token",
     "successfulWithdrawal": "Successful Withdrawal",

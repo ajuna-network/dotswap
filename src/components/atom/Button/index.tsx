@@ -37,6 +37,7 @@ const Button = ({ children, disabled, className, icon, variant, onClick }: Butto
         "btn-primary-ghost-lg": variant === ButtonVariants.btnPrimaryGhostLg,
         "btn-primary-ghost-sm": variant === ButtonVariants.btnPrimaryGhostSm,
         "btn-secondary-white": variant === ButtonVariants.btnSecondaryWhite,
+        "btn-secondary-white-no-border": variant === ButtonVariants.btnSecondaryWhiteNoBorder,
         "btn-secondary-gray": variant === ButtonVariants.btnSecondaryGray,
         "btn-close-modal": variant === ButtonVariants.btnCloseModal,
         "btn-interactive-pink": variant === ButtonVariants.btnInteractivePink && !disabled,

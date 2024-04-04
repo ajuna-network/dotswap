@@ -25,6 +25,7 @@ import {
   fetchRelayBalance,
   fetchAssetHubBalance,
   setupKusamaRelayChainApi,
+  checkWalletMetadata,
 } from "../../../services/polkadotWalletServices";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import TokenIcon from "../../atom/TokenIcon";
@@ -36,6 +37,7 @@ import {
   executeCrossIn,
   executeCrossOut,
 } from "../../../services/crosschain";
+import UpdateMetadataModal from "../UpdateMetadataModal";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -49,6 +51,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const { rpcUrlRelay } = useGetNetwork();
 
   const { state, dispatch } = useAppContext();
+
+  const [metadataModalOpen, setMetadataModalOpen] = useState(false);
 
   const {
     tokenBalances,
@@ -97,6 +101,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const setupKusamaApi = async () => {
     const kusamaApi = await setupKusamaRelayChainApi();
+    const kusamaMetadataUpdateAvailable = await checkWalletMetadata(kusamaApi, selectedAccount);
+    if (kusamaMetadataUpdateAvailable) {
+      setMetadataModalOpen(true);
+    }
     dispatch({ type: ActionType.SET_KUSAMA_API, payload: kusamaApi });
   };
 
@@ -619,6 +627,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         }}
       />
       <NotificationsModal />
+      <UpdateMetadataModal
+        metadataModalOpen={metadataModalOpen}
+        setMetadataModalOpen={setMetadataModalOpen}
+        api={kusamaApi}
+        walletConnected={selectedAccount}
+      />
     </div>
   );
 };

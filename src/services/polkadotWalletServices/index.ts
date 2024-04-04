@@ -1,6 +1,6 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import "@polkadot/api-augment";
-import { formatBalance } from "@polkadot/util";
+import { formatBalance, isNumber } from "@polkadot/util";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import type { AnyJson } from "@polkadot/types/types/codec";
 import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
@@ -15,6 +15,9 @@ import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
+import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defaults";
+import { base64Encode } from "@polkadot/util-crypto";
+import { getSpecTypes } from "@polkadot/types-known";
 
 export const setupPolkadotApi = async () => {
   const { rpcUrl } = useGetNetwork();
@@ -144,7 +147,7 @@ export const setTokenBalance = async (
       const walletTokens: any = await getWalletTokensBalance(api, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
 
-      const lpFee = await api.consts.assetConversion.lpFee;
+      const lpFee = api.consts.assetConversion.lpFee;
       dispatch({ type: ActionType.SET_LP_FEE, payload: lpFee.toHuman() });
 
       LocalStorage.set("wallet-connected", selectedAccount);
@@ -176,7 +179,7 @@ export const setTokenBalanceUpdate = async (
     withUnit: tokenSymbol as string,
     withSi: false,
   });
-  const existentialDeposit = await api.consts.balances.existentialDeposit;
+  const existentialDeposit = api.consts.balances.existentialDeposit;
 
   const tokenAsset = await api.query.assets.account(assetId, walletAddress);
 
@@ -285,6 +288,63 @@ export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) 
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: "0" });
   dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+};
+
+const getChainMetadata = (api: ApiPromise) => {
+  const DEFAULT_SS58 = api.registry.createType("u32", addressDefaults.prefix);
+  const DEFAULT_DECIMALS = api.registry.createType("u32", 12);
+
+  return {
+    icon: "polkadot" as const,
+    ss58Format: isNumber(api.registry.chainSS58) ? api.registry.chainSS58 : DEFAULT_SS58.toNumber(),
+    tokenDecimals: api.registry.chainDecimals || [DEFAULT_DECIMALS.toNumber()][0],
+    tokenSymbol: (api.registry.chainTokens || formatBalance.getDefaults().unit)[0],
+  };
+};
+
+export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
+  const wallet = getWalletBySource(account.wallet?.extensionName);
+  wallet?.enable("DOT-ACP");
+  const extension = wallet?.extension;
+
+  if (extension) {
+    const metadataCurrentArray = await wallet.extension.metadata.get();
+    const metadataCurrent = metadataCurrentArray.find(
+      (genesisHash: any) => api.genesisHash.toHex() === genesisHash.genesisHash
+    );
+    if (metadataCurrentArray.length === 0) {
+      return true;
+    } else {
+      const shouldUpdate = !api.genesisHash.eq(metadataCurrent.genesisHash);
+      const specVersionUpdate = api.runtimeVersion.specVersion.gtn(metadataCurrent.specVersion);
+
+      return shouldUpdate || specVersionUpdate;
+    }
+  } else {
+    return false;
+  }
+};
+
+export const updateWalletMetadata = async (api: ApiPromise, account: WalletAccount) => {
+  const wallet = getWalletBySource(account.wallet?.extensionName);
+  const extension = wallet?.extension;
+  if (extension && api) {
+    const chain = ((await api.rpc.system.chain()) || "<unknown>").toString();
+    const chainType = "substrate";
+    const newMetadata = getChainMetadata(api);
+    const result = await extension.metadata?.provide({
+      ...newMetadata,
+      chain,
+      chainType,
+      genesisHash: api.genesisHash.toHex(),
+      metaCalls: base64Encode(api.runtimeMetadata.asCallsOnly.toU8a()),
+      specVersion: api.runtimeVersion.specVersion.toNumber(),
+      // @ts-expect-error Invalid Polkadot types
+      types: getSpecTypes(api.registry, chain, api.runtimeVersion.specName, api.runtimeVersion.specVersion),
+    });
+
+    if (!result) throw new Error("Failed to update metadata");
+  }
 };
 
 export const connectWalletAndFetchBalance = async (
