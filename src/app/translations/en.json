@@ -134,6 +134,22 @@
     "maxValueLessThanMinAmount": "The maximum value is less than the minimum amount."
   },
   "pageNotFound": "Page not found",
+  "dashboardPage": {
+    "dashboard": "Dashboard",
+    "myTotalAssets" : "My Total Assets",
+    "price": "Price",
+    "loadingAssets": "Loading...",
+    "noAssets": "No assets found",
+    "connectWallet": "To see your asset list first connect your wallet.",
+    "assetList": "Asset List",
+    "otherAssets": "Other Assets"
+  },
+  "assetItem": {
+    "locked": "Locked",
+    "reserved": "Reserved",
+    "available": "Available balance",
+    "total": "Total balance"
+  },
   "poolsPage": {
     "pools": "Pools",
     "earnFeesByProvidingLiquidity": "Earn fees by providing liquidity.",
@@ -168,6 +184,10 @@
     "originChainFee": "Origin chain fee",
     "destinationChainFee": "Destination chain fee",
     "route": "Route"
+  },
+  "mobilePage": {
+    "title": "DOT ACP",
+    "subtitle": "This application is not optimized for mobile devices. Please use a desktop browser."
   },
   "footer": {
     "poweredBy": "Powered by",

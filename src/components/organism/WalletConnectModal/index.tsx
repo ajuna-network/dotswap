@@ -1,16 +1,18 @@
 import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
-import RandomTokenIcon from "../../../assets/img/random-token-icon.svg?react";
-import { useState } from "react";
 import { WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
+import { ActionType } from "../../../app/types/enum";
+import { useAppContext } from "../../../state/index.tsx";
+import Identicon from "@polkadot/react-identicon";
 
 interface WalletConnectModalProps {
   open: boolean;
   title: string;
   modalStep: ModalStepProps;
   supportedWallets: Wallet[];
+  walletAccounts: WalletAccount[];
   setModalStep: (step: ModalStepProps) => void;
   handleConnect: (account: WalletAccount) => void;
   onClose: () => void;
@@ -23,16 +25,17 @@ const WalletConnectModal = ({
   title,
   modalStep,
   supportedWallets,
+  walletAccounts,
   onClose,
   onBack,
   setModalStep,
   handleConnect,
 }: WalletConnectModalProps) => {
-  const [walletAccounts, setWalletAccounts] = useState<WalletAccount[]>([]);
+  const { dispatch } = useAppContext();
 
   const handleContinueClick = (accounts: WalletAccount[]) => {
     setModalStep({ step: WalletConnectSteps.stepAddresses });
-    setWalletAccounts(accounts);
+    dispatch({ type: ActionType.SET_ACCOUNTS, payload: accounts });
   };
 
   return (
@@ -73,7 +76,7 @@ const WalletConnectModal = ({
               return (
                 <div key={index} className="flex cursor-pointer flex-col rounded-lg bg-purple-100 px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <RandomTokenIcon />
+                    <Identicon value={account?.address} size={24} theme="polkadot" className="!cursor-pointer" />
                     <button className="flex flex-col items-start" onClick={() => handleConnect(account)}>
                       <div className="text-base font-medium text-gray-300">{account?.name}</div>
                       <div className="text-xs font-normal text-gray-300">{account?.address}</div>

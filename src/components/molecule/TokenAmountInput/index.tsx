@@ -23,6 +23,7 @@ type TokenAmountInputProps = {
   assetLoading?: boolean;
   withdrawAmountPercentage?: number;
   showUSDValue?: boolean;
+  spotPrice?: string;
   onClick: () => void;
   onSetTokenValue: (value: string) => void;
   onMaxClick?: () => void;
@@ -42,6 +43,7 @@ const TokenAmountInput = ({
   assetLoading,
   withdrawAmountPercentage,
   showUSDValue,
+  spotPrice,
   onSetTokenValue,
   onClick,
   onMaxClick,
@@ -61,6 +63,11 @@ const TokenAmountInput = ({
   useEffect(() => {
     if (!showUSDValue) return;
     setSpotPriceLoaded(false);
+    if (spotPrice !== "") {
+      setTokenPriceUSD((parseFloat(spotPrice || "") * parseFloat(tokenBalance || "0")).toFixed(2));
+      setSpotPriceLoaded(true);
+      return;
+    }
     getSpotPrice(tokenText).then((data: string | void) => {
       if (typeof data === "string") {
         setTokenPriceUSD((parseFloat(data) * parseFloat(tokenBalance || "0")).toFixed(2));
@@ -92,7 +99,7 @@ const TokenAmountInput = ({
           allowNegative={false}
           fixedDecimalScale
           displayType={"input"}
-          disabled={disabled}
+          disabled={disabled || !tokenText}
           placeholder={"0"}
           className="w-full basis-auto bg-transparent font-unbounded-variable text-heading-4 font-bold text-gray-300 outline-none placeholder:text-gray-200"
           onFocus={() => setIsFocused(true)}
@@ -105,6 +112,7 @@ const TokenAmountInput = ({
             }
           }}
           onValueChange={({ floatValue }) => {
+            if (!floatValue) return;
             onSetTokenValue(floatValue?.toString() || "");
           }}
         />

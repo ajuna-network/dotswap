@@ -1,12 +1,10 @@
 import { ActionType } from "../../app/types/enum";
 import { SelectedChain } from "../../app/types";
 import { Extrinsic } from "@paraspell/sdk";
-import { ApiPromise } from "@polkadot/api";
 
 export type CrosschainExtrinsic = Extrinsic | null;
 
 export interface CrosschainState {
-  kusamaApi: ApiPromise | null;
   crosschainFinalized: boolean;
   crosschainOriginChainFee: string;
   crosschainDestinationChainFee: string;
@@ -18,7 +16,6 @@ export interface CrosschainState {
 }
 
 export type CrosschainAction =
-  | { type: ActionType.SET_KUSAMA_API; payload: ApiPromise }
   | { type: ActionType.SET_CROSSCHAIN_TRANSFER_FINALIZED; payload: boolean }
   | { type: ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE; payload: string }
   | { type: ActionType.SET_CROSSCHAIN_DESTINATION_CHAIN_FEE; payload: string }

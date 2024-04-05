@@ -7,6 +7,7 @@ import CrossChainSwap from "../../organism/CrossChainSwap";
 import Modal from "../../atom/Modal";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
+import { t } from "i18next";
 
 type AccordionAssetItemProps = {
   token: AssetListToken;
@@ -109,7 +110,7 @@ const AccordionAssetItem = ({
           <div className="flex w-2/4 items-center justify-start">
             <div className="flex flex-col">
               <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
-                Total Available Balance
+                {t("assetItem.total")}
               </div>
               <div className="font-titillium-web text-base font-semibold">
                 {totalBalance && totalBalance !== 0

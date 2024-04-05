@@ -9,15 +9,15 @@ import { AppStateProvider } from "./state";
 
 const App: FC = () => {
   const { dispatch, state } = useStateAndDispatch();
-  const { api } = state;
+  const { api, relayApi } = state;
 
   const walletConnected: WalletAccount = LocalStorage.get("wallet-connected");
 
   useEffect(() => {
-    if (walletConnected && api) {
-      connectWalletAndFetchBalance(dispatch, api, walletConnected).then();
+    if (walletConnected && api && relayApi) {
+      connectWalletAndFetchBalance(dispatch, api, relayApi, walletConnected).then();
     }
-  }, [api]);
+  }, [api, relayApi]);
 
   return (
     <AppStateProvider state={state} dispatch={dispatch}>

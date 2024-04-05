@@ -21,9 +21,7 @@ import {
   formatInputTokenValue,
   liquidityProviderFee,
 } from "../../../app/util/helper";
-import DotToken from "../../../assets/img/dot-token.svg?react";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
-import AssetTokenIcon from "../../../assets/img/test-token.svg?react";
 import CustomSlippageIcon from "../../../assets/img/custom-slippage-icon.svg?react";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
@@ -165,17 +163,20 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   useClickOutside(slippageRef, () => {
     setShowSlippage(false);
   });
-  const nativeToken = {
+  const nativeToken = tokenBalances && {
     tokenId: "",
     assetTokenMetadata: {
-      symbol: tokenBalances?.tokenSymbol as string,
-      name: tokenBalances?.tokenSymbol as string,
-      decimals: tokenBalances?.tokenDecimals as string,
+      symbol: tokenBalances.tokenSymbol,
+      name: tokenBalances.tokenSymbol,
+      decimals: tokenBalances.tokenDecimals,
     },
     tokenAsset: {
-      balance: tokenBalances?.balance,
+      balance: (Number(tokenBalances.balanceAsset?.free) - Number(tokenBalances.balanceAsset?.frozen)).toString(),
     },
   };
+
+  const tokenADecimal = new Decimal(selectedTokenAValue.tokenValue || 0);
+  const tokenBDecimal = new Decimal(selectedTokenBValue.tokenValue || 0);
 
   useEffect(() => {
     const updatePoolsCards = async () => {
@@ -184,9 +185,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
 
     updatePoolsCards().then();
   }, [pools, selectedAccount, tokenBalances]);
-
-  const tokenADecimal = new Decimal(selectedTokenAValue.tokenValue || 0);
-  const tokenBDecimal = new Decimal(selectedTokenBValue.tokenValue || 0);
 
   const handleSwapNativeForAssetGasFee = async () => {
     const tokenA = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
@@ -327,7 +325,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
             ? calculateSlippageReduce(nativeTokenNoDecimals, slippageValue)
             : calculateSlippageAdd(nativeTokenNoDecimals, slippageValue);
 
-        if (tokenBalances?.balance) {
+        if (tokenBalances?.balanceAsset?.free) {
           if (inputType === InputEditedType.exactIn) {
             setTokenAValueForSwap({ tokenValue: value });
             setTokenBValueForSwap({ tokenValue: nativeTokenWithSlippage });
@@ -460,9 +458,9 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         getPriceOfNativeTokenFromAssetToken(value, InputEditedType.exactOut);
       } else if (selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) {
         getPriceOfAssetTokenFromNativeToken(value, InputEditedType.exactOut);
-        if (tokenBalances?.balance) {
+        if (tokenBalances?.balanceAsset?.free) {
           const fee = convertToBaseUnit(swapGasFee);
-          const balanceMinusFee = new Decimal(tokenBalances.balance).minus(fee);
+          const balanceMinusFee = new Decimal(tokenBalances.balanceAsset.free).minus(fee);
           setWalletHasEnoughNativeToken(new Decimal(value).lte(balanceMinusFee));
         }
       } else {
@@ -475,7 +473,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   };
 
   const getSwapButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(tokenBalances?.balance || 0);
+    const tokenBalanceDecimal = new Decimal(tokenBalances?.balanceAsset?.free || 0);
     if (tokenBalances?.assets) {
       if (selectedTokens.tokenA.tokenSymbol === "" || selectedTokens.tokenB.tokenSymbol === "") {
         return { label: t("button.selectToken"), disabled: true };
@@ -559,7 +557,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   }, [
     selectedAccount?.address,
     tooManyDecimalsError.isError,
-    tokenBalances?.balance,
+    tokenBalances?.balanceAsset,
     selectedTokens.tokenA.decimals,
     selectedTokens.tokenB.decimals,
     selectedTokenAValue?.tokenValue,
@@ -685,7 +683,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
 
   const getSwapTokenB = () => {
     const poolLiquidTokens: any = [nativeToken]
-      .concat(poolsTokenMetadata)
+      .concat(poolsTokenMetadata as any)
       ?.filter((item: any) => item.tokenId !== selectedTokens.tokenA?.tokenId && whitelist.includes(item.tokenId));
     if (tokenBalances !== null) {
       for (const item of poolLiquidTokens) {
@@ -955,6 +953,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   // if it is asset token selling and it is drain (from user wallet or pool) we need to substrate min balance
   // if it is native token drain from the pool we need to substrate existential deposit
   const onMaxClick = async () => {
+    if (!selectedTokens.tokenA.tokenSymbol || !selectedTokens.tokenB.tokenSymbol) return;
     setIsMaxValueLessThenMinAmount(false);
     const nativeTokenExistentialDeposit = tokenBalances!.existentialDeposit.replace(/[, ]/g, "");
     // tokenb moze biti native token i onda ga nece naci u poolu, u tom slucaju treba naci pool za tokenA
@@ -1035,11 +1034,12 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       return;
     }
     tokenAValue(maxValueA);
+
     if (selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol && tokenBalances) {
       // reduce gas fee if amount is lower then balance in wallet
       const fee = convertToBaseUnit(swapGasFee);
       const maxValueWithFee = new Decimal(maxValueA).plus(fee);
-      const nativeTokenBalance = new Decimal(tokenBalances.balance);
+      const nativeTokenBalance = new Decimal(tokenBalances.balanceAsset.free);
       if (nativeTokenBalance.lt(maxValueWithFee)) {
         tokenAValue(nativeTokenBalance.minus(fee).toFixed());
       }
@@ -1447,7 +1447,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
             tokenSymbol: tokenBalances.tokenSymbol,
             tokenId: "",
             decimals: tokenBalances.tokenDecimals,
-            tokenBalance: tokenBalances.balance.toString(),
+            tokenBalance: tokenBalances.balanceAsset.free.toString(),
           },
         };
       });
@@ -1482,13 +1482,13 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     setSelectedTokens((prev) => {
       const tokenBalanceA =
         prev.tokenA.tokenSymbol === nativeTokenSymbol
-          ? tokenBalances.balance.toString()
+          ? tokenBalances.balanceAsset?.free
           : tokenBalances.assets
               ?.find((item: any) => item.tokenId === prev.tokenA.tokenId)
               ?.tokenAsset.balance?.replace(/[, ]/g, "");
       const tokenBalanceB =
         prev.tokenB.tokenSymbol === nativeTokenSymbol
-          ? tokenBalances.balance.toString()
+          ? tokenBalances.balanceAsset?.free
           : tokenBalances.assets
               ?.find((item: any) => item.tokenId === prev.tokenB.tokenId)
               ?.tokenAsset.balance?.replace(/[, ]/g, "");
@@ -1739,22 +1739,12 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenA={{
             symbol: selectedTokens.tokenA.tokenSymbol,
             value: swapExactInTokenAmount.toString(),
-            icon:
-              selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol ? (
-                <DotToken />
-              ) : (
-                <AssetTokenIcon width={24} height={24} />
-              ),
+            icon: <TokenIcon tokenSymbol={selectedTokens.tokenA.tokenSymbol} width={"24px"} height={"24px"} />,
           }}
           tokenB={{
             symbol: selectedTokens.tokenB.tokenSymbol,
             value: swapExactOutTokenAmount.toString(),
-            icon:
-              selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol ? (
-                <DotToken />
-              ) : (
-                <AssetTokenIcon width={24} height={24} />
-              ),
+            icon: <TokenIcon tokenSymbol={selectedTokens.tokenB.tokenSymbol} width={"24px"} height={"24px"} />,
           }}
           actionLabel="Swapped"
         />
