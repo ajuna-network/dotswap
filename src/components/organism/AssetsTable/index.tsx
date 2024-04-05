@@ -73,14 +73,13 @@ const AssetsTable = () => {
 
   const setTokens = async () => {
     if (tokenBalances && tokenBalances.assets && api) {
-      const balance =
+      const balance = Number(tokenBalances.balanceAsset.free) - Number(tokenBalances.balanceAsset.frozen);
+      const relayBalance = Number(tokenBalances.balanceRelay.free) - Number(tokenBalances.balanceRelay.frozen);
+      const totalBalance =
         Number(tokenBalances.balanceAsset.free) +
-        Number(tokenBalances.balanceAsset.reserved) -
-        Number(tokenBalances.balanceAsset.frozen);
-      const relayBalance =
         Number(tokenBalances.balanceRelay.free) +
-        Number(tokenBalances.balanceRelay.reserved) -
-        Number(tokenBalances.balanceRelay.frozen);
+        Number(tokenBalances.balanceAsset.reserved) +
+        Number(tokenBalances.balanceRelay.reserved);
       const nativeToken: AssetListToken = {
         tokenId: "",
         assetTokenMetadata: {
@@ -91,6 +90,7 @@ const AssetsTable = () => {
         tokenAsset: {
           balance: balance.toString(),
           relayBalance: relayBalance.toString(),
+          totalBalance: totalBalance.toString(),
         },
         spotPrice: tokenBalances.spotPrice,
       };
