@@ -67,7 +67,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     tokenBalance: "",
   });
 
-  //TODO Temporary notification clear until new notifications are implemented app-wide
+  //To do: Temporary notification clear until new notifications are implemented app-wide
 
   useEffect(() => {
     return () => {
