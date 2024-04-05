@@ -1,4 +1,3 @@
-import AccountImage from "../../../assets/img/account-image-icon.svg?react";
 import { ActionType, ButtonVariants, WalletConnectSteps } from "../../../app/types/enum.ts";
 import { reduceAddress } from "../../../app/util/helper";
 import {
@@ -11,21 +10,26 @@ import Button from "../../atom/Button/index.tsx";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import WalletConnectModal from "../WalletConnectModal/index.tsx";
+import SelectAccountModal from "../SelectAccountModal/index.tsx";
 import LocalStorage from "../../../app/util/localStorage.ts";
 import { ModalStepProps } from "../../../app/types/index.ts";
 import type { Timeout } from "react-number-format/types/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
+import { TokenBalanceData } from "../../../app/types/index.ts";
+import Identicon from "@polkadot/react-identicon";
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
-  const { walletConnectLoading, api } = state;
+  const { walletConnectLoading, api, relayApi, accounts } = state;
 
   const [walletAccount, setWalletAccount] = useState<WalletAccount>({} as WalletAccount);
   const [modalStep, setModalStep] = useState<ModalStepProps>({ step: WalletConnectSteps.stepExtensions });
   const [walletConnectOpen, setWalletConnectOpen] = useState(false);
   const [supportedWallets, setSupportedWallets] = useState<Wallet[]>([] as Wallet[]);
+
+  const [selectAccountModalOpen, setSelectAccountModalOpen] = useState(false);
 
   const walletConnected = LocalStorage.get("wallet-connected");
 
@@ -34,9 +38,17 @@ const ConnectWallet = () => {
   };
 
   const handleConnect = async (account: WalletAccount) => {
+    if (selectAccountModalOpen) {
+      dispatch({ type: ActionType.SET_ASSETS_LIST, payload: [] });
+      dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
+      dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+      dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: {} as TokenBalanceData });
+      setSelectAccountModalOpen(false);
+    }
     try {
       setWalletConnectOpen(false);
-      await connectWalletAndFetchBalance(dispatch, api, account);
+      if (!api || !relayApi) return;
+      await connectWalletAndFetchBalance(dispatch, api, relayApi, account);
     } catch (error) {
       dotAcpToast.error(`Error connecting: ${error}`);
     }
@@ -47,6 +59,7 @@ const ConnectWallet = () => {
   };
 
   const disconnectWallet = () => {
+    setSelectAccountModalOpen(false);
     handleDisconnect(dispatch);
     setWalletAccount({} as WalletAccount);
     setModalStep({ step: WalletConnectSteps.stepExtensions });
@@ -97,17 +110,20 @@ const ConnectWallet = () => {
                 <LottieSmall />
               </Button>
             ) : (
-              <div className="flex items-center justify-center gap-[26px]">
-                <div className="flex flex-col text-gray-300">
+              <button
+                className="flex items-center justify-center gap-[26px]"
+                onClick={() => {
+                  setSelectAccountModalOpen(true);
+                }}
+              >
+                <div className="flex flex-col items-start justify-start text-gray-300">
                   <div className="font-[500]">{walletAccount?.name || "Account"}</div>
                   <div className="text-small">{reduceAddress(walletAccount?.address, 6, 6)}</div>
                 </div>
-                <div>
-                  <button onClick={() => disconnectWallet()}>
-                    <AccountImage />
-                  </button>
+                <div className="flex items-center justify-center">
+                  <Identicon value={walletAccount?.address} size={32} theme="polkadot" className="!cursor-pointer" />
                 </div>
-              </div>
+              </button>
             )}
           </>
         ) : (
@@ -122,6 +138,15 @@ const ConnectWallet = () => {
         )}
       </div>
 
+      <SelectAccountModal
+        open={selectAccountModalOpen}
+        title="Account"
+        onClose={() => setSelectAccountModalOpen(false)}
+        walletAccounts={accounts}
+        handleConnect={handleConnect}
+        handleDisconnect={disconnectWallet}
+      />
+
       <WalletConnectModal
         title="Connect a Wallet"
         open={walletConnectOpen}
@@ -130,6 +155,7 @@ const ConnectWallet = () => {
         modalStep={modalStep}
         setModalStep={setModalStep}
         setWalletConnectOpen={setWalletConnectOpen}
+        walletAccounts={accounts}
         supportedWallets={supportedWallets}
         handleConnect={handleConnect}
       />

@@ -6,6 +6,7 @@ import type { WalletAccount } from "@talismn/connect-wallets";
 
 export interface WalletState {
   api: ApiPromise | null;
+  relayApi: ApiPromise | null;
   accounts: WalletAccount[];
   extensions: InjectedExtension[];
   selectedAccount: WalletAccount;
@@ -22,7 +23,7 @@ export interface WalletState {
 
 export type WalletAction =
   | { type: ActionType.SET_API; payload: ApiPromise }
-  | { type: ActionType.SET_KUSAMA_API; payload: ApiPromise }
+  | { type: ActionType.SET_RELAY_API; payload: ApiPromise }
   | { type: ActionType.SET_ACCOUNTS; payload: WalletAccount[] }
   | { type: ActionType.SET_SELECTED_ACCOUNT; payload: WalletAccount }
   | { type: ActionType.SET_TOKEN_BALANCES; payload: TokenBalanceData }

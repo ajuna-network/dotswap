@@ -1,32 +1,48 @@
-import { ApiPromise } from "@polkadot/api";
-import { WalletAccount } from "@talismn/connect-wallets";
 import Modal from "../../atom/Modal";
 import { ButtonVariants } from "../../../app/types/enum";
-import { updateWalletMetadata } from "../../../services/polkadotWalletServices";
+import { checkWalletMetadata, updateWalletMetadata } from "../../../services/polkadotWalletServices";
 import { t } from "i18next";
+import useStateAndDispatch from "../../../app/hooks/useStateAndDispatch";
+import { useEffect, useState } from "react";
 
-type UpdateMetadataModalProps = {
-  metadataModalOpen: boolean;
-  setMetadataModalOpen: (isOpen: boolean) => void;
-  api: ApiPromise | null;
-  walletConnected: WalletAccount;
-};
-
-const UpdateMetadataModal = ({
-  metadataModalOpen,
-  setMetadataModalOpen,
-  api,
-  walletConnected,
-}: UpdateMetadataModalProps) => {
+const UpdateMetadataModal = () => {
+  const [metadataModalOpen, setMetadataModalOpen] = useState({
+    modalOpen: false,
+    assetHubUpdateAvailable: false,
+    relayChainUpdateAvailable: false,
+  });
+  const { state } = useStateAndDispatch();
+  const { api, relayApi, selectedAccount } = state;
   const updateMetadata = async () => {
-    if (api && walletConnected) {
-      await updateWalletMetadata(api, walletConnected);
-      setMetadataModalOpen(false);
+    if (api && relayApi && selectedAccount) {
+      if (metadataModalOpen.assetHubUpdateAvailable) await updateWalletMetadata(api, selectedAccount);
+      if (metadataModalOpen.relayChainUpdateAvailable) await updateWalletMetadata(relayApi, selectedAccount);
+      setMetadataModalOpen({ modalOpen: false, assetHubUpdateAvailable: false, relayChainUpdateAvailable: false });
     }
   };
+  useEffect(() => {
+    const updatesCheck = async () => {
+      const assetHubUpdateAvailable = await checkWalletMetadata(api!, selectedAccount);
+      const relayChainUpdateAvailable = await checkWalletMetadata(relayApi!, selectedAccount);
+      if (assetHubUpdateAvailable || relayChainUpdateAvailable) {
+        setMetadataModalOpen({
+          modalOpen: true,
+          assetHubUpdateAvailable,
+          relayChainUpdateAvailable,
+        });
+      }
+    };
+
+    updatesCheck();
+  }, [api, relayApi, selectedAccount]);
 
   return (
-    <Modal isOpen={metadataModalOpen} onClose={() => setMetadataModalOpen(false)}>
+    <Modal
+      isOpen={metadataModalOpen.modalOpen}
+      onClose={() =>
+        setMetadataModalOpen({ modalOpen: false, assetHubUpdateAvailable: false, relayChainUpdateAvailable: false })
+      }
+    >
       <div className="flex w-full flex-col items-center gap-3">
         <div className="flex w-full border-b border-purple-100 pb-3">
           <p className="max-w-[390px] font-inter text-large font-normal text-black">{t("modal.updateMetadata")}</p>
@@ -35,7 +51,11 @@ const UpdateMetadataModal = ({
           <button
             className={ButtonVariants.btnSecondaryWhiteNoBorder}
             onClick={() => {
-              setMetadataModalOpen(false);
+              setMetadataModalOpen({
+                modalOpen: false,
+                assetHubUpdateAvailable: false,
+                relayChainUpdateAvailable: false,
+              });
             }}
           >
             Cancel

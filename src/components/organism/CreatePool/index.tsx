@@ -263,7 +263,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
         return { label: t("button.enterAmount"), disabled: true };
       }
 
-      if (selectedNativeTokenNumber.gt(tokenBalances.balance)) {
+      if (selectedNativeTokenNumber.gt(tokenBalances.balanceAsset.free)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -271,7 +271,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
       }
 
       const fee = convertToBaseUnit(poolGasFee);
-      if (selectedNativeTokenNumber.plus(fee).gt(tokenBalances.balance)) {
+      if (selectedNativeTokenNumber.plus(fee).gt(tokenBalances.balanceAsset.free)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -330,7 +330,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
         nativeTokenSymbol: tokenBalances?.tokenSymbol,
         nativeTokenDecimals: tokenBalances?.tokenDecimals,
         tokenId: "",
-        tokenBalance: tokenBalances.balance.toString(),
+        tokenBalance: tokenBalances.balanceAsset.free.toString(),
       });
     }
   }, [tokenBalances?.assets]);

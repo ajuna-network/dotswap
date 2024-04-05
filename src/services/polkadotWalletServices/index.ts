@@ -2,17 +2,17 @@ import { ApiPromise, WsProvider } from "@polkadot/api";
 import "@polkadot/api-augment";
 import { formatBalance, isNumber } from "@polkadot/util";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
-import type { AnyJson } from "@polkadot/types/types/codec";
 import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken } from "../../app/util/helper";
+import { formatDecimalsFromToken, getSpotPrice } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
+import { CrosschainAction } from "../../store/crosschain/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
 import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defaults";
@@ -28,13 +28,11 @@ export const setupPolkadotApi = async () => {
     api.rpc.system.name(),
     api.rpc.system.version(),
   ]);
-
   console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
-
   return api;
 };
 
-export const setupKusamaRelayChainApi = async () => {
+export const setupPolkadotRelayApi = async () => {
   const { rpcUrlRelay } = useGetNetwork();
   const api = await ApiPromise.create({ provider: new WsProvider(rpcUrlRelay) });
   const [chain, nodeName, nodeVersion] = await Promise.all([
@@ -46,79 +44,86 @@ export const setupKusamaRelayChainApi = async () => {
   return api;
 };
 
-export const getWalletTokensBalance = async (api: ApiPromise, walletAddress: string) => {
-  const now = await api.query.timestamp.now();
-  const { nonce, data: balance } = await api.query.system.account(walletAddress);
-  const nextNonce = await api.rpc.system.accountNextIndex(walletAddress);
-  const tokenMetadata = api.registry.getChainProperties();
-  const existentialDeposit = api.consts.balances.existentialDeposit;
+export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromise, walletAddress: string) => {
+  try {
+    // Fetch assets
+    const tokenMetadata = api.registry.getChainProperties();
+    const allAssets = await api.query.assets.asset.entries();
 
-  const allAssets = await api.query.assets.asset.entries();
-
-  const allChainAssets: { tokenData: AnyJson; tokenId: any }[] = [];
-
-  allAssets.forEach((item) => {
-    const id = item?.[0].toHuman();
-    if (id?.toString()?.replace(/[, ]/g, "")) {
-      allChainAssets.push({ tokenData: item?.[1].toHuman(), tokenId: item?.[0].toHuman() });
+    if (!allAssets || !allAssets.length || tokenMetadata === undefined) {
+      return null;
     }
-  });
 
-  const myAssetTokenData = [];
-  const assetTokensDataPromises = [];
+    // Process assets
+    const myAssetTokenData = await Promise.all(
+      allAssets.map(async ([assetId, assetDetails]) => {
+        const cleanedTokenId = assetId.toHuman()?.toString()?.replace(/[, ]/g, "");
+        if (!cleanedTokenId || (!whitelist.includes(cleanedTokenId) && !assetDetails.toHuman())) {
+          return null;
+        }
 
-  for (const item of allChainAssets) {
-    const cleanedTokenId = item?.tokenId?.[0]?.replace(/[, ]/g, "");
+        const [tokenAsset, assetTokenMetadata] = await Promise.all([
+          api.query.assets.account(cleanedTokenId, walletAddress),
+          api.query.assets.metadata(cleanedTokenId),
+        ]);
 
-    assetTokensDataPromises.push(
-      Promise.all([
-        api.query.assets.account(cleanedTokenId, walletAddress),
-        api.query.assets.metadata(cleanedTokenId),
-      ]).then(([tokenAsset, assetTokenMetadata]) => {
         const tokenAssetData = tokenAsset.toHuman()
           ? (tokenAsset.toHuman() as any)
-          : {
-              balance: "",
-              extra: "",
-              reason: "",
-              status: "",
-            };
-        if (whitelist.includes(cleanedTokenId) || tokenAssetData.balance !== "") {
-          const resultObject = {
+          : { balance: "", extra: "", reason: "", status: "" };
+
+        if (whitelist.includes(cleanedTokenId) || tokenAssetData?.balance !== "") {
+          return {
             tokenId: cleanedTokenId,
             assetTokenMetadata: assetTokenMetadata.toHuman(),
             tokenAsset: tokenAssetData,
           };
-
-          return resultObject;
         }
         return null;
       })
     );
+
+    // Format data
+    const ss58Format = tokenMetadata?.ss58Format.toHuman();
+    const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman()?.toString();
+    const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman()?.toString();
+
+    // Fetch balance
+    const { data: balance } = await api.query.system.account(walletAddress);
+    const existentialDeposit = api.consts.balances.existentialDeposit;
+
+    const balanceAsset = {
+      free: formatDecimalsFromToken(balance?.free.toString() || "0", tokenDecimals as string) || "0",
+      reserved: formatDecimalsFromToken(balance?.reserved.toString() || "0", tokenDecimals as string) || "0",
+      frozen: formatDecimalsFromToken(balance?.frozen.toString() || "0", tokenDecimals as string) || "0",
+    };
+
+    // fetch relay balance and spot price
+    const [balances, spotPrice] = await Promise.all([
+      fetchNativeTokenBalances(walletAddress, tokenDecimals as string, relayApi),
+      getSpotPrice(tokenSymbol as string) || "0",
+    ]);
+
+    const balanceRelay = {
+      free: balances?.free || "0",
+      reserved: balances?.reserved || "0",
+      frozen: balances?.frozen || "0",
+    };
+
+    // Return data
+    return {
+      balanceAsset: balanceAsset,
+      balanceRelay: balanceRelay,
+      spotPrice: spotPrice,
+      ss58Format,
+      existentialDeposit: existentialDeposit.toHuman(),
+      tokenDecimals,
+      tokenSymbol,
+      assets: myAssetTokenData.filter((asset) => asset !== null),
+    };
+  } catch (error) {
+    console.error("Error in getWalletTokensBalance:", error);
+    throw error;
   }
-
-  const results = await Promise.all(assetTokensDataPromises);
-
-  myAssetTokenData.push(...results.filter((result) => result !== null));
-
-  const ss58Format = tokenMetadata?.ss58Format.toHuman();
-  const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman();
-  const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman();
-
-  console.log(`${now}: balance of ${balance?.free} and a current nonce of ${nonce} and next nonce of ${nextNonce}`);
-
-  const balanceFormatted = formatDecimalsFromToken(balance?.free.toString(), tokenDecimals as string);
-
-  const tokensInfo = {
-    balance: balanceFormatted,
-    ss58Format,
-    existentialDeposit: existentialDeposit.toHuman(),
-    tokenDecimals: Array.isArray(tokenDecimals) ? tokenDecimals?.[0] : "",
-    tokenSymbol: Array.isArray(tokenSymbol) ? tokenSymbol?.[0] : "",
-    assets: myAssetTokenData,
-  };
-
-  return tokensInfo;
 };
 
 export const assetTokenData = async (id: string, api: ApiPromise) => {
@@ -138,13 +143,14 @@ export const getSupportedWallets = () => {
 };
 
 export const setTokenBalance = async (
-  dispatch: Dispatch<WalletAction | PoolAction>,
+  dispatch: Dispatch<WalletAction | PoolAction | CrosschainAction>,
   api: any,
+  relayApi: any,
   selectedAccount: WalletAccount
 ) => {
-  if (api) {
+  if (api && relayApi && selectedAccount?.address) {
     try {
-      const walletTokens: any = await getWalletTokensBalance(api, selectedAccount?.address);
+      const walletTokens: any = await getWalletTokensBalance(api, relayApi, selectedAccount?.address);
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletTokens });
 
       const lpFee = api.consts.assetConversion.lpFee;
@@ -172,13 +178,8 @@ export const setTokenBalanceUpdate = async (
 ) => {
   const { data: balance } = await api.query.system.account(walletAddress);
   const tokenMetadata = api.registry.getChainProperties();
-  const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman();
-  const ss58Format = tokenMetadata?.ss58Format.toHuman();
-  const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman();
-  const nativeTokenNewBalance = formatBalance(balance?.free.toString(), {
-    withUnit: tokenSymbol as string,
-    withSi: false,
-  });
+  const tokenDecimals = tokenMetadata?.tokenDecimals?.toHuman()?.toString() as string;
+  const nativeTokenNewBalance = formatDecimalsFromToken(balance?.free.toString() || "0", tokenDecimals) || "0";
   const existentialDeposit = api.consts.balances.existentialDeposit;
 
   const tokenAsset = await api.query.assets.account(assetId, walletAddress);
@@ -191,7 +192,7 @@ export const setTokenBalanceUpdate = async (
     const resultObject = {
       tokenId: assetId,
       assetTokenMetadata: assetTokenMetadata.toHuman(),
-      tokenAsset: tokenAsset.toHuman(),
+      tokenAsset: tokenAsset.toHuman() || { balance: "", extra: "", reason: "", status: "" },
     };
 
     const assetInPossession = assetsUpdated.findIndex((item: any) => item.tokenId === resultObject.tokenId);
@@ -204,10 +205,11 @@ export const setTokenBalanceUpdate = async (
   }
 
   const updatedTokensInfo = {
-    balance: nativeTokenNewBalance,
-    ss58Format,
-    tokenDecimals: Array.isArray(tokenDecimals) ? tokenDecimals?.[0] : "",
-    tokenSymbol: Array.isArray(tokenSymbol) ? tokenSymbol?.[0] : "",
+    ...oldWalletBalance,
+    balanceAsset: {
+      ...oldWalletBalance.balanceAsset,
+      free: nativeTokenNewBalance,
+    },
     assets: assetsUpdated,
     existentialDeposit: existentialDeposit.toHuman(),
   };
@@ -224,13 +226,8 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
 ) => {
   const { data: balance } = await api.query.system.account(walletAddress);
   const tokenMetadata = api.registry.getChainProperties();
-  const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman();
-  const ss58Format = tokenMetadata?.ss58Format.toHuman();
-  const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman();
-  const nativeTokenNewBalance = formatBalance(balance?.free.toString(), {
-    withUnit: tokenSymbol as string,
-    withSi: false,
-  });
+  const tokenDecimals = tokenMetadata?.tokenDecimals?.toHuman()?.toString() as string;
+  const nativeTokenNewBalance = formatDecimalsFromToken(balance?.free.toString() || "0", tokenDecimals) || "0";
 
   const tokenAssetA = await api.query.assets.account(assetAId, walletAddress);
   const tokenAssetB = await api.query.assets.account(assetBId, walletAddress);
@@ -267,10 +264,11 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
   }
 
   const updatedTokensInfo = {
-    balance: nativeTokenNewBalance,
-    ss58Format,
-    tokenDecimals: Array.isArray(tokenDecimals) ? tokenDecimals?.[0] : "",
-    tokenSymbol: Array.isArray(tokenSymbol) ? tokenSymbol?.[0] : "",
+    ...oldWalletBalance,
+    balanceAsset: {
+      ...oldWalletBalance.balanceAsset,
+      free: nativeTokenNewBalance,
+    },
     assets: assetsUpdated,
   };
 
@@ -352,18 +350,20 @@ export const updateWalletMetadata = async (api: ApiPromise, account: WalletAccou
 };
 
 export const connectWalletAndFetchBalance = async (
-  dispatch: Dispatch<WalletAction | PoolAction>,
-  api: any,
+  dispatch: Dispatch<WalletAction | PoolAction | CrosschainAction>,
+  api: ApiPromise,
+  relayApi: ApiPromise,
   account: WalletAccount
 ) => {
-  dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
+  dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
     await wallet?.enable("DOT-ACP");
   }
   LocalStorage.set("wallet-connected", account);
+  dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   try {
-    await setTokenBalance(dispatch, api, account);
+    await setTokenBalance(dispatch, api, relayApi, account);
   } catch (error) {
     dotAcpToast.error(`Wallet connection error: ${error}`);
   }
@@ -379,52 +379,20 @@ export const connectWalletAndFetchBalance = async (
  *
  */
 
-export const fetchNativeTokenBalances = async (
-  address: string,
-  tokenDecimals: string,
-  api?: ApiPromise,
-  rpcUrl?: string
-) => {
-  if (!address) return;
-  if (!api && rpcUrl) {
-    const { ApiPromise, WsProvider } = await import("@polkadot/api");
-
-    try {
-      const provider = new WsProvider(rpcUrl);
-      const api = await ApiPromise.create({ provider });
-
-      const {
-        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
-      } = await api.query.system.account(address);
-
-      await provider.disconnect();
-
-      return {
-        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
-        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
-        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
-        chainName: api.runtimeChain.toString(),
-      };
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-      return undefined;
-    }
-  } else if (api) {
-    try {
-      const {
-        data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
-      } = await api.query.system.account(address);
-      return {
-        free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
-        reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
-        frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
-        chainName: api.runtimeChain.toString(),
-      };
-    } catch (error) {
-      console.error("Error fetching balance:", error);
-      return undefined;
-    }
-  } else {
+export const fetchNativeTokenBalances = async (address: string, tokenDecimals: string, api: ApiPromise) => {
+  if (!address && !api) return;
+  try {
+    const {
+      data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
+    } = await api.query.system.account(address);
+    return {
+      free: formatDecimalsFromToken(currentBalance.toString(), tokenDecimals),
+      reserved: formatDecimalsFromToken(currentReserved.toString(), tokenDecimals),
+      frozen: formatDecimalsFromToken(currentFrozen.toString(), tokenDecimals),
+      chainName: api.runtimeChain.toString(),
+    };
+  } catch (error) {
+    console.error("Error fetching balance:", error);
     return undefined;
   }
 };
@@ -435,14 +403,13 @@ export const fetchNativeTokenBalances = async (
  * @param address - The address to fetch the balance for.
  * @param tokenBalancesDecimals - The number of decimals for token balances.
  * @param setSelectedChain - A function to update the state with the fetched chain and balance information.
- * @param rpcUrl - The RPC URL of the chain to connect to.
  */
 
-export const fetchRelayBalance = async (address: string, tokenBalancesDecimals: string, rpcUrl: string) => {
+export const fetchChainBalance = async (address: string, tokenBalancesDecimals: string, api: ApiPromise) => {
   try {
     if (!address) return;
 
-    const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, undefined, rpcUrl);
+    const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, api);
 
     if (!data) {
       return {
@@ -470,49 +437,5 @@ export const fetchRelayBalance = async (address: string, tokenBalancesDecimals: 
   } catch (error) {
     console.error("Error fetching relay balance:", error);
     return null; // Return null or handle the error appropriately
-  }
-};
-
-/**
- * Fetches and updates the chain information for the Asset Hub.
- * This function is used to determine and set the current active chain's name and type.
- *
- * @param api - The ApiPromise instance used to query blockchain data. It can be null, indicating no API instance is available.
- * @param setSelectedChain - A function to update the state with the fetched chain information. This function modifies the 'chainB' part of the state to reflect the current chain's details.
- */
-
-export const fetchAssetHubBalance = async (api: ApiPromise | null, address: string, tokenBalancesDecimals: string) => {
-  if (!api) return;
-
-  const chainInfo = await api.rpc.system.chain();
-  const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, api, undefined);
-
-  const chainName =
-    chainInfo.indexOf("Asset Hub") !== -1 ? chainInfo.toString().replace(" Asset Hub", "") : chainInfo.toString();
-
-  if (!data || !chainName) {
-    return {
-      chainName: "",
-      chainType: "",
-      balances: {
-        free: "0",
-        reserved: "0",
-        frozen: "0",
-      },
-    };
-  }
-
-  try {
-    return {
-      chainName: chainName,
-      chainType: api.runtimeChain.toString().indexOf("Asset Hub") == 1 ? "Asset Hub" : "Relay Chain",
-      balances: {
-        free: data.free.toString(),
-        reserved: data.reserved.toString(),
-        frozen: data.frozen.toString(),
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching chain info:", error);
   }
 };

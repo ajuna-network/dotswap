@@ -1,47 +1,86 @@
 import AccordionAssetItem from "../../molecule/AccordionAssetItem";
 import AccordionList from "../../molecule/AccordionList";
 import { useAppContext } from "../../../state";
-import { useEffect, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { whitelist } from "../../../whitelist";
-import { fetchNativeTokenBalances } from "../../../services/polkadotWalletServices";
 import AssetItemChild from "../../molecule/AccordionAssetItem/AssetItemChild";
 import Modal from "../../atom/Modal";
 import SwapTokens from "../SwapTokens";
-import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { formatDecimalsFromToken, getSpotPrice } from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
 import { ActionType } from "../../../app/types/enum";
 import ConnectWallet from "../ConnectWallet";
 import { LottieLarge } from "../../../assets/loader";
 import LocalStorage from "../../../app/util/localStorage.ts";
+import { WalletAction } from "../../../store/wallet/interface.ts";
+import { t } from "i18next";
 
 const AssetsTable = () => {
   const { state, dispatch } = useAppContext();
 
-  const { rpcUrlRelay } = useGetNetwork();
-
-  const {
-    tokenBalances,
-    api,
-    selectedAccount,
-    assetLoading,
-    assetsList,
-    otherAssets,
-    nativeTokenSpotPrice,
-    walletBalanceUSD,
-  } = state;
+  const { tokenBalances, api, assetLoading, assetsList, otherAssets, walletBalanceUSD, selectedAccount } = state;
 
   const walletConnected = LocalStorage.get("wallet-connected");
 
-  const [totalBalance, setTotalBalance] = useState<number>(walletBalanceUSD);
   const [swapModalOpen, setSwapModalOpen] = useState(false);
   const [tokenId, setTokenId] = useState("");
 
+  const updateSpotPrice = async (tokens: AssetListToken[]) => {
+    const newTokens = await Promise.all(
+      tokens.map(async (token: AssetListToken) => {
+        if (token.tokenId === "1107") {
+          return token;
+        }
+        const price = await getSpotPrice(token.assetTokenMetadata.symbol).then((data: string | void) => {
+          if (typeof data === "string") {
+            return data;
+          }
+        });
+        return {
+          ...token,
+          spotPrice: price || "0",
+        };
+      })
+    );
+
+    return newTokens;
+  };
+
+  const calculateBalance = async (tokens: AssetListToken[], dispatch: Dispatch<WalletAction>) => {
+    let totalUsdBalance = 0;
+
+    tokens.map((token: AssetListToken) => {
+      if (token.tokenId === "1107") return token;
+
+      const formattedBalance =
+        token.tokenId === tokens[0].tokenId
+          ? token.tokenAsset.balance
+          : formatDecimalsFromToken(
+              Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
+              token.assetTokenMetadata.decimals as string
+            );
+
+      const totalBalance = Number(formattedBalance || "0") + Number(token.tokenAsset.relayBalance || "0");
+
+      const usdTotalBalance = Number(token.spotPrice || "0") * totalBalance;
+      totalUsdBalance += usdTotalBalance;
+
+      return token;
+    });
+
+    dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: totalUsdBalance });
+  };
+
   const setTokens = async () => {
     if (tokenBalances && tokenBalances.assets && api) {
-      const tokenSpotPrice = (await getSpotPrice(tokenBalances.tokenSymbol)) || "0";
-      dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: tokenSpotPrice });
-
+      const balance =
+        Number(tokenBalances.balanceAsset.free) +
+        Number(tokenBalances.balanceAsset.reserved) -
+        Number(tokenBalances.balanceAsset.frozen);
+      const relayBalance =
+        Number(tokenBalances.balanceRelay.free) +
+        Number(tokenBalances.balanceRelay.reserved) -
+        Number(tokenBalances.balanceRelay.frozen);
       const nativeToken: AssetListToken = {
         tokenId: "",
         assetTokenMetadata: {
@@ -50,22 +89,11 @@ const AssetsTable = () => {
           decimals: tokenBalances.tokenDecimals,
         },
         tokenAsset: {
-          balance: tokenBalances.balance.toString(),
-          relayBalance: "0",
+          balance: balance.toString(),
+          relayBalance: relayBalance.toString(),
         },
-        spotPrice: tokenSpotPrice || "0",
+        spotPrice: tokenBalances.spotPrice,
       };
-
-      const nativeTokenBalance = await fetchNativeTokenBalances(
-        selectedAccount.address,
-        tokenBalances.tokenDecimals,
-        undefined,
-        rpcUrlRelay
-      ).then((data: any) => {
-        return data?.free || "0";
-      });
-
-      nativeToken.tokenAsset.relayBalance = nativeTokenBalance;
 
       const otherTokens = tokenBalances.assets.filter(
         (token: AssetListToken) => token.tokenId !== nativeToken.tokenId && !whitelist.includes(token.tokenId)
@@ -75,48 +103,23 @@ const AssetsTable = () => {
         (token: AssetListToken) => token.tokenId === nativeToken.tokenId || whitelist.includes(token.tokenId)
       );
 
-      whitelistedTokens.map((token: AssetListToken) => {
-        getSpotPrice(token.assetTokenMetadata.symbol).then((data: string | void) => {
-          if (typeof data === "string") {
-            token.spotPrice = data;
-          }
-        });
-        return token;
-      });
+      const whitelistedTokensUpdated = await updateSpotPrice(whitelistedTokens);
 
-      const assetTokens = [nativeToken, ...whitelistedTokens];
+      const assetTokens = [nativeToken, ...whitelistedTokensUpdated];
 
-      let totalUsdBalance = 0;
+      await calculateBalance(assetTokens, dispatch);
 
-      assetTokens.map((token: AssetListToken) => {
-        if (token.tokenId === "1107") return token;
+      console.log(tokenBalances, "tokenBalances"); // TODO: remove
 
-        const formattedBalance =
-          token.tokenId === nativeToken.tokenId
-            ? token.tokenAsset.balance
-            : formatDecimalsFromToken(
-                Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
-                token.assetTokenMetadata.decimals as string
-              );
-
-        const totalBalance = parseFloat(formattedBalance || "0") + parseFloat(token.tokenAsset.relayBalance || "0");
-
-        const usdTotalBalance = parseFloat(token.spotPrice || "0") * totalBalance;
-        totalUsdBalance += usdTotalBalance;
-        return token;
-      });
-
-      setTotalBalance(totalUsdBalance);
-      dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: totalUsdBalance });
       dispatch({ type: ActionType.SET_ASSETS_LIST, payload: assetTokens });
       dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: otherTokens });
     }
   };
 
   useEffect(() => {
-    if (!tokenBalances) return;
+    if (!tokenBalances || !selectedAccount.address) return;
     setTokens();
-  }, [tokenBalances]);
+  }, [tokenBalances, selectedAccount.address]);
 
   const handleSwapModal = (tokenId: string) => {
     setTokenId(tokenId);
@@ -128,18 +131,18 @@ const AssetsTable = () => {
       <div className="flex w-full justify-between px-8 py-4">
         <div className="flex flex-col items-start justify-center">
           <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
-            My Total Assets
+            {t("dashboardPage.myTotalAssets")}
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
-            {!walletConnected ? "$0.00" : "$" + totalBalance.toFixed(2)}
+            {!walletConnected ? "$0.00" : "$" + walletBalanceUSD.toFixed(2)}
           </div>
         </div>
         <div className="flex flex-col items-start justify-center">
           <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
-            {tokenBalances?.tokenSymbol} Price
+            {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
-            {!walletConnected ? "$0.00" : "$" + parseFloat(nativeTokenSpotPrice).toFixed(2)}
+            {!walletConnected ? "$0.00" : "$" + parseFloat(tokenBalances?.spotPrice || "0").toFixed(2)}
           </div>
         </div>
       </div>
@@ -147,8 +150,7 @@ const AssetsTable = () => {
         <div className="flex w-full flex-1 flex-col gap-6">
           <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white">
             <div className="font-unbounded-variable text-medium font-normal text-dark-300">
-              {walletConnected ? "Loading assets..." : "To see your asset list first connect your wallet."}
-              {/* TODO: translate */}
+              {walletConnected ? t("dashboardPage.loadingAssets") : t("dashboardPage.connectWallet")}
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4">
               {walletConnected ? (
@@ -163,7 +165,7 @@ const AssetsTable = () => {
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          <AccordionList title="Asset List" nested alwaysOpen className="rounded-t-2xl bg-white">
+          <AccordionList title={t("dashboardPage.assetList")} nested alwaysOpen className="rounded-t-2xl bg-white">
             {assetsList &&
               assetsList.length > 0 &&
               assetsList.map((token: AssetListToken) => {
@@ -180,14 +182,11 @@ const AssetsTable = () => {
                         <AssetItemChild
                           tokenSymbol={token.assetTokenMetadata.symbol}
                           tokenSpotPrice={token.spotPrice}
-                          decimals={token.assetTokenMetadata.decimals}
                           isRelayChain
-                          rpcUrl={rpcUrlRelay}
                         />
                         <AssetItemChild
                           tokenSymbol={token.assetTokenMetadata.symbol}
                           tokenSpotPrice={token.spotPrice}
-                          decimals={token.assetTokenMetadata.decimals}
                         />
                       </div>
                     ) : null}
@@ -196,15 +195,15 @@ const AssetsTable = () => {
               })}
           </AccordionList>
 
-          <AccordionList nested title="Other Assets" className="rounded-b-2xl bg-white">
+          <AccordionList nested title={t("dashboardPage.otherAssets")} className="rounded-b-2xl bg-white">
             {assetLoading ? (
-              <div className="flex flex-col items-center justify-center py-8">Loading...</div>
+              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.loadingAssets")}</div>
             ) : otherAssets.length > 0 ? (
               otherAssets.map((token: AssetListToken) => {
                 return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-8">No other assets found</div>
+              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssets")}</div>
             )}
           </AccordionList>
         </div>

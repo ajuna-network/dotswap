@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: HOME_ROUTE,
-        element: <Navigate to={SWAP_ROUTE} />,
+        element: <Navigate to={DASHBOARD_ROUTE} />,
       },
 
       {

@@ -31,7 +31,17 @@ export type TokenProps = {
 };
 
 export type TokenBalanceData = {
-  balance: number;
+  balanceAsset: {
+    free: string;
+    reserved: string;
+    frozen: string;
+  };
+  balanceRelay: {
+    free: string;
+    reserved: string;
+    frozen: string;
+  };
+  spotPrice: string;
   ss58Format: AnyJson;
   existentialDeposit: string;
   tokenDecimals: string;
@@ -87,19 +97,9 @@ export type SelectedChain = {
   chainA: {
     chainName: string;
     chainType: string;
-    balances: {
-      free: string;
-      reserved: string;
-      frozen: string;
-    };
   };
   chainB: {
     chainName: string;
     chainType: string;
-    balances: {
-      free: string;
-      reserved: string;
-      frozen: string;
-    };
   };
 };

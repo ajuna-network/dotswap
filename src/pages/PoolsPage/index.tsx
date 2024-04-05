@@ -6,21 +6,12 @@ import TokenIcon from "../../components/atom/TokenIcon";
 import { LottieLarge } from "../../assets/loader";
 import { useAppContext } from "../../state";
 import PoolDataCard from "../../components/molecule/PoolDataCard/PoolDataCard";
-import { createPoolCardsArray } from "../../services/poolServices";
 
 const PoolsPage = () => {
-  const { state, dispatch } = useAppContext();
-  const { selectedAccount, pools, poolsCards, api, tokenBalances } = state;
+  const { state } = useAppContext();
+  const { selectedAccount, pools, poolsCards } = state;
 
   const [isPoolsLoading, setPoolsIsLoading] = useState<boolean>(selectedAccount ? true : false);
-
-  useEffect(() => {
-    const updatePoolsCards = async () => {
-      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
-    };
-
-    updatePoolsCards().then();
-  }, [pools, selectedAccount, tokenBalances]);
 
   useEffect(() => {
     if (poolsCards.length > 0) {
