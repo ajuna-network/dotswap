@@ -54,13 +54,13 @@ const AssetsTable = () => {
 
       const formattedBalance =
         token.tokenId === tokens[0].tokenId
-          ? token.tokenAsset.balance
+          ? token.tokenAsset.totalBalance
           : formatDecimalsFromToken(
               Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
               token.assetTokenMetadata.decimals as string
             );
 
-      const totalBalance = Number(formattedBalance || "0") + Number(token.tokenAsset.relayBalance || "0");
+      const totalBalance = Number(formattedBalance || "0");
 
       const usdTotalBalance = Number(token.spotPrice || "0") * totalBalance;
       totalUsdBalance += usdTotalBalance;
