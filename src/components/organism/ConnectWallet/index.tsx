@@ -140,7 +140,7 @@ const ConnectWallet = () => {
 
       <SelectAccountModal
         open={selectAccountModalOpen}
-        title="Account"
+        title={t("wallet.account")}
         onClose={() => setSelectAccountModalOpen(false)}
         walletAccounts={accounts}
         handleConnect={handleConnect}
