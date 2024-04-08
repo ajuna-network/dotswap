@@ -39,7 +39,7 @@ dependencies:
     specifier: ^10.12.1
     version: 10.12.6
   '@polkadot/types-known':
-    specifier: ^10.12.6
+    specifier: ^10.12.1
     version: 10.12.6
   '@polkadot/util':
     specifier: ^12.6.2
