@@ -54,13 +54,13 @@ const AssetsTable = () => {
 
       const formattedBalance =
         token.tokenId === tokens[0].tokenId
-          ? token.tokenAsset.balance
+          ? token.tokenAsset.totalBalance
           : formatDecimalsFromToken(
               Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
               token.assetTokenMetadata.decimals as string
             );
 
-      const totalBalance = Number(formattedBalance || "0") + Number(token.tokenAsset.relayBalance || "0");
+      const totalBalance = Number(formattedBalance || "0");
 
       const usdTotalBalance = Number(token.spotPrice || "0") * totalBalance;
       totalUsdBalance += usdTotalBalance;
@@ -73,14 +73,13 @@ const AssetsTable = () => {
 
   const setTokens = async () => {
     if (tokenBalances && tokenBalances.assets && api) {
-      const balance =
+      const balance = Number(tokenBalances.balanceAsset.free) - Number(tokenBalances.balanceAsset.frozen);
+      const relayBalance = Number(tokenBalances.balanceRelay.free) - Number(tokenBalances.balanceRelay.frozen);
+      const totalBalance =
         Number(tokenBalances.balanceAsset.free) +
-        Number(tokenBalances.balanceAsset.reserved) -
-        Number(tokenBalances.balanceAsset.frozen);
-      const relayBalance =
         Number(tokenBalances.balanceRelay.free) +
-        Number(tokenBalances.balanceRelay.reserved) -
-        Number(tokenBalances.balanceRelay.frozen);
+        Number(tokenBalances.balanceAsset.reserved) +
+        Number(tokenBalances.balanceRelay.reserved);
       const nativeToken: AssetListToken = {
         tokenId: "",
         assetTokenMetadata: {
@@ -91,6 +90,7 @@ const AssetsTable = () => {
         tokenAsset: {
           balance: balance.toString(),
           relayBalance: relayBalance.toString(),
+          totalBalance: totalBalance.toString(),
         },
         spotPrice: tokenBalances.spotPrice,
       };
@@ -108,8 +108,6 @@ const AssetsTable = () => {
       const assetTokens = [nativeToken, ...whitelistedTokensUpdated];
 
       await calculateBalance(assetTokens, dispatch);
-
-      console.log(tokenBalances, "tokenBalances"); // TODO: remove
 
       dispatch({ type: ActionType.SET_ASSETS_LIST, payload: assetTokens });
       dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: otherTokens });

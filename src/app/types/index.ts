@@ -59,6 +59,7 @@ export type AssetListToken = {
   tokenAsset: {
     balance: string;
     relayBalance: string;
+    totalBalance: string;
   };
   spotPrice: string;
 };

@@ -48,18 +48,17 @@ const AccordionAssetItem = ({
     setCrossChainModalOpen(!crossChainModalOpen);
   };
 
-  const formattedBalance =
+  const totalBalance =
     token.tokenId === ""
-      ? token.tokenAsset.balance
+      ? token.tokenAsset.totalBalance
       : formatDecimalsFromToken(
           Number(token.tokenAsset.balance?.replace(/[, ]/g, "")),
           token.assetTokenMetadata.decimals as string
         ) || "0";
 
-  const totalBalance = parseFloat(formattedBalance) + parseFloat(token.tokenAsset.relayBalance || "0");
-  const formattedTotalBalance = token.tokenId !== "" ? totalBalance : totalBalance.toFixed(2);
+  const formattedTotalBalance = token.tokenId !== "" ? totalBalance : Number(totalBalance).toFixed(2);
 
-  const usdTotalBalance = (parseFloat(token.spotPrice) * totalBalance).toFixed(2);
+  const usdTotalBalance = (parseFloat(token.spotPrice) * parseFloat(totalBalance)).toFixed(2);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -113,7 +112,7 @@ const AccordionAssetItem = ({
                 {t("assetItem.total")}
               </div>
               <div className="font-titillium-web text-base font-semibold">
-                {totalBalance && totalBalance !== 0
+                {totalBalance && totalBalance !== "0"
                   ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
                   : "0"}
                 {token.spotPrice ? " ($" + usdTotalBalance + ")" : ""}
