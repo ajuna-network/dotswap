@@ -25,7 +25,7 @@ export const setupPolkadotApi = async (
 
     const api = stateApi || new ApiPromise({ provider });
     await api.isReadyOrError;
-
+    //comment
     return { provider, api };
   } catch (error) {
     console.error("Failed to connect to API:", error);
