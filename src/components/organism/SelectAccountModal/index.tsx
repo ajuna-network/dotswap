@@ -8,6 +8,7 @@ import { ActionType } from "../../../app/types/enum";
 import { reduceAddress } from "../../../app/util/helper";
 import InfoMessage from "../../atom/InfoMessage/index.tsx";
 import Identicon from "@polkadot/react-identicon";
+import { t } from "i18next";
 
 interface SelectAccountModalProps {
   open: boolean;
@@ -37,10 +38,10 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
     }
   }, [accounts, selectedAccount]);
 
-  const [infoModal, setInfoModal] = useState(true);
+  const [infoMessage, setInfoMessage] = useState(true);
 
   const handleClose = () => {
-    setInfoModal(false);
+    setInfoMessage(false);
   };
 
   const handleAccountClick = (account: WalletAccount, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -54,7 +55,7 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
       <div className="flex min-w-[450px] flex-col gap-1 py-7">
-        <div className="flex w-full items-start justify-start text-medium">Select Account</div>
+        <div className="flex w-full items-start justify-start text-medium">{t("wallet.selectAccount")}</div>
         {accounts?.map((account: WalletAccount, index: any) => {
           return (
             <div key={index} className="flex flex-col rounded-lg">
@@ -93,10 +94,10 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
           );
         })}
       </div>
-      {infoModal && (
+      {infoMessage && (
         <InfoMessage
-          title={"Need to see all your accounts?"}
-          message="Head over to your wallet and customize which accounts can access DEDSwap."
+          title={t("wallet.infoMessage.title")}
+          message={t("wallet.infoMessage.description")}
           handleClose={handleClose}
         />
       )}

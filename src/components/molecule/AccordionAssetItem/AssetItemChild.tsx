@@ -45,11 +45,11 @@ const AssetItemChild = ({
     const balances = !isRelayChain ? tokenBalances.balanceAsset : tokenBalances.balanceRelay;
     const chainName = !isRelayChain ? assetHub.chainName + " " + assetHub.chainType : relayChain.chainName;
 
-    const floatFreeTokenBalance = Number(balances.free) - Number(balances.frozen);
+    const floatFreeTokenBalance = Number(balances?.free) - Number(balances?.frozen);
     const floatUsdFreeTokenBalance = floatFreeTokenBalance * Number(tokenSpotPrice);
-    const floatReservedTokenBalance = Number(balances.reserved);
+    const floatReservedTokenBalance = Number(balances?.reserved);
     const floatUsdReservedTokenBalance = floatReservedTokenBalance * Number(tokenSpotPrice);
-    const floatLockedTokenBalance = Number(balances.frozen);
+    const floatLockedTokenBalance = Number(balances?.frozen);
     const floatUsdLockedTokenBalance = floatLockedTokenBalance * Number(tokenSpotPrice);
 
     setBalances({

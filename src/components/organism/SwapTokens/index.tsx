@@ -500,7 +500,12 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       }
       if (
         selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
-        tokenADecimal.gt(selectedTokens.tokenA.tokenBalance)
+        tokenADecimal.gt(
+          formatDecimalsFromToken(
+            selectedTokens.tokenA.tokenBalance.replace(/[, ]/g, ""),
+            selectedTokens.tokenA.decimals
+          )
+        )
       ) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokens.tokenA.tokenSymbol }),
@@ -856,7 +861,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   }): TransactionValues => {
     const priceCalcType = PriceCalcType.NativeFromAsset;
 
-    const valueA = new Decimal(selectedTokens.tokenA.tokenBalance.replace(/[, ]/g, ""))
+    const valueA = new Decimal(selectedTokens.tokenA.tokenBalance.replace(/[, ]/g, "") || 0)
       .minus(assetTokenMinBalance) // TODO: substract this later if it is required, eg after calculation
       .toFixed();
     const formattedValueA = formatDecimalsFromToken(valueA, selectedTokens.tokenA.decimals);

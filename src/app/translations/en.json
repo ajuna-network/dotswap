@@ -84,7 +84,13 @@
   },
   "wallet": {
     "notConnected": "Not connected",
-    "noWalletFound": "No wallet found!"
+    "noWalletFound": "No wallet found!",
+    "account": "Account",
+    "selectAccount": "Select Account",
+    "infoMessage": {
+        "title": "Need to see all your accounts?",
+        "description": "Head over to your wallet and customize which accounts can access DOTSwap."
+    }
   },
   "destinationWalletAddress": {
     "destination": "Destination",
