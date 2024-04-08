@@ -29,12 +29,19 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
 }) => {
   const { state } = useAppContext();
 
-  const { crosschainExactTokenAmount, crosschainOriginChainFee, crosschainDestinationChainFee } = state;
+  const {
+    crosschainExactTokenAmount,
+    crosschainOriginChainFee,
+    crosschainDestinationChainFee,
+    messageQueueProcessedFee,
+  } = state;
 
   const destinationBalanceAfter = (
     parseFloat(destinationBalance) +
     parseFloat(crosschainExactTokenAmount) -
-    parseFloat(crosschainDestinationChainFee)
+    parseFloat(
+      destinationChainName === "Asset Hub" ? messageQueueProcessedFee.crossOut : messageQueueProcessedFee.crossIn
+    )
   ).toFixed(6);
 
   return (

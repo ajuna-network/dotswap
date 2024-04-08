@@ -13,6 +13,10 @@ export interface CrosschainState {
   crosschainExactTokenAmount: string;
   crosschainDestinationWalletAddress: string;
   crosschainExtrinsic: CrosschainExtrinsic;
+  messageQueueProcessedFee: {
+    crossIn: string;
+    crossOut: string;
+  };
 }
 
 export type CrosschainAction =
@@ -23,4 +27,5 @@ export type CrosschainAction =
   | { type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT; payload: string }
   | { type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN; payload: SelectedChain }
   | { type: ActionType.SET_CROSSCHAIN_DESTINATION_WALLET_ADDRESS; payload: string }
-  | { type: ActionType.SET_CROSSCHAIN_EXTRINSIC; payload: CrosschainExtrinsic };
+  | { type: ActionType.SET_CROSSCHAIN_EXTRINSIC; payload: CrosschainExtrinsic }
+  | { type: ActionType.SET_MESSAGE_QUEUE_PROCESSED_FEE; payload: { crossIn: string; crossOut: string } };

@@ -308,13 +308,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
   const getCrosschainButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(availableBalanceA);
+    const tokenBalanceDecimal = new Decimal(availableBalanceA)
+      .minus(Number(crosschainOriginChainFee))
+      .minus(Number(crosschainDestinationChainFee));
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
         return { label: t("button.selectToken"), disabled: true };
       }
-      if (tokenDecimals.lte(0) || crosschainExactTokenAmount === "") {
+      if (tokenDecimals.lte(0) || crosschainExactTokenAmount === "" || crosschainExactTokenAmount === "0") {
         return { label: t("button.enterAmount"), disabled: true };
       }
       if (
@@ -378,6 +380,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainExactTokenAmount,
     crosschainSelectedChain.chainA.chainType,
     crosschainLoading,
+    selectedTokenValue.tokenValue,
+    crosschainSelectedChain,
   ]);
 
   useEffect(() => {
