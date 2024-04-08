@@ -14,6 +14,7 @@ import { LottieLarge } from "../../../assets/loader";
 import LocalStorage from "../../../app/util/localStorage.ts";
 import { WalletAction } from "../../../store/wallet/interface.ts";
 import { t } from "i18next";
+import Decimal from "decimal.js";
 
 const AssetsTable = () => {
   const { state, dispatch } = useAppContext();
@@ -62,7 +63,8 @@ const AssetsTable = () => {
 
       const totalBalance = Number(formattedBalance || "0");
 
-      const usdTotalBalance = Number(token.spotPrice || "0") * totalBalance;
+      const usdTotalBalance = new Decimal(token.spotPrice || "0").times(totalBalance).toNumber();
+
       totalUsdBalance += usdTotalBalance;
 
       return token;
@@ -73,13 +75,12 @@ const AssetsTable = () => {
 
   const setTokens = async () => {
     if (tokenBalances && tokenBalances.assets && api) {
-      const balance = Number(tokenBalances.balanceAsset.free) - Number(tokenBalances.balanceAsset.frozen);
-      const relayBalance = Number(tokenBalances.balanceRelay.free) - Number(tokenBalances.balanceRelay.frozen);
-      const totalBalance =
-        Number(tokenBalances.balanceAsset.free) +
-        Number(tokenBalances.balanceRelay.free) +
-        Number(tokenBalances.balanceAsset.reserved) +
-        Number(tokenBalances.balanceRelay.reserved);
+      const balance = new Decimal(tokenBalances.balanceAsset.free).minus(tokenBalances.balanceAsset.frozen);
+      const relayBalance = new Decimal(tokenBalances.balanceRelay.free).minus(tokenBalances.balanceRelay.frozen);
+      const totalBalance = new Decimal(tokenBalances.balanceAsset.free)
+        .plus(tokenBalances.balanceRelay.free)
+        .plus(tokenBalances.balanceAsset.reserved)
+        .plus(tokenBalances.balanceRelay.reserved);
       const nativeToken: AssetListToken = {
         tokenId: "",
         assetTokenMetadata: {

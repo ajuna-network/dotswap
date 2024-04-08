@@ -3,6 +3,7 @@ import DotToken from "../../../assets/img/dot-token.svg?react";
 import AssetHubToken from "../../../assets/img/asset-hub.svg?react";
 import { useAppContext } from "../../../state";
 import { t } from "i18next";
+import Decimal from "decimal.js";
 
 type AssetItemChildProps = {
   isRelayChain?: boolean;
@@ -45,12 +46,15 @@ const AssetItemChild = ({
     const balances = !isRelayChain ? tokenBalances.balanceAsset : tokenBalances.balanceRelay;
     const chainName = !isRelayChain ? assetHub.chainName + " " + assetHub.chainType : relayChain.chainName;
 
-    const floatFreeTokenBalance = Number(balances?.free) - Number(balances?.frozen);
-    const floatUsdFreeTokenBalance = floatFreeTokenBalance * Number(tokenSpotPrice);
+    const floatFreeTokenBalance = new Decimal(balances?.free).minus(balances?.frozen).toNumber();
+    const floatUsdFreeTokenBalance = new Decimal(balances?.free)
+      .minus(balances?.frozen)
+      .times(tokenSpotPrice)
+      .toNumber();
     const floatReservedTokenBalance = Number(balances?.reserved);
-    const floatUsdReservedTokenBalance = floatReservedTokenBalance * Number(tokenSpotPrice);
+    const floatUsdReservedTokenBalance = new Decimal(balances?.reserved).times(tokenSpotPrice).toNumber();
     const floatLockedTokenBalance = Number(balances?.frozen);
-    const floatUsdLockedTokenBalance = floatLockedTokenBalance * Number(tokenSpotPrice);
+    const floatUsdLockedTokenBalance = new Decimal(balances?.frozen).times(tokenSpotPrice).toNumber();
 
     setBalances({
       freeTokenBalance: floatFreeTokenBalance,

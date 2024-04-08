@@ -171,7 +171,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       decimals: tokenBalances.tokenDecimals,
     },
     tokenAsset: {
-      balance: (Number(tokenBalances.balanceAsset?.free) - Number(tokenBalances.balanceAsset?.frozen)).toString(),
+      balance: new Decimal(tokenBalances.balanceAsset?.free).minus(tokenBalances.balanceAsset?.frozen).toString(),
     },
   };
 

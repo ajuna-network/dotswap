@@ -218,10 +218,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setOriginChainFee();
   }, [crosschainExtrinsic]);
 
-  const assetHubChainAvailableBalance =
-    Number(tokenBalances?.balanceAsset?.free) - Number(tokenBalances?.balanceAsset?.frozen);
-  const relayChainAvailableBalance =
-    Number(tokenBalances?.balanceRelay?.free) - Number(tokenBalances?.balanceRelay?.frozen);
+  const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free)).minus(
+    Number(tokenBalances?.balanceAsset?.frozen)
+  );
+  const relayChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceRelay?.free)).minus(
+    Number(tokenBalances?.balanceRelay?.frozen)
+  );
 
   const availableBalanceA =
     crosschainSelectedChain.chainA.chainType === "Asset Hub"
