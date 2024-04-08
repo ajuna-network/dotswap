@@ -562,7 +562,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               onSetTokenValue={(value) => {
                 handleTokenValueChange(value);
               }}
-              disabled={!selectedAccount || crosschainLoading || !tokenBalances?.assets}
+              disabled={
+                !selectedAccount || crosschainLoading || !tokenBalances?.assets || availablePoolToken.length < 2
+              }
               assetLoading={assetLoading}
               onMaxClick={() => {
                 handleMaxClick();

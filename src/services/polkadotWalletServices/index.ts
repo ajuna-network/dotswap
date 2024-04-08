@@ -3,7 +3,6 @@ import "@polkadot/api-augment";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
-import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
 import { formatDecimalsFromToken, getSpotPrice } from "../../app/util/helper";
@@ -15,29 +14,23 @@ import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
 import { CrosschainAction } from "../../store/crosschain/interface";
 
-export const setupPolkadotApi = async () => {
-  const { rpcUrl } = useGetNetwork();
-  const wsProvider = new WsProvider(rpcUrl);
-  const api = await ApiPromise.create({ provider: wsProvider });
-  const [chain, nodeName, nodeVersion] = await Promise.all([
-    api.rpc.system.chain(),
-    api.rpc.system.name(),
-    api.rpc.system.version(),
-  ]);
-  console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
-  return api;
-};
+export const setupPolkadotApi = async (
+  rpcUrl: string,
+  stateProvider: WsProvider | null,
+  stateApi: ApiPromise | null
+) => {
+  try {
+    const provider = stateProvider || new WsProvider(rpcUrl);
+    await provider.isReady;
 
-export const setupPolkadotRelayApi = async () => {
-  const { rpcUrlRelay } = useGetNetwork();
-  const api = await ApiPromise.create({ provider: new WsProvider(rpcUrlRelay) });
-  const [chain, nodeName, nodeVersion] = await Promise.all([
-    api.rpc.system.chain(),
-    api.rpc.system.name(),
-    api.rpc.system.version(),
-  ]);
-  console.log(`Successfully connected to ${chain} using ${nodeName} v${nodeVersion}`);
-  return api;
+    const api = stateApi || new ApiPromise({ provider });
+    await api.isReadyOrError;
+
+    return { provider, api };
+  } catch (error) {
+    console.error("Failed to connect to API:", error);
+    throw error; // Re-throwing the error for handling at a higher level if needed
+  }
 };
 
 export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromise, walletAddress: string) => {
