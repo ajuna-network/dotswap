@@ -109,8 +109,6 @@ const AssetsTable = () => {
 
       await calculateBalance(assetTokens, dispatch);
 
-      console.log(tokenBalances, "tokenBalances"); // TODO: remove
-
       dispatch({ type: ActionType.SET_ASSETS_LIST, payload: assetTokens });
       dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: otherTokens });
     }
