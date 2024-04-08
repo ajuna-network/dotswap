@@ -1,4 +1,4 @@
-import { ApiPromise } from "@polkadot/api";
+import { ApiPromise, WsProvider } from "@polkadot/api";
 import { InjectedExtension } from "@polkadot/extension-inject/types";
 import { ActionType } from "../../app/types/enum";
 import { TokenBalanceData, AssetListToken } from "../../app/types";
@@ -6,7 +6,9 @@ import type { WalletAccount } from "@talismn/connect-wallets";
 
 export interface WalletState {
   api: ApiPromise | null;
+  apiProvider: WsProvider | null;
   relayApi: ApiPromise | null;
+  relayProvider: WsProvider | null;
   accounts: WalletAccount[];
   extensions: InjectedExtension[];
   selectedAccount: WalletAccount;
@@ -23,7 +25,9 @@ export interface WalletState {
 
 export type WalletAction =
   | { type: ActionType.SET_API; payload: ApiPromise }
+  | { type: ActionType.SET_API_PROVIDER; payload: WsProvider }
   | { type: ActionType.SET_RELAY_API; payload: ApiPromise }
+  | { type: ActionType.SET_RELAY_PROVIDER; payload: WsProvider }
   | { type: ActionType.SET_ACCOUNTS; payload: WalletAccount[] }
   | { type: ActionType.SET_SELECTED_ACCOUNT; payload: WalletAccount }
   | { type: ActionType.SET_TOKEN_BALANCES; payload: TokenBalanceData }

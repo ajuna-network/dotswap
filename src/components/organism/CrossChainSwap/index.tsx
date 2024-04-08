@@ -218,10 +218,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setOriginChainFee();
   }, [crosschainExtrinsic]);
 
-  const assetHubChainAvailableBalance =
-    Number(tokenBalances?.balanceAsset?.free) - Number(tokenBalances?.balanceAsset?.frozen);
-  const relayChainAvailableBalance =
-    Number(tokenBalances?.balanceRelay?.free) - Number(tokenBalances?.balanceRelay?.frozen);
+  const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free)).minus(
+    Number(tokenBalances?.balanceAsset?.frozen)
+  );
+  const relayChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceRelay?.free)).minus(
+    Number(tokenBalances?.balanceRelay?.frozen)
+  );
 
   const availableBalanceA =
     crosschainSelectedChain.chainA.chainType === "Asset Hub"
@@ -306,13 +308,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
   const getCrosschainButtonProperties = useMemo(() => {
-    const tokenBalanceDecimal = new Decimal(availableBalanceA);
+    const tokenBalanceDecimal = new Decimal(availableBalanceA)
+      .minus(Number(crosschainOriginChainFee))
+      .minus(Number(crosschainDestinationChainFee));
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
         return { label: t("button.selectToken"), disabled: true };
       }
-      if (tokenDecimals.lte(0) || crosschainExactTokenAmount === "") {
+      if (tokenDecimals.lte(0) || crosschainExactTokenAmount === "" || crosschainExactTokenAmount === "0") {
         return { label: t("button.enterAmount"), disabled: true };
       }
       if (
@@ -376,6 +380,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainExactTokenAmount,
     crosschainSelectedChain.chainA.chainType,
     crosschainLoading,
+    selectedTokenValue.tokenValue,
+    crosschainSelectedChain,
   ]);
 
   useEffect(() => {
@@ -563,6 +569,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
                 handleTokenValueChange(value);
               }}
               disabled={!selectedAccount || crosschainLoading || !tokenBalances?.assets}
+              selectDisabled={true}
               assetLoading={assetLoading}
               onMaxClick={() => {
                 handleMaxClick();

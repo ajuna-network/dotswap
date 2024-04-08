@@ -19,6 +19,10 @@ export const initialCrosschainState: CrosschainState = {
   },
   crosschainDestinationWalletAddress: "",
   crosschainExtrinsic: null,
+  messageQueueProcessedFee: {
+    crossIn: "0.000007890210",
+    crossOut: "0.000007890210",
+  },
 };
 
 export const crosschainReducer = (state: CrosschainState, action: CrosschainAction): CrosschainState => {
@@ -39,6 +43,8 @@ export const crosschainReducer = (state: CrosschainState, action: CrosschainActi
       return { ...state, crosschainDestinationWalletAddress: action.payload };
     case ActionType.SET_CROSSCHAIN_EXTRINSIC:
       return { ...state, crosschainExtrinsic: action.payload };
+    case ActionType.SET_MESSAGE_QUEUE_PROCESSED_FEE:
+      return { ...state, messageQueueProcessedFee: action.payload };
     default:
       return state;
   }
