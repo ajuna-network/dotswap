@@ -249,7 +249,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       }
     }
   };
-  //
+
   const getPriceOfAssetTokenFromNativeToken = async (value: string, inputType: string) => {
     if (api) {
       const valueWithDecimals = formatInputTokenValue(
