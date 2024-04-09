@@ -4,26 +4,28 @@ import { checkWalletMetadata, updateWalletMetadata } from "../../../services/pol
 import { t } from "i18next";
 import useStateAndDispatch from "../../../app/hooks/useStateAndDispatch";
 import { useEffect, useState } from "react";
+import { WalletAccount } from "@talismn/connect-wallets";
 
-const UpdateMetadataModal = () => {
+const UpdateMetadataModal = ({ account }: { account: WalletAccount | undefined }) => {
   const [metadataModalOpen, setMetadataModalOpen] = useState({
     modalOpen: false,
     assetHubUpdateAvailable: false,
     relayChainUpdateAvailable: false,
   });
   const { state } = useStateAndDispatch();
-  const { api, relayApi, selectedAccount } = state;
+  const { api, relayApi } = state;
   const updateMetadata = async () => {
-    if (api && relayApi && selectedAccount) {
-      if (metadataModalOpen.assetHubUpdateAvailable) await updateWalletMetadata(api, selectedAccount);
-      if (metadataModalOpen.relayChainUpdateAvailable) await updateWalletMetadata(relayApi, selectedAccount);
+    if (api && relayApi && account) {
+      if (metadataModalOpen.assetHubUpdateAvailable) await updateWalletMetadata(api, account);
+      if (metadataModalOpen.relayChainUpdateAvailable) await updateWalletMetadata(relayApi, account);
       setMetadataModalOpen({ modalOpen: false, assetHubUpdateAvailable: false, relayChainUpdateAvailable: false });
     }
   };
   useEffect(() => {
+    if (!api || !relayApi || !account) return;
     const updatesCheck = async () => {
-      const assetHubUpdateAvailable = await checkWalletMetadata(api!, selectedAccount);
-      const relayChainUpdateAvailable = await checkWalletMetadata(relayApi!, selectedAccount);
+      const assetHubUpdateAvailable = await checkWalletMetadata(api!, account);
+      const relayChainUpdateAvailable = await checkWalletMetadata(relayApi!, account);
       if (assetHubUpdateAvailable || relayChainUpdateAvailable) {
         setMetadataModalOpen({
           modalOpen: true,
@@ -32,9 +34,8 @@ const UpdateMetadataModal = () => {
         });
       }
     };
-
     updatesCheck();
-  }, [api, relayApi, selectedAccount]);
+  }, [api, relayApi, account]);
 
   return (
     <Modal
