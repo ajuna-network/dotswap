@@ -63,10 +63,6 @@ type TokenValueProps = {
   tokenValue: string;
 };
 
-type TokenValueSlippageProps = {
-  tokenValue: string;
-};
-
 type TokenSelectedProps = {
   tokenSelected: TokenPosition;
 };
@@ -117,10 +113,10 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   const [inputEdited, setInputEdited] = useState<InputEditedProps>({ inputType: InputEditedType.exactIn });
   const [selectedTokenAValue, setSelectedTokenAValue] = useState<TokenValueProps>({ tokenValue: "" });
   const [selectedTokenBValue, setSelectedTokenBValue] = useState<TokenValueProps>({ tokenValue: "" });
-  const [tokenAValueForSwap, setTokenAValueForSwap] = useState<TokenValueSlippageProps>({
+  const [tokenAValueForSwap, setTokenAValueForSwap] = useState<TokenValueProps>({
     tokenValue: "0",
   });
-  const [tokenBValueForSwap, setTokenBValueForSwap] = useState<TokenValueSlippageProps>({
+  const [tokenBValueForSwap, setTokenBValueForSwap] = useState<TokenValueProps>({
     tokenValue: "0",
   });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
@@ -184,69 +180,39 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     updatePoolsCards().then();
   }, [pools, selectedAccount, tokenBalances]);
 
-  const handleSwapNativeForAssetGasFee = async () => {
-    const tokenA = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
-    const tokenB = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
-    if (api) {
-      if (inputEdited.inputType === InputEditedType.exactIn) {
-        await checkSwapNativeForAssetGasFee(
-          api,
-          selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol
-            ? selectedTokens.tokenB.tokenId
-            : selectedTokens.tokenA.tokenId,
-          selectedAccount,
-          tokenA,
-          tokenB,
-          false,
-          dispatch,
-          true
-        );
-      }
-      if (inputEdited.inputType === InputEditedType.exactOut) {
-        await checkSwapNativeForAssetGasFee(
-          api,
-          selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol
-            ? selectedTokens.tokenB.tokenId
-            : selectedTokens.tokenA.tokenId,
-          selectedAccount,
-          tokenA,
-          tokenB,
-          false,
-          dispatch,
-          false
-        );
-      }
-    }
-  };
+  const handleSwapGasFee = async (isNativeAssetSwap: boolean) => {
+    if (!api) return;
 
-  const handleSwapAssetForAssetGasFee = async () => {
     const tokenA = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
     const tokenB = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
-    if (api) {
-      if (inputEdited.inputType === InputEditedType.exactIn) {
-        await checkSwapAssetForAssetGasFee(
-          api,
-          selectedTokens.tokenA.tokenId,
-          selectedTokens.tokenB.tokenId,
-          selectedAccount,
-          tokenA,
-          tokenB,
-          dispatch,
-          true
-        );
-      }
-      if (inputEdited.inputType === InputEditedType.exactOut) {
-        await checkSwapAssetForAssetGasFee(
-          api,
-          selectedTokens.tokenA.tokenId,
-          selectedTokens.tokenB.tokenId,
-          selectedAccount,
-          tokenA,
-          tokenB,
-          dispatch,
-          false
-        );
-      }
+    const isExactIn = inputEdited.inputType === InputEditedType.exactIn;
+
+    if (isNativeAssetSwap) {
+      const assetTokenId =
+        selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol
+          ? selectedTokens.tokenB.tokenId
+          : selectedTokens.tokenA.tokenId;
+      await checkSwapNativeForAssetGasFee(
+        api,
+        assetTokenId,
+        selectedAccount,
+        tokenA,
+        tokenB,
+        false,
+        dispatch,
+        isExactIn
+      );
+    } else {
+      await checkSwapAssetForAssetGasFee(
+        api,
+        selectedTokens.tokenA.tokenId,
+        selectedTokens.tokenB.tokenId,
+        selectedAccount,
+        tokenA,
+        tokenB,
+        dispatch,
+        isExactIn
+      );
     }
   };
 
@@ -1101,23 +1067,21 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   }, [slippageValue]);
 
   useEffect(() => {
-    if (
-      (selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol ||
-        selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) &&
-      selectedTokenAValue.tokenValue !== "" &&
-      selectedTokenBValue.tokenValue !== ""
-    ) {
-      handleSwapNativeForAssetGasFee();
-    }
-    if (
+    const isNativeAssetSwap =
+      selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol ||
+      selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol;
+    const isAssetAssetSwap =
       selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
       selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol &&
       selectedTokens.tokenA.tokenSymbol !== "" &&
-      selectedTokens.tokenB.tokenSymbol !== "" &&
+      selectedTokens.tokenB.tokenSymbol !== "";
+
+    if (
+      (isNativeAssetSwap || isAssetAssetSwap) &&
       selectedTokenAValue.tokenValue !== "" &&
       selectedTokenBValue.tokenValue !== ""
     ) {
-      handleSwapAssetForAssetGasFee();
+      handleSwapGasFee(isNativeAssetSwap);
     }
     checkAssetTokenMinAmountToSwap();
     dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP, payload: false });
@@ -1125,6 +1089,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     selectedTokens.tokenA.tokenSymbol && selectedTokens.tokenB.tokenSymbol,
     tokenAValueForSwap.tokenValue && tokenBValueForSwap.tokenValue,
   ]);
+
   useEffect(() => {
     setIsMaxValueLessThenMinAmount(false);
     setIsTransactionTimeout(false);
