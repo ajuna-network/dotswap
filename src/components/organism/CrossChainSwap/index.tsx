@@ -154,8 +154,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     });
   }, [crosschainOriginChainFee]);
 
-  // In the event where the user has not selected a token, or if the input field is empty, we will create a crosschain extrinsic with a default value of 0.001
-  // This is to be able to calculate the origin chain fee, we must always have an extrinsic to query the payment info from the chain with the latest info
   const createExtrinsic = async () => {
     let extrinsic = null;
     if (
@@ -384,7 +382,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // This will calculate the max amount that can be transferred based on the available balance
   // And update the input field with the calculated amount after which the extrinsic will be created
   // and the origin chain fee will be calculated
-  // TODO: handle change in origin chain fee and reflect it in the max amount calculation
   const handleTokenValueChange = async (value: string, maxTriggered?: boolean) => {
     let payloadTokenValue = "";
     if (maxTriggered) {
@@ -416,7 +413,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleMaxClick = () => {
-    console.log("available balance a", availableBalanceA.toString());
     const maxAvailableAmount = availableBalanceA.toString();
     handleTokenValueChange(maxAvailableAmount, true);
   };

@@ -256,14 +256,17 @@ export const getCrossOutDestinationFee = () => {
 
 // function for calculating max amount for cross out
 // existential deposit for kusama relay chain is 0.000333333 KSM
+// xcm instructions buffer for cross out is 0.000371525 KSM
 // free balance - origin chain fee - destination chain fee - existential deposit
 // KSM has 12 decimal places, in the future we should probably make this dynamic
 export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFee: string) => {
+  const xcmInstructionsBuffer = new Decimal("0.000371525");
   const existentialDeposit = new Decimal("0.000333333");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
   return freeBalanceDecimal
+    .minus(xcmInstructionsBuffer)
     .minus(originChainFeeDecimal)
     .minus(existentialDeposit)
     .minus(destinationChainFeeDecimal)
@@ -272,6 +275,7 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 
 // function for calculating max amount for cross in
 // existential deposit for kusama asset hub is 0.000003333 KSM
+// xcm instructions buffer for cross in is 0.0004176614 KSM
 // free balance - origin chain fee - destination chain fee - existential deposit
 export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
   const xcmInstructionsBuffer = new Decimal("0.0004176614");

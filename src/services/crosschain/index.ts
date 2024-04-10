@@ -76,10 +76,7 @@ const recurseMaxAmount = async (
   api: ApiPromise,
   account: WalletAccount
 ): Promise<{ originFeeA: string; originFeeB: string; calculatedMaxAmount: string }> => {
-  console.log("tokenAmount", tokenAmount);
-  console.log(decimals);
   const tokenAmountDecimal = new Decimal(tokenAmount).times(Math.pow(10, parseInt(decimals))).toFixed();
-  console.log("tokenAmountDecimal", tokenAmountDecimal);
   let extrinsic, originFeeA, calculatedMaxAmount;
   if (crosschainTransactionType === CrosschainTransactionTypes.crossIn) {
     extrinsic = await createCrossInExtrinsic(api, tokenAmountDecimal, destinationAddress);
@@ -90,16 +87,12 @@ const recurseMaxAmount = async (
     originFeeA = await calculateOriginFee(account, extrinsic);
     calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA);
   }
-  console.log("originFeeA", originFeeA);
-  console.log("calculatedMaxAmount", calculatedMaxAmount);
   const calculatedMaxAmountDecimal = new Decimal(calculatedMaxAmount).times(Math.pow(10, parseInt(decimals))).toFixed();
-  console.log("calculatedMaxAmount", calculatedMaxAmountDecimal);
   const verifyingExtrinsic =
     crosschainTransactionType === CrosschainTransactionTypes.crossIn
       ? await createCrossInExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress)
       : await createCrossOutExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress);
   const originFeeB = await calculateOriginFee(account, verifyingExtrinsic);
-  console.log("originFeeB", originFeeB);
   return { originFeeA, originFeeB, calculatedMaxAmount };
 };
 
