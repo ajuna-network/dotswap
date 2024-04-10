@@ -419,8 +419,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleMaxClick = () => {
-    const maxAvailableAmount = availableBalanceA.toString();
-    handleTokenValueChange(maxAvailableAmount, true);
+    handleTokenValueChange(availableBalanceA.toString(), true);
   };
 
   const handleCrosschain = () => {

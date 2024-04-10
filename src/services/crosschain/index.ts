@@ -63,11 +63,6 @@ export const calculateCrosschainMaxAmount = async (
   return maxAmount;
 };
 
-// cross in additional fees for xcm instructions
-// 0.0001860629 +
-// 0.0002315985 =
-// 0.0004176614
-
 const recurseMaxAmount = async (
   tokenAmount: string,
   decimals: string,
