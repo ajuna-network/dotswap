@@ -41,6 +41,11 @@ button {
       @apply border border-black bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
     }
 
+    &-white-no-border {
+      @extend .btn-secondary;
+      @apply bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
+    }
+
     &-gray {
       @extend .btn-secondary;
       @apply border border-purple-100 bg-purple-100 text-black hover:border-purple-200 hover:bg-purple-200;

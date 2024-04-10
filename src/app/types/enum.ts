@@ -4,6 +4,7 @@ export const enum ButtonVariants {
   btnPrimaryGhostLg = "btn-primary-ghost-lg",
   btnPrimaryGhostSm = "btn-primary-ghost-sm",
   btnSecondaryWhite = "btn-secondary-white",
+  btnSecondaryWhiteNoBorder = "btn-secondary-white-no-border",
   btnSecondaryGray = "btn-secondary-gray",
   btnInteractivePink = "btn-interactive-pink",
   btnInteractiveGhost = "btn-interactive-ghost",
