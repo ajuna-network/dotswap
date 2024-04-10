@@ -39,7 +39,7 @@ export const setupPolkadotApi = async (
 
 export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromise, walletAddress: string) => {
   try {
-    // Fetch assets
+    // Fetch assets //
     const tokenMetadata = api.registry.getChainProperties();
     const allAssets = await api.query.assets.asset.entries();
 
