@@ -15,7 +15,6 @@ import { LottieMedium } from "../../../assets/loader";
 import DestinationWalletAddress from "../../molecule/DestinationWalletAddress";
 import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModal";
 import {
-  calculateMaxAmount,
   formatDecimalsFromToken,
   formatInputTokenValue,
   getCrossInDestinationFee,
@@ -25,6 +24,7 @@ import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
 import NotificationsModal from "../NotificationsModal";
 import {
+  calculateCrosschainMaxAmount,
   calculateOriginFee,
   createCrossInExtrinsic,
   createCrossOutExtrinsic,
@@ -158,48 +158,26 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // This is to be able to calculate the origin chain fee, we must always have an extrinsic to query the payment info from the chain with the latest info
   const createExtrinsic = async () => {
     let extrinsic = null;
-    if (!tooManyDecimalsError.isError && selectedToken.tokenBalance !== "" && selectedTokenValue.tokenValue !== "") {
-      if (selectedTokenValue.tokenValue === "" || selectedTokenValue.tokenValue === "0") {
-        extrinsic =
-          crosschainSelectedChain.chainA.chainType === "Asset Hub" && api
-            ? await createCrossInExtrinsic(
-                api,
-                formatInputTokenValue(availableBalanceA, selectedToken.decimals),
-                crosschainDestinationWalletAddress
-              )
-            : relayApi
-              ? await createCrossOutExtrinsic(
-                  relayApi,
-                  formatInputTokenValue(availableBalanceA, selectedToken.decimals),
-                  crosschainDestinationWalletAddress
-                )
-              : null;
-      } else {
-        extrinsic =
-          crosschainSelectedChain.chainA.chainType === "Asset Hub" && api
-            ? await createCrossInExtrinsic(
-                api,
+    if (
+      !tooManyDecimalsError.isError &&
+      selectedToken.tokenBalance !== "" &&
+      selectedTokenValue.tokenValue !== "" &&
+      selectedTokenValue.tokenValue !== "0"
+    ) {
+      extrinsic =
+        crosschainSelectedChain.chainA.chainType === "Asset Hub" && api
+          ? await createCrossInExtrinsic(
+              api,
+              formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
+              crosschainDestinationWalletAddress
+            )
+          : relayApi
+            ? await createCrossOutExtrinsic(
+                relayApi,
                 formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
                 crosschainDestinationWalletAddress
               )
-            : relayApi
-              ? await createCrossOutExtrinsic(
-                  relayApi,
-                  formatInputTokenValue(selectedTokenValue.tokenValue, selectedToken.decimals),
-                  crosschainDestinationWalletAddress
-                )
-              : null;
-      }
-    } else {
-      crosschainSelectedChain.chainA.chainType === "Asset Hub" && api
-        ? await createCrossInExtrinsic(api, formatInputTokenValue("0.001", "12"), crosschainDestinationWalletAddress)
-        : relayApi
-          ? await createCrossOutExtrinsic(
-              relayApi,
-              formatInputTokenValue("0.001", "12"),
-              crosschainDestinationWalletAddress
-            )
-          : null;
+            : null;
     }
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXTRINSIC, payload: extrinsic });
   };
@@ -408,18 +386,23 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // and the origin chain fee will be calculated
   // TODO: handle change in origin chain fee and reflect it in the max amount calculation
   const handleTokenValueChange = async (value: string, maxTriggered?: boolean) => {
-    const payloadTokenValue = maxTriggered
-      ? await tokenValue(
-          calculateMaxAmount(
-            availableBalanceB.toString(),
-            crosschainOriginChainFee
-              ? crosschainOriginChainFee
-              : crosschainSelectedChain.chainA.chainType === "AssetHub"
-                ? "0.000087322311"
-                : "0.00061047862"
-          )
+    let payloadTokenValue = "";
+    if (maxTriggered) {
+      payloadTokenValue = await tokenValue(
+        await calculateCrosschainMaxAmount(
+          value,
+          selectedToken.decimals,
+          crosschainSelectedChain.chainA.chainType === "Asset Hub"
+            ? CrosschainTransactionTypes.crossIn
+            : CrosschainTransactionTypes.crossOut,
+          crosschainDestinationWalletAddress,
+          crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+          selectedAccount
         )
-      : await tokenValue(value);
+      );
+    } else {
+      payloadTokenValue = await tokenValue(value);
+    }
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
 
     const destinationChainFee =
@@ -433,7 +416,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleMaxClick = () => {
-    handleTokenValueChange("0", true);
+    console.log("available balance a", availableBalanceA.toString());
+    const maxAvailableAmount = availableBalanceA.toString();
+    handleTokenValueChange(maxAvailableAmount, true);
   };
 
   const handleCrosschain = () => {
@@ -567,7 +552,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               onMaxClick={() => {
                 handleMaxClick();
               }}
-              maxVisible={false}
+              maxVisible={true}
             />
           </div>
           <DestinationWalletAddress

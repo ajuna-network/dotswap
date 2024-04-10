@@ -7,6 +7,7 @@ export const initialCrosschainState: CrosschainState = {
   crosschainDestinationChainFee: "",
   crosschainLoading: false,
   crosschainExactTokenAmount: "",
+  crosschainExactMaxTokenAmount: "",
   crosschainSelectedChain: {
     chainA: {
       chainName: "Kusama",
@@ -33,6 +34,8 @@ export const crosschainReducer = (state: CrosschainState, action: CrosschainActi
       return { ...state, crosschainLoading: action.payload };
     case ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT:
       return { ...state, crosschainExactTokenAmount: action.payload };
+    case ActionType.SET_CROSSCHAIN_EXACT_MAX_TOKEN_AMOUNT:
+      return { ...state, crosschainExactMaxTokenAmount: action.payload };
     case ActionType.SET_CROSSCHAIN_SELECTED_CHAIN:
       return { ...state, crosschainSelectedChain: action.payload };
     case ActionType.SET_CROSSCHAIN_DESTINATION_WALLET_ADDRESS:
