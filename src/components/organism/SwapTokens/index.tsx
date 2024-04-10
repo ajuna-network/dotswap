@@ -550,116 +550,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     }
   };
 
-  const handleSwap = async () => {
-    setReviewModalOpen(false);
-    if (waitingForTransaction) {
-      clearTimeout(waitingForTransaction);
-    }
-    setSwapSuccessfulReset(false);
-    setIsTransactionTimeout(false);
-    setIsMaxValueLessThenMinAmount(false);
-    if (api) {
-      const tokenA = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
-      const tokenB = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
-      if (selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol) {
-        if (selectedTokens.tokenB.tokenId) {
-          if (inputEdited.inputType === InputEditedType.exactIn) {
-            await performSwapNativeForAsset(
-              api,
-              selectedTokens.tokenB.tokenId,
-              selectedAccount,
-              tokenA,
-              tokenB,
-              selectedTokens.tokenA.decimals,
-              selectedTokens.tokenB.decimals,
-              false,
-              dispatch,
-              true
-            );
-          } else if (inputEdited.inputType === InputEditedType.exactOut) {
-            if (selectedTokens.tokenB.tokenId) {
-              await performSwapNativeForAsset(
-                api,
-                selectedTokens.tokenB.tokenId,
-                selectedAccount,
-                tokenA,
-                tokenB,
-                selectedTokens.tokenA.decimals,
-                selectedTokens.tokenB.decimals,
-                false,
-                dispatch,
-                false
-              );
-            }
-          }
-        }
-      } else if (selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) {
-        if (selectedTokens.tokenA.tokenId) {
-          if (inputEdited.inputType === InputEditedType.exactIn) {
-            await performSwapNativeForAsset(
-              api,
-              selectedTokens.tokenA.tokenId,
-              selectedAccount,
-              tokenB,
-              tokenA,
-              selectedTokens.tokenA.decimals,
-              selectedTokens.tokenB.decimals,
-              true,
-              dispatch,
-              true
-            );
-          } else if (inputEdited.inputType === InputEditedType.exactOut) {
-            await performSwapNativeForAsset(
-              api,
-              selectedTokens.tokenA.tokenId,
-              selectedAccount,
-              tokenB,
-              tokenA,
-              selectedTokens.tokenA.decimals,
-              selectedTokens.tokenB.decimals,
-              true,
-              dispatch,
-              false
-            );
-          }
-        }
-      } else if (
-        selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
-        selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol
-      ) {
-        if (selectedTokens.tokenA.tokenId && selectedTokens.tokenB.tokenId) {
-          if (inputEdited.inputType === InputEditedType.exactIn) {
-            await performSwapAssetForAsset(
-              api,
-              selectedTokens.tokenA.tokenId,
-              selectedTokens.tokenB.tokenId,
-              selectedAccount,
-              tokenA,
-              tokenB,
-              selectedTokens.tokenA.decimals,
-              selectedTokens.tokenB.decimals,
-              dispatch,
-              true
-            );
-          } else if (inputEdited.inputType === InputEditedType.exactOut) {
-            await performSwapAssetForAsset(
-              api,
-              selectedTokens.tokenA.tokenId,
-              selectedTokens.tokenB.tokenId,
-              selectedAccount,
-              tokenA,
-              tokenB,
-              selectedTokens.tokenA.decimals,
-              selectedTokens.tokenB.decimals,
-              dispatch,
-              false
-            );
-          }
-        }
-      }
-    }
-  };
-
   const getSwapTokenB = () => {
     const poolLiquidTokens: any = [nativeToken]
       .concat(poolsTokenMetadata as any)
@@ -675,6 +565,69 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       setAvailablePoolTokenB(poolLiquidTokens);
     }
     return poolLiquidTokens;
+  };
+
+  const handleSwap = async () => {
+    setReviewModalOpen(false);
+    waitingForTransaction && clearTimeout(waitingForTransaction);
+    setSwapSuccessfulReset(false);
+    setIsTransactionTimeout(false);
+    setIsMaxValueLessThenMinAmount(false);
+
+    if (!api) return;
+
+    const tokenAValue = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
+    const tokenBValue = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
+
+    const isExactIn = inputEdited.inputType === InputEditedType.exactIn;
+
+    const isNativeToAssetSwap =
+      selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol &&
+      selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol;
+    const isAssetToAssetSwap =
+      selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
+      selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol;
+
+    if (isNativeToAssetSwap) {
+      await performSwapNativeForAsset(
+        api,
+        selectedTokens.tokenB.tokenId,
+        selectedAccount,
+        tokenAValue,
+        tokenBValue,
+        selectedTokens.tokenA.decimals,
+        selectedTokens.tokenB.decimals,
+        false,
+        dispatch,
+        isExactIn
+      );
+    } else if (selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) {
+      await performSwapNativeForAsset(
+        api,
+        selectedTokens.tokenA.tokenId,
+        selectedAccount,
+        tokenBValue,
+        tokenAValue,
+        selectedTokens.tokenA.decimals,
+        selectedTokens.tokenB.decimals,
+        true,
+        dispatch,
+        isExactIn
+      );
+    } else if (isAssetToAssetSwap) {
+      await performSwapAssetForAsset(
+        api,
+        selectedTokens.tokenA.tokenId,
+        selectedTokens.tokenB.tokenId,
+        selectedAccount,
+        tokenAValue,
+        tokenBValue,
+        selectedTokens.tokenA.decimals,
+        selectedTokens.tokenB.decimals,
+        dispatch,
+        isExactIn
+      );
+    }
   };
 
   const fillTokenPairsAndOpenModal = (tokenInputSelected: TokenSelection) => {
