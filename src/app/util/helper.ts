@@ -249,7 +249,7 @@ export const getCrossInDestinationFee = () => {
 //
 // fees for Kusama Relay Chain -> AssetHubKusama
 // source chain fee: 0.00060714529 KSM
-// destination chain fee: 0.000119766667 KSM
+// destination chain fee: 0.001329999669 KSM
 export const getCrossOutDestinationFee = () => {
   return "0.001329999669";
 };
