@@ -171,7 +171,9 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       decimals: tokenBalances.tokenDecimals,
     },
     tokenAsset: {
-      balance: (Number(tokenBalances.balanceAsset?.free) - Number(tokenBalances.balanceAsset?.frozen)).toString(),
+      balance: new Decimal(tokenBalances.balanceAsset?.free || 0)
+        .minus(tokenBalances.balanceAsset?.frozen || 0)
+        .toString(),
     },
   };
 
@@ -1058,53 +1060,17 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     setSwitchTokensEnabled(true);
 
     setSelectedTokens({
-      tokenA: {
-        tokenSymbol: selectedTokenB.tokenSymbol,
-        tokenBalance: selectedTokenB.tokenBalance,
-        tokenId: selectedTokenB.tokenId,
-        decimals: selectedTokenB.decimals,
-      },
-      tokenB: {
-        tokenSymbol: selectedTokenA.tokenSymbol,
-        tokenBalance: selectedTokenA.tokenBalance,
-        tokenId: selectedTokenA.tokenId,
-        decimals: selectedTokenA.decimals,
-      },
+      tokenA: selectedTokenB,
+      tokenB: selectedTokenA,
     });
   };
 
   useEffect(() => {
-    if (switchTokensEnabled) {
-      if (inputEdited.inputType === InputEditedType.exactIn) {
-        tokenBValue(selectedTokenAValue.tokenValue);
-      } else if (inputEdited.inputType === InputEditedType.exactOut) {
-        tokenAValue(selectedTokenBValue.tokenValue);
-      }
-    } else {
-      if (
-        selectedTokenBValue?.tokenValue &&
-        tokenSelected.tokenSelected === TokenPosition.tokenA &&
-        parseFloat(selectedTokenBValue?.tokenValue) > 0
-      ) {
-        tokenBValue(selectedTokenBValue.tokenValue);
-      }
-
-      if (
-        selectedTokenAValue?.tokenValue &&
-        tokenSelected.tokenSelected === TokenPosition.tokenB &&
-        tokenADecimal.gt(0)
-      ) {
-        tokenAValue(selectedTokenAValue.tokenValue);
-      }
+    if (switchTokensEnabled && tokenSelected) {
+      tokenBValue(selectedTokenAValue.tokenValue);
+      tokenAValue(selectedTokenBValue.tokenValue);
     }
 
-    if (
-      selectedTokenAValue?.tokenValue &&
-      tokenSelected.tokenSelected === TokenPosition.tokenB &&
-      tokenADecimal.gt(0)
-    ) {
-      tokenAValue(selectedTokenAValue.tokenValue);
-    }
     return () => {
       setSwitchTokensEnabled(false);
     };

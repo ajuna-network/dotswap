@@ -4,7 +4,9 @@ import type { WalletAccount } from "@talismn/connect-wallets";
 
 export const initialWalletState: WalletState = {
   api: null,
+  apiProvider: null,
   relayApi: null,
+  relayProvider: null,
   accounts: [],
   selectedAccount: {} as WalletAccount,
   tokenBalances: null,
@@ -23,8 +25,12 @@ export const walletReducer = (state: WalletState, action: WalletAction): WalletS
   switch (action.type) {
     case ActionType.SET_API:
       return { ...state, api: action.payload };
+    case ActionType.SET_API_PROVIDER:
+      return { ...state, apiProvider: action.payload };
     case ActionType.SET_RELAY_API:
       return { ...state, relayApi: action.payload };
+    case ActionType.SET_RELAY_PROVIDER:
+      return { ...state, relayProvider: action.payload };
     case ActionType.SET_ACCOUNTS:
       return { ...state, accounts: action.payload };
     case ActionType.SET_SELECTED_ACCOUNT:

@@ -12,13 +12,14 @@ import {
   crosschainReducer,
   initialNotificationState,
 } from "../../store";
-import { setupPolkadotRelayApi, setupPolkadotApi } from "../../services/polkadotWalletServices";
-import { ActionType } from "../types/enum";
+import { setupPolkadotApi } from "../../services/polkadotWalletServices";
 import dotAcpToast from "../util/toast";
 import { SwapAction } from "../../store/swap/interface";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { notificationReducer } from "../../store/notifications";
 import { NotificationAction } from "../../store/notifications/interface";
+import useGetNetwork from "./useGetNetwork";
+import { ActionType } from "../../app/types/enum";
 
 const useStateAndDispatch = () => {
   const [walletState, dispatchWallet] = useReducer(walletReducer, initialWalletState);
@@ -39,10 +40,16 @@ const useStateAndDispatch = () => {
 
   useEffect(() => {
     const callApiSetup = async () => {
+      const { rpcUrl, rpcUrlRelay } = useGetNetwork();
       try {
-        const [api, relayApi] = await Promise.all([setupPolkadotApi(), setupPolkadotRelayApi()]);
-        dispatch({ type: ActionType.SET_RELAY_API, payload: relayApi });
-        dispatch({ type: ActionType.SET_API, payload: api });
+        const [asset, relay] = await Promise.all([
+          setupPolkadotApi(rpcUrl, state.apiProvider, state.api),
+          setupPolkadotApi(rpcUrlRelay, state.relayProvider, state.relayApi),
+        ]);
+        dispatch({ type: ActionType.SET_API, payload: asset.api });
+        dispatch({ type: ActionType.SET_RELAY_API, payload: relay.api });
+        dispatch({ type: ActionType.SET_API_PROVIDER, payload: asset.provider });
+        dispatch({ type: ActionType.SET_RELAY_PROVIDER, payload: relay.provider });
       } catch (error) {
         dotAcpToast.error(`Error setting up Polkadot API: ${error}`);
       }

@@ -430,7 +430,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         nativeTokenSymbol: tokenBalances.tokenSymbol,
         nativeTokenDecimals: tokenBalances.tokenDecimals,
         tokenId: "",
-        tokenBalance: (Number(tokenBalances.balanceAsset.free) - Number(tokenBalances.balanceAsset.frozen)).toString(),
+        tokenBalance: new Decimal(tokenBalances.balanceAsset.free).minus(tokenBalances.balanceAsset.frozen).toString(),
       });
     }
   }, [tokenBalances]);

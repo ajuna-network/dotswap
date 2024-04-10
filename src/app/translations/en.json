@@ -193,8 +193,12 @@
     "route": "Route"
   },
   "mobilePage": {
-    "title": "DOT ACP",
-    "subtitle": "This application is not optimized for mobile devices. Please use a desktop browser."
+    "title": "Coming soon to mobile! Stay tuned for updates.",
+    "subtitle": "This experience is currently optimized for desktop browsers. For the best experience, please visit us on your computer."
+  },
+  "offlinePage": {
+    "title": "Whoops!",
+    "subtitle": "No internet connection was found. Check your connection or try again."
   },
   "footer": {
     "poweredBy": "Powered by",
