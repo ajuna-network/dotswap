@@ -29,14 +29,10 @@ import { LottieMedium } from "../../../assets/loader";
 import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
 import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
 import {
-  checkSwapAssetForAssetExactInGasFee,
-  checkSwapAssetForAssetExactOutGasFee,
-  checkSwapNativeForAssetExactInGasFee,
-  checkSwapNativeForAssetExactOutGasFee,
-  swapAssetForAssetExactIn,
-  swapAssetForAssetExactOut,
-  swapNativeForAssetExactIn,
-  swapNativeForAssetExactOut,
+  checkSwapAssetForAssetGasFee,
+  checkSwapNativeForAssetGasFee,
+  performSwapAssetForAsset,
+  performSwapNativeForAsset,
 } from "../../../services/swapServices";
 import {
   PriceCalcType,
@@ -193,7 +189,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     const tokenB = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
     if (api) {
       if (inputEdited.inputType === InputEditedType.exactIn) {
-        await checkSwapNativeForAssetExactInGasFee(
+        await checkSwapNativeForAssetGasFee(
           api,
           selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol
             ? selectedTokens.tokenB.tokenId
@@ -202,11 +198,12 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenA,
           tokenB,
           false,
-          dispatch
+          dispatch,
+          true
         );
       }
       if (inputEdited.inputType === InputEditedType.exactOut) {
-        await checkSwapNativeForAssetExactOutGasFee(
+        await checkSwapNativeForAssetGasFee(
           api,
           selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol
             ? selectedTokens.tokenB.tokenId
@@ -215,7 +212,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenA,
           tokenB,
           false,
-          dispatch
+          dispatch,
+          false
         );
       }
     }
@@ -226,25 +224,27 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     const tokenB = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
     if (api) {
       if (inputEdited.inputType === InputEditedType.exactIn) {
-        await checkSwapAssetForAssetExactInGasFee(
+        await checkSwapAssetForAssetGasFee(
           api,
           selectedTokens.tokenA.tokenId,
           selectedTokens.tokenB.tokenId,
           selectedAccount,
           tokenA,
           tokenB,
-          dispatch
+          dispatch,
+          true
         );
       }
       if (inputEdited.inputType === InputEditedType.exactOut) {
-        await checkSwapAssetForAssetExactOutGasFee(
+        await checkSwapAssetForAssetGasFee(
           api,
           selectedTokens.tokenA.tokenId,
           selectedTokens.tokenB.tokenId,
           selectedAccount,
           tokenA,
           tokenB,
-          dispatch
+          dispatch,
+          false
         );
       }
     }
@@ -598,7 +598,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       if (selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol) {
         if (selectedTokens.tokenB.tokenId) {
           if (inputEdited.inputType === InputEditedType.exactIn) {
-            await swapNativeForAssetExactIn(
+            await performSwapNativeForAsset(
               api,
               selectedTokens.tokenB.tokenId,
               selectedAccount,
@@ -607,11 +607,12 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               selectedTokens.tokenA.decimals,
               selectedTokens.tokenB.decimals,
               false,
-              dispatch
+              dispatch,
+              true
             );
           } else if (inputEdited.inputType === InputEditedType.exactOut) {
             if (selectedTokens.tokenB.tokenId) {
-              await swapNativeForAssetExactOut(
+              await performSwapNativeForAsset(
                 api,
                 selectedTokens.tokenB.tokenId,
                 selectedAccount,
@@ -620,7 +621,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
                 selectedTokens.tokenA.decimals,
                 selectedTokens.tokenB.decimals,
                 false,
-                dispatch
+                dispatch,
+                false
               );
             }
           }
@@ -628,7 +630,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       } else if (selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) {
         if (selectedTokens.tokenA.tokenId) {
           if (inputEdited.inputType === InputEditedType.exactIn) {
-            await swapNativeForAssetExactIn(
+            await performSwapNativeForAsset(
               api,
               selectedTokens.tokenA.tokenId,
               selectedAccount,
@@ -637,10 +639,11 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               selectedTokens.tokenA.decimals,
               selectedTokens.tokenB.decimals,
               true,
-              dispatch
+              dispatch,
+              true
             );
           } else if (inputEdited.inputType === InputEditedType.exactOut) {
-            await swapNativeForAssetExactOut(
+            await performSwapNativeForAsset(
               api,
               selectedTokens.tokenA.tokenId,
               selectedAccount,
@@ -649,7 +652,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               selectedTokens.tokenA.decimals,
               selectedTokens.tokenB.decimals,
               true,
-              dispatch
+              dispatch,
+              false
             );
           }
         }
@@ -659,7 +663,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       ) {
         if (selectedTokens.tokenA.tokenId && selectedTokens.tokenB.tokenId) {
           if (inputEdited.inputType === InputEditedType.exactIn) {
-            await swapAssetForAssetExactIn(
+            await performSwapAssetForAsset(
               api,
               selectedTokens.tokenA.tokenId,
               selectedTokens.tokenB.tokenId,
@@ -668,10 +672,11 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               tokenB,
               selectedTokens.tokenA.decimals,
               selectedTokens.tokenB.decimals,
-              dispatch
+              dispatch,
+              true
             );
           } else if (inputEdited.inputType === InputEditedType.exactOut) {
-            await swapAssetForAssetExactOut(
+            await performSwapAssetForAsset(
               api,
               selectedTokens.tokenA.tokenId,
               selectedTokens.tokenB.tokenId,
@@ -680,7 +685,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               tokenB,
               selectedTokens.tokenA.decimals,
               selectedTokens.tokenB.decimals,
-              dispatch
+              dispatch,
+              false
             );
           }
         }
