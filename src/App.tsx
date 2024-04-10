@@ -21,12 +21,10 @@ const App: FC = () => {
   }, [api, relayApi]);
 
   return (
-    <>
-      <UpdateMetadataModal />
-      <AppStateProvider state={state} dispatch={dispatch}>
-        <RouterProvider router={router} />
-      </AppStateProvider>
-    </>
+    <AppStateProvider state={state} dispatch={dispatch}>
+      {walletConnected && <UpdateMetadataModal account={walletConnected} />}
+      <RouterProvider router={router} />
+    </AppStateProvider>
   );
 };
 

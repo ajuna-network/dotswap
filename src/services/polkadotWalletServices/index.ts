@@ -302,15 +302,14 @@ const getChainMetadata = (api: ApiPromise) => {
 
 export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
   const wallet = getWalletBySource(account.wallet?.extensionName);
-  wallet?.enable("DOT-ACP");
+  await wallet?.enable("DOT-ACP");
   const extension = wallet?.extension;
-
   if (extension) {
     const metadataCurrentArray = await wallet.extension.metadata.get();
     const metadataCurrent = metadataCurrentArray.find(
       (genesisHash: any) => api.genesisHash.toHex() === genesisHash.genesisHash
     );
-    if (metadataCurrentArray.length === 0) {
+    if (metadataCurrentArray.length === 0 || !metadataCurrent) {
       return true;
     } else {
       const shouldUpdate = !api.genesisHash.eq(metadataCurrent.genesisHash);
