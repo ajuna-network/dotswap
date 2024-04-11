@@ -3,16 +3,23 @@ import { getWalletBySource, type WalletAccount } from "@talismn/connect-wallets"
 import { t } from "i18next";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
-import { ActionType, ServiceResponseStatus } from "../../app/types/enum";
+import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
 import { formatDecimalsFromToken } from "../../app/util/helper";
-import dotAcpToast from "../../app/util/toast";
 import { SwapAction } from "../../store/swap/interface";
 import { WalletAction } from "../../store/wallet/interface";
+import { NotificationAction } from "../../store/notifications/interface";
 
 const { parents } = useGetNetwork();
 
 const checkIfExactError = (errorValue: string) => {
   return errorValue === t("swapPage.palletSlippageError");
+};
+
+const convertMicroKSMToKSM = (microKSM: string) => {
+  const microKSMValue = parseFloat(microKSM.replace(" µKSM", ""));
+  const conversionFactor = 1e-6;
+  const ksmValue = microKSMValue * conversionFactor;
+  return `${ksmValue.toFixed(9)} KSM`;
 };
 
 const { assethubSubscanUrl, nativeTokenSymbol } = useGetNetwork();
@@ -99,22 +106,48 @@ const prepareAssetMultiLocationArguments = (
   return [firstArg, secondArg, thirdArg];
 };
 
-const handleInBlockResponse = () => {
-  dotAcpToast.pending("Submitted. Waiting finalization");
+const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  console.log(`Changing pending message. Response is:`, response.toHuman());
+  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
+  dispatch({
+    type: ActionType.SET_NOTIFICATION_LINK,
+    payload: {
+      text: "Transaction included in block",
+      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+    },
+  });
 };
 
 const handleDispatchError = (
   response: SubmittableResult,
   api: ApiPromise,
-  dispatch: Dispatch<SwapAction | WalletAction>
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
   if (response.dispatchError?.isModule) {
     const { docs } = api.registry.findMetaError(response.dispatchError.asModule);
-    dotAcpToast.error(checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`);
+    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_LINK,
+      payload: null,
+    });
   } else if (response.dispatchError?.toString() === t("pageError.tokenCanNotCreate")) {
     dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP, payload: true });
   } else {
-    dotAcpToast.error(response.dispatchError?.toString() ?? "Error occured. Try again.");
+    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_LINK,
+      payload: null,
+    });
   }
   dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
 };
@@ -123,13 +156,19 @@ const handleSuccessfulSwap = (
   response: SubmittableResult,
   tokenADecimals: string,
   tokenBDecimals: string,
-  dispatch: Dispatch<SwapAction | WalletAction>
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
-  dotAcpToast.success(
-    "Swap completed.",
-    undefined,
-    `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`
-  );
+  console.log("Setting sucess notification: ", response.toHuman());
+  dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
+  dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.success") });
+  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
+  dispatch({
+    type: ActionType.SET_NOTIFICATION_LINK,
+    payload: {
+      text: "View in block explorer",
+      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+    },
+  });
   exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
   dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
   dispatch({ type: ActionType.SET_SWAP_FINALIZED, payload: true });
@@ -149,7 +188,7 @@ const handleFinalizedResponse = (
   api: ApiPromise,
   tokenADecimals: string,
   tokenBDecimals: string,
-  dispatch: Dispatch<SwapAction | WalletAction>
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
   if (response.dispatchError) {
     handleDispatchError(response, api, dispatch);
@@ -163,11 +202,18 @@ const handleSwapTransactionResponse = (
   api: ApiPromise,
   tokenADecimals: string,
   tokenBDecimals: string,
-  dispatch: Dispatch<SwapAction | WalletAction>
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
+  if (response.status.isReady) {
+    console.log("Calling first pending. Response is: ", response.toHuman());
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: t("swapPage.swapInitiatedNotification"),
+    });
+  }
   if (response.status.isInBlock) {
-    handleInBlockResponse();
-  } else if (response.status.type === ServiceResponseStatus.Finalized) {
+    handleInBlockResponse(response, dispatch);
+  } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
     handleFinalizedResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
   }
 };
@@ -183,7 +229,7 @@ export const performSwapNativeForAsset = async (
   tokenADecimals: string,
   tokenBDecimals: string,
   reverse: boolean,
-  dispatch: Dispatch<SwapAction | WalletAction>,
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>,
   isExactIn: boolean
 ) => {
   dispatch({ type: ActionType.SET_SWAP_LOADING, payload: true });
@@ -213,7 +259,9 @@ export const performSwapNativeForAsset = async (
       handleSwapTransactionResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
     })
     .catch((error) => {
-      dotAcpToast.error(`Transaction failed: ${error}`);
+      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
       dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
     });
 
@@ -229,7 +277,7 @@ export const performSwapAssetForAsset = async (
   assetTokenBValue: string,
   tokenADecimals: string,
   tokenBDecimals: string,
-  dispatch: Dispatch<SwapAction | WalletAction>,
+  dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>,
   isExactIn: boolean
 ) => {
   dispatch({ type: ActionType.SET_SWAP_LOADING, payload: true });
@@ -257,7 +305,9 @@ export const performSwapAssetForAsset = async (
       handleSwapTransactionResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
     })
     .catch((error) => {
-      dotAcpToast.error(`Transaction failed: ${error}`);
+      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
       dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
     });
 
@@ -293,6 +343,7 @@ export const checkSwapNativeForAssetGasFee = async (
       );
 
   const { partialFee } = await result.paymentInfo(account.address);
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
@@ -300,7 +351,7 @@ export const checkSwapNativeForAssetGasFee = async (
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 
@@ -331,6 +382,7 @@ export const checkSwapAssetForAssetGasFee = async (
       );
 
   const { partialFee } = await result.paymentInfo(account.address);
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
@@ -338,6 +390,6 @@ export const checkSwapAssetForAssetGasFee = async (
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };

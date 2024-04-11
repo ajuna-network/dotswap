@@ -55,6 +55,12 @@
     "expectedOutput": "Expected output",
     "minimumOutput": "Minimum output",
     "added": "added",
+    "notifications": {
+      "success": "Success",
+      "pending": "Pending",
+      "error": "Error",
+      "genericError": "An error occured. Please try again."
+    },
     "swap": {
       "swapped": "Swapped",
       "successfullySwapped": "Successfully swapped",
@@ -87,8 +93,8 @@
     "account": "Account",
     "selectAccount": "Select Account",
     "infoMessage": {
-        "title": "Need to see all your accounts?",
-        "description": "Head over to your wallet and customize which accounts can access DOTSwap."
+      "title": "Need to see all your accounts?",
+      "description": "Head over to your wallet and customize which accounts can access DOTSwap."
     }
   },
   "destinationWalletAddress": {
@@ -142,7 +148,7 @@
   "pageNotFound": "Page not found",
   "dashboardPage": {
     "dashboard": "Dashboard",
-    "myTotalAssets" : "My Total Assets",
+    "myTotalAssets": "My Total Assets",
     "price": "Price",
     "loadingAssets": "Loading...",
     "noAssets": "No assets found",
@@ -179,7 +185,8 @@
     "swap": "Swap",
     "poolExists": "No need to create a new pool. Liquidity can be added to the existing one.",
     "palletSlippageError": "Calculated amount out is less than provided minimum amount.",
-    "slippageError": "The transaction could not be completed due to the set slippage."
+    "slippageError": "The transaction could not be completed due to the set slippage.",
+    "swapInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates."
   },
   "crosschainPage": {
     "from": "From",
