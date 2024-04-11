@@ -69,7 +69,7 @@ const NotificationsModal: FC = () => {
     if (notificationModalOpen && notificationType !== ToasterType.PENDING) {
       setNotificationViewed(true);
     }
-  }, [notificationModalOpen]);
+  }, [notificationModalOpen, notificationType]);
 
   const renderNotificationIcon = () => {
     switch (notificationType) {
