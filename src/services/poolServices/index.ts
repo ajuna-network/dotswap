@@ -14,6 +14,7 @@ import AssetTokenIcon from "../../assets/img/test-token.svg";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
+import { convertMicroKSMToKSM } from "../swapServices";
 
 const { parents, nativeTokenSymbol } = useGetNetwork();
 
@@ -235,9 +236,11 @@ export const addLiquidity = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
 
   const wallet = getWalletBySource(account.wallet?.extensionName);
@@ -409,13 +412,15 @@ export const checkCreatePoolGasFee = async (
   const result = api.tx.assetConversion.createPool(firstArg, secondArg);
   const { partialFee } = await result.paymentInfo(account.address);
 
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_POOL_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 
@@ -457,13 +462,14 @@ export const checkAddPoolLiquidityGasFee = async (
     account.address
   );
   const { partialFee } = await result.paymentInfo(account.address);
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 
@@ -537,13 +543,15 @@ export const checkWithdrawPoolLiquidityGasFee = async (
   );
 
   const { partialFee } = await result.paymentInfo(account.address);
+
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 

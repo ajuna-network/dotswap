@@ -15,7 +15,7 @@ const checkIfExactError = (errorValue: string) => {
   return errorValue === t("swapPage.palletSlippageError");
 };
 
-const convertMicroKSMToKSM = (microKSM: string) => {
+export const convertMicroKSMToKSM = (microKSM: string) => {
   const microKSMValue = parseFloat(microKSM.replace(" µKSM", ""));
   const conversionFactor = 1e-6;
   const ksmValue = microKSMValue * conversionFactor;
@@ -347,7 +347,7 @@ export const checkSwapNativeForAssetGasFee = async (
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,
@@ -386,7 +386,7 @@ export const checkSwapAssetForAssetGasFee = async (
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,

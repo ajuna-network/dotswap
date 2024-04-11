@@ -471,6 +471,8 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
+          showUSDValue={selectedTokenA.nativeTokenBalance !== ""}
+          spotPrice={tokenBalances?.spotPrice}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
               ? new Decimal(selectedTokenNativeValue?.tokenValue).mul(withdrawAmountPercentage).div(100).toFixed()
@@ -488,6 +490,8 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
+          showUSDValue={selectedTokenB.assetTokenBalance !== ""}
+          spotPrice={selectedTokenB.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
           tokenValue={formattedTokenBValue()}
           tokenBalance={selectedTokenB?.assetTokenBalance}
           onClick={() => setIsModalOpen(true)}
