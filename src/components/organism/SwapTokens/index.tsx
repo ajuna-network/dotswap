@@ -52,7 +52,6 @@ import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
-import NotificationsModal from "../NotificationsModal";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -1698,7 +1697,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         })}
       />
       <WarningMessage show={isMaxValueLessThenMinAmount} message={t("pageError.maxValueLessThanMinAmount")} />
-      <NotificationsModal />
     </div>
   );
 };

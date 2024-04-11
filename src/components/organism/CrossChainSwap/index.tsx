@@ -23,7 +23,6 @@ import {
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
-import NotificationsModal from "../NotificationsModal";
 import {
   calculateOriginFee,
   createCrossInExtrinsic,
@@ -656,7 +655,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           handleCrosschainExec();
         }}
       />
-      <NotificationsModal />
     </div>
   );
 };
