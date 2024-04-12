@@ -11,7 +11,7 @@ import { useAppContext } from "../../../state";
 import { ToasterType } from "../../../app/types/enum";
 import dotAcpToast from "../../../app/util/toast";
 import { ActionType } from "../../../app/types/enum";
-//com
+
 const NotificationsModal: FC = () => {
   const { state, dispatch } = useAppContext();
   const [notificationViewed, setNotificationViewed] = useState(false);
