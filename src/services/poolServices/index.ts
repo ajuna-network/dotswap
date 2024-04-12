@@ -1,4 +1,4 @@
-import { ApiPromise } from "@polkadot/api";
+import { ApiPromise, SubmittableResult } from "@polkadot/api";
 import { u8aToHex } from "@polkadot/util";
 import { getWalletBySource, type WalletAccount } from "@talismn/connect-wallets";
 import Decimal from "decimal.js";
@@ -6,7 +6,7 @@ import { t } from "i18next";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
-import { ActionType, ServiceResponseStatus } from "../../app/types/enum";
+import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
 import { formatDecimalsFromToken } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
@@ -14,8 +14,10 @@ import AssetTokenIcon from "../../assets/img/test-token.svg";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
+import { convertMicroKSMToKSM } from "../swapServices";
+import { NotificationAction } from "../../store/notifications/interface";
 
-const { parents, nativeTokenSymbol } = useGetNetwork();
+const { parents, nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
 const exactAddedLiquidityInPool = (
   itemEvents: any,
@@ -37,7 +39,7 @@ const exactAddedLiquidityInPool = (
   dispatch({ type: ActionType.SET_EXACT_NATIVE_TOKEN_ADD_LIQUIDITY, payload: nativeTokenIn });
   dispatch({ type: ActionType.SET_EXACT_ASSET_TOKEN_ADD_LIQUIDITY, payload: assetTokenIn });
 
-  return liquidityAddedEvent;
+  return { nativeTokenIn, assetTokenIn };
 };
 
 const exactWithdrawnLiquidityFromPool = (
@@ -60,7 +62,7 @@ const exactWithdrawnLiquidityFromPool = (
   dispatch({ type: ActionType.SET_EXACT_NATIVE_TOKEN_WITHDRAW, payload: nativeTokenOut });
   dispatch({ type: ActionType.SET_EXACT_ASSET_TOKEN_WITHDRAW, payload: assetTokenOut });
 
-  return liquidityRemovedEvent;
+  return { nativeTokenOut, assetTokenOut };
 };
 
 export const getAllPools = async (api: ApiPromise) => {
@@ -105,18 +107,7 @@ export const getPoolReserves = async (api: ApiPromise, assetTokenId: string) => 
   return decoded.toHuman();
 };
 
-export const createPool = async (
-  api: ApiPromise,
-  assetTokenId: string,
-  account: WalletAccount,
-  nativeTokenValue: string,
-  assetTokenValue: string,
-  minNativeTokenValue: string,
-  minAssetTokenValue: string,
-  nativeTokenDecimals: string,
-  assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
-) => {
+const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) => {
   const firstArg = api
     .createType("MultiLocation", {
       parents: parents,
@@ -134,6 +125,163 @@ export const createPool = async (
       },
     })
     .toU8a();
+  return { firstArg, secondArg };
+};
+
+const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
+  dispatch({
+    type: ActionType.SET_NOTIFICATION_LINK,
+    payload: {
+      text: "Transaction included in block",
+      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+    },
+  });
+};
+
+const handleDispatchError = (
+  response: SubmittableResult,
+  api: ApiPromise,
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
+) => {
+  if (response.dispatchError?.isModule) {
+    const { docs } = api.registry.findMetaError(response.dispatchError.asModule);
+    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: `${docs.join(" ")}`,
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_LINK,
+      payload: null,
+    });
+  } else if (response.dispatchError?.toString() === t("pageError.tokenCanNotCreate")) {
+    dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS, payload: true });
+  } else {
+    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_LINK,
+      payload: null,
+    });
+  }
+  dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+};
+
+const handleSuccessfulPool = (
+  response: SubmittableResult,
+  nativeTokenDecimals: string,
+  assetTokenDecimals: string,
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  poolType: "add" | "remove"
+) => {
+  dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
+  dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.success") });
+  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
+  dispatch({
+    type: ActionType.SET_NOTIFICATION_LINK,
+    payload: {
+      text: "View in block explorer",
+      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+    },
+  });
+
+  if (poolType === "add") {
+    const { nativeTokenIn, assetTokenIn } = exactAddedLiquidityInPool(
+      response.toHuman(),
+      nativeTokenDecimals,
+      assetTokenDecimals,
+      dispatch
+    );
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT,
+      payload: parseFloat(nativeTokenIn),
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT,
+      payload: parseFloat(assetTokenIn),
+    });
+  } else if (poolType === "remove") {
+    const { nativeTokenOut, assetTokenOut } = exactWithdrawnLiquidityFromPool(
+      response.toHuman(),
+      nativeTokenDecimals,
+      assetTokenDecimals,
+      dispatch
+    );
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT,
+      payload: parseFloat(nativeTokenOut),
+    });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT,
+      payload: parseFloat(assetTokenOut),
+    });
+  }
+
+  dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
+  dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+};
+
+const handleFinalizedResponse = (
+  response: SubmittableResult,
+  api: ApiPromise,
+  nativeTokenDecimals: string,
+  assetTokenDecimals: string,
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  poolType: "add" | "remove"
+) => {
+  if (response.dispatchError) {
+    handleDispatchError(response, api, dispatch);
+  } else {
+    handleSuccessfulPool(response, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);
+  }
+};
+
+const handlePoolTransactionResponse = async (
+  response: SubmittableResult,
+  api: ApiPromise,
+  nativeTokenDecimals: string,
+  assetTokenDecimals: string,
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  account: WalletAccount,
+  poolType: "add" | "remove"
+) => {
+  if (response.status.isReady) {
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MESSAGE,
+      payload: t("modal.notifications.transactionInitiatedNotification"),
+    });
+  }
+  if (response.status.isInBlock) {
+    handleInBlockResponse(response, dispatch);
+  } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+    handleFinalizedResponse(response, api, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);
+    const allPools = await getAllPools(api);
+    if (allPools) {
+      dispatch({ type: ActionType.SET_POOLS, payload: allPools });
+      await createPoolCardsArray(api, dispatch, allPools, account);
+    }
+  }
+};
+
+export const createPool = async (
+  api: ApiPromise,
+  assetTokenId: string,
+  account: WalletAccount,
+  nativeTokenValue: string,
+  assetTokenValue: string,
+  minNativeTokenValue: string,
+  minAssetTokenValue: string,
+  nativeTokenDecimals: string,
+  assetTokenDecimals: string,
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
+) => {
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_CREATE_POOL_LOADING, payload: true });
 
@@ -159,11 +307,7 @@ export const createPool = async (
       }
 
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        handleInBlockResponse(response, dispatch);
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -201,25 +345,9 @@ export const addLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: true });
 
@@ -235,57 +363,31 @@ export const addLiquidity = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
 
   const wallet = getWalletBySource(account.wallet?.extensionName);
 
   result
     .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
-      if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
-      } else {
-        if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
-          if (response.dispatchError.isModule) {
-            const decoded = api.registry.findMetaError(response.dispatchError.asModule);
-            const { docs } = decoded;
-            dotAcpToast.error(`${docs.join(" ")}`);
-            dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
-          } else {
-            if (response.dispatchError.toString() === t("pageError.tokenCanNotCreate")) {
-              dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS, payload: true });
-            }
-            dotAcpToast.error(response.dispatchError.toString());
-            dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
-          }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized) {
-          dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
-          exactAddedLiquidityInPool(response.toHuman(), nativeTokenDecimals, assetTokenDecimals, dispatch);
-
-          dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
-          dispatch({ type: ActionType.SET_SUCCESS_MODAL_OPEN, payload: true });
-          dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
-          const allPools = await getAllPools(api);
-          if (allPools) {
-            dispatch({ type: ActionType.SET_POOLS, payload: allPools });
-            await createPoolCardsArray(api, dispatch, allPools, account);
-          }
-        }
-      }
+      await handlePoolTransactionResponse(
+        response,
+        api,
+        nativeTokenDecimals,
+        assetTokenDecimals,
+        dispatch,
+        account,
+        "add"
+      );
     })
     .catch((error: any) => {
-      dotAcpToast.error(`Transaction failed ${error}`);
+      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
       dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
       dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
     });
@@ -300,25 +402,9 @@ export const removeLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: true });
 
@@ -335,48 +421,20 @@ export const removeLiquidity = async (
 
   result
     .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
-      if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
-      } else {
-        if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
-          if (response.dispatchError.isModule) {
-            const decoded = api.registry.findMetaError(response.dispatchError.asModule);
-            const { docs } = decoded;
-            dotAcpToast.error(`${docs.join(" ")}`);
-            dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
-          } else {
-            if (response.dispatchError.toString() === t("pageError.tokenCanNotCreate")) {
-              dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS, payload: true });
-            }
-            dotAcpToast.error(response.dispatchError.toString());
-            dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
-          }
-        } else {
-          dotAcpToast.success(`Current status: ${response.status.type}`);
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized) {
-          dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
-        }
-        if (response.status.type === ServiceResponseStatus.Finalized && !response.dispatchError) {
-          exactWithdrawnLiquidityFromPool(response.toHuman(), nativeTokenDecimals, assetTokenDecimals, dispatch);
-
-          dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
-          dispatch({ type: ActionType.SET_SUCCESS_MODAL_OPEN, payload: true });
-          dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
-          const allPools = await getAllPools(api);
-          if (allPools) {
-            dispatch({ type: ActionType.SET_POOLS, payload: allPools });
-            await createPoolCardsArray(api, dispatch, allPools, account);
-          }
-        }
-      }
+      await handlePoolTransactionResponse(
+        response,
+        api,
+        nativeTokenDecimals,
+        assetTokenDecimals,
+        dispatch,
+        account,
+        "remove"
+      );
     })
     .catch((error: any) => {
-      dotAcpToast.error(`Transaction failed ${error}`);
+      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
       dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
       dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
     });
@@ -388,34 +446,20 @@ export const checkCreatePoolGasFee = async (
   account: any,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.createPool(firstArg, secondArg);
   const { partialFee } = await result.paymentInfo(account.address);
 
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_POOL_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 
@@ -429,23 +473,7 @@ export const checkAddPoolLiquidityGasFee = async (
   minAssetTokenValue: string,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.addLiquidity(
     firstArg,
@@ -457,13 +485,14 @@ export const checkAddPoolLiquidityGasFee = async (
     account.address
   );
   const { partialFee } = await result.paymentInfo(account.address);
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 
@@ -509,23 +538,7 @@ export const checkWithdrawPoolLiquidityGasFee = async (
   minAssetTokenValue: string,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.removeLiquidity(
     firstArg,
@@ -537,13 +550,15 @@ export const checkWithdrawPoolLiquidityGasFee = async (
   );
 
   const { partialFee } = await result.paymentInfo(account.address);
+
+  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${partialFee.toHuman()} fees`,
+    payload: `transaction will have a weight of ${ksmFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: partialFee.toHuman(),
+    payload: ksmFeeString,
   });
 };
 

@@ -6,6 +6,7 @@ import SuccessIcon from "../../../assets/img/toasterSuccessIcon.svg?react";
 import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ErrorIcon from "../../../assets/img/toasterErrorIcon.svg?react";
 import CloseButtonIcon from "../../../assets/img/closeButtonIcon.svg?react";
+import toast from "react-hot-toast";
 
 interface ToasterProps {
   description: string;
@@ -14,7 +15,12 @@ interface ToasterProps {
   close: () => void;
 }
 
-const Toaster: FC<ToasterProps> = ({ description, type = ToasterType.SUCCESS, close, blockExplorerLink }) => {
+const Toaster: FC<ToasterProps> = ({
+  description,
+  type = ToasterType.SUCCESS,
+  close = () => toast.dismiss(),
+  blockExplorerLink,
+}) => {
   const handleIcon = (type: ToasterType): ReactElement => {
     if (type === ToasterType.SUCCESS) return <SuccessIcon />;
     if (type === ToasterType.PENDING) return <LottieSmall />;
