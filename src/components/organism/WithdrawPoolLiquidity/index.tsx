@@ -10,6 +10,7 @@ import {
   ButtonVariants,
   InputEditedType,
   LiquidityPageType,
+  ToasterType,
   TransactionTypes,
 } from "../../../app/types/enum";
 import {
@@ -18,10 +19,9 @@ import {
   formatInputTokenValue,
   truncateDecimalNumber,
 } from "../../../app/util/helper";
-import dotAcpToast from "../../../app/util/toast";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
 import { LottieMedium } from "../../../assets/loader";
-import { assetTokenData, setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
+import { assetTokenData } from "../../../services/polkadotWalletServices";
 import { checkWithdrawPoolLiquidityGasFee, getPoolReserves, removeLiquidity } from "../../../services/poolServices";
 import { useAppContext } from "../../../state";
 import Button from "../../atom/Button";
@@ -29,7 +29,6 @@ import WarningMessage from "../../atom/WarningMessage";
 import AmountPercentage from "../../molecule/AmountPercentage";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
-import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
@@ -65,10 +64,7 @@ const WithdrawPoolLiquidity = () => {
     selectedAccount,
     pools,
     transferGasFeesMessage,
-    successModalOpen,
     withdrawLiquidityLoading,
-    exactNativeTokenWithdraw,
-    exactAssetTokenWithdraw,
     assetLoading,
     isTokenCanNotCreateWarningPools,
   } = state;
@@ -147,6 +143,34 @@ const WithdrawPoolLiquidity = () => {
     }
     setIsTransactionTimeout(false);
 
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_DATA,
+      payload: {
+        notificationModalOpen: true,
+        notificationAction: t("modal.notifications.removeLiquidity"),
+        notificationType: ToasterType.PENDING,
+        notificationTitle: t("modal.notifications.removeLiquidity"),
+        notificationMessage: t("modal.notifications.proceed"),
+        notificationChainDetails: null,
+
+        notificationTransactionDetails: {
+          fromToken: {
+            symbol: selectedTokenA.nativeTokenSymbol,
+            amount: parseFloat(
+              selectedTokenNativeValue?.tokenValue
+                ? new Decimal(selectedTokenNativeValue?.tokenValue).mul(withdrawAmountPercentage).div(100).toFixed()
+                : ""
+            ),
+          },
+          toToken: {
+            symbol: selectedTokenB.tokenSymbol,
+            amount: parseFloat(formattedTokenBValue()),
+          },
+        },
+        notificationLink: null,
+      },
+    });
+
     try {
       if (api) {
         await removeLiquidity(
@@ -162,7 +186,10 @@ const WithdrawPoolLiquidity = () => {
         );
       }
     } catch (error) {
-      dotAcpToast.error(`Error: ${error}`);
+      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Error: ${error}` });
+      dispatch({ type: ActionType.SET_NOTIFICATION_LINK, payload: null });
     }
   };
 
@@ -177,20 +204,6 @@ const WithdrawPoolLiquidity = () => {
         assetTokenWithSlippage.tokenValue.toString(),
         dispatch
       );
-  };
-
-  const closeSuccessModal = async () => {
-    dispatch({ type: ActionType.SET_SUCCESS_MODAL_OPEN, payload: false });
-    navigateToPools();
-    if (api) {
-      const walletAssets: any = await setTokenBalanceUpdate(
-        api,
-        selectedAccount.address,
-        selectedTokenB.assetTokenId,
-        tokenBalances
-      );
-      dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletAssets });
-    }
   };
 
   useEffect(() => {
@@ -612,22 +625,6 @@ const WithdrawPoolLiquidity = () => {
           inputType={InputEditedType.exactIn}
           onConfirmTransaction={() => {
             handlePool();
-          }}
-        />
-        <SwapAndPoolSuccessModal
-          open={successModalOpen}
-          onClose={closeSuccessModal}
-          contentTitle={t("modal.removeFromPool.successfulWithdrawal")}
-          actionLabel={t("modal.removeFromPool.withdrawal")}
-          tokenA={{
-            value: exactNativeTokenWithdraw,
-            symbol: selectedTokenA.nativeTokenSymbol,
-            icon: <TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width={"24"} height={"24"} />,
-          }}
-          tokenB={{
-            value: exactAssetTokenWithdraw,
-            symbol: selectedTokenB.tokenSymbol,
-            icon: <TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width={"24"} height={"24"} />,
           }}
         />
       </div>

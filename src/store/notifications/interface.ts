@@ -37,8 +37,10 @@ export type NotificationAction =
   | { type: ActionType.SET_NOTIFICATION_TITLE; payload: string | null }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_DETAILS; payload: NotificationTransactionDetails | null }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM; payload: NotificationToken }
-  | { type: ActionType.SET_NOTIFICATION_MESSAGE; payload: string | null }
+  | { type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT; payload: number }
   | { type: ActionType.SET_NOTIFICATION_TRANSACTION_TO; payload: NotificationToken | null }
+  | { type: ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT; payload: number }
+  | { type: ActionType.SET_NOTIFICATION_MESSAGE; payload: string | null }
   | { type: ActionType.SET_NOTIFICATION_CHAINS_DETAILS; payload: NotificationChainDetails | null }
   | { type: ActionType.SET_NOTIFICATION_LINK; payload: NotificationLink | null }
   | { type: ActionType.SET_NOTIFICATION_LINK_TEXT; payload: string }

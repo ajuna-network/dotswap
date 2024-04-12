@@ -204,6 +204,7 @@ const handleSwapTransactionResponse = (
   tokenBDecimals: string,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
+  console.log("Tracker: ", response.toHuman());
   if (response.status.isReady) {
     console.log("Calling first pending. Response is: ", response.toHuman());
     dispatch({

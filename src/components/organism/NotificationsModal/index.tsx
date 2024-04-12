@@ -120,7 +120,7 @@ const NotificationsModal: FC = () => {
           <>
             <ArrowRight />
             <div className="flex items-center gap-1">
-              <TokenIcon tokenSymbol={notificationTransactionDetails.toToken.symbol} width="16" height="16" />
+              <TokenIcon tokenSymbol={notificationTransactionDetails.toToken.symbol ?? ""} width="16" height="16" />
               <p>{notificationTransactionDetails.toToken.amount}</p>
               <p className="uppercase">{notificationTransactionDetails.toToken.symbol}</p>
             </div>

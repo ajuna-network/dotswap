@@ -467,6 +467,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               amount: parseFloat(crosschainExactTokenAmount),
             },
           },
+          notificationLink: null,
         },
       });
       if (crosschainSelectedChain.chainA.chainType === "Relay Chain" && relayApi) {

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { SWAP_ROUTE } from "../../../app/router/routes";
 import { InputEditedProps, TokenDecimalsErrorProps } from "../../../app/types";
-import { ActionType, ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/types/enum";
+import { ActionType, ButtonVariants, InputEditedType, ToasterType, TransactionTypes } from "../../../app/types/enum";
 import {
   calculateSlippageReduce,
   checkIfPoolAlreadyExists,
@@ -13,10 +13,8 @@ import {
   formatDecimalsFromToken,
   formatInputTokenValue,
 } from "../../../app/util/helper";
-import dotAcpToast from "../../../app/util/toast";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
 import { LottieMedium } from "../../../assets/loader";
-import { setTokenBalanceUpdate } from "../../../services/polkadotWalletServices";
 import { addLiquidity, checkAddPoolLiquidityGasFee, getPoolReserves } from "../../../services/poolServices";
 import { getAssetTokenFromNativeToken, getNativeTokenFromAssetToken } from "../../../services/tokenServices";
 import { useAppContext } from "../../../state";
@@ -25,7 +23,6 @@ import WarningMessage from "../../atom/WarningMessage";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
 import CreatePool from "../CreatePool";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
-import SwapAndPoolSuccessModal from "../SwapAndPoolSuccessModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
@@ -66,10 +63,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
     pools,
     transferGasFeesMessage,
     poolGasFee,
-    successModalOpen,
     addLiquidityLoading,
-    exactNativeTokenAddLiquidity,
-    exactAssetTokenAddLiquidity,
     assetLoading,
     isTokenCanNotCreateWarningPools,
   } = state;
@@ -155,6 +149,29 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         .toLocaleString()
         ?.replace(/[, ]/g, "");
 
+      dispatch({
+        type: ActionType.SET_NOTIFICATION_DATA,
+        payload: {
+          notificationModalOpen: true,
+          notificationAction: t("modal.notifications.addLiquidity"),
+          notificationType: ToasterType.PENDING,
+          notificationTitle: t("modal.notifications.addLiquidity"),
+          notificationMessage: t("modal.notifications.proceed"),
+          notificationChainDetails: null,
+          notificationTransactionDetails: {
+            fromToken: {
+              symbol: selectedTokenA.nativeTokenSymbol,
+              amount: parseFloat(selectedTokenNativeValue?.tokenValue),
+            },
+            toToken: {
+              symbol: selectedTokenB.tokenSymbol,
+              amount: parseFloat(selectedTokenAssetValue?.tokenValue),
+            },
+          },
+          notificationLink: null,
+        },
+      });
+
       try {
         await addLiquidity(
           api,
@@ -169,7 +186,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           dispatch
         );
       } catch (error) {
-        dotAcpToast.error(`Error: ${error}`);
+        dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
+        dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
+        dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Error: ${error}` });
+        dispatch({ type: ActionType.SET_NOTIFICATION_LINK, payload: null });
       }
     }
   };
@@ -190,20 +210,6 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         assetTokenWithSlippage.tokenValue.toString(),
         dispatch
       );
-    }
-  };
-
-  const closeSuccessModal = async () => {
-    dispatch({ type: ActionType.SET_SUCCESS_MODAL_OPEN, payload: false });
-    navigateToPools();
-    if (api) {
-      const walletAssets: any = await setTokenBalanceUpdate(
-        api,
-        selectedAccount.address,
-        selectedTokenB.assetTokenId,
-        tokenBalances
-      );
-      dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletAssets });
     }
   };
 
@@ -650,22 +656,6 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             open={isModalOpen}
             title={t("button.selectToken")}
             selected={selectedTokenB}
-          />
-          <SwapAndPoolSuccessModal
-            open={successModalOpen}
-            onClose={closeSuccessModal}
-            contentTitle={t("modal.addTooExistingPool.successfullyAddedLiquidity")}
-            tokenA={{
-              value: exactNativeTokenAddLiquidity,
-              symbol: selectedTokenA.nativeTokenSymbol,
-              icon: <TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />,
-            }}
-            tokenB={{
-              value: exactAssetTokenAddLiquidity,
-              symbol: selectedTokenB.tokenSymbol,
-              icon: <TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />,
-            }}
-            actionLabel={t("modal.added")}
           />
         </div>
       )}

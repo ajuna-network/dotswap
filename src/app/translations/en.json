@@ -60,7 +60,10 @@
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
-      "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates."
+      "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates.",
+      "addLiquidity": "Adding Liquidity",
+      "removeLiquidity": "Removing Liquidity",
+      "proceed": "Proceed in your wallet"
     },
     "swap": {
       "swapped": "Swapped",
