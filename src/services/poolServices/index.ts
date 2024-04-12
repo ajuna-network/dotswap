@@ -74,6 +74,27 @@ export const getAllPools = async (api: ApiPromise) => {
   }
 };
 
+const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) => {
+  const firstArg = api
+    .createType("MultiLocation", {
+      parents: parents,
+      interior: {
+        here: null,
+      },
+    })
+    .toU8a();
+
+  const secondArg = api
+    .createType("MultiLocation", {
+      parents: 0,
+      interior: {
+        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
+      },
+    })
+    .toU8a();
+  return { firstArg, secondArg };
+};
+
 export const getPoolReserves = async (api: ApiPromise, assetTokenId: string) => {
   const multiLocation2 = api
     .createType("MultiLocation", {
@@ -118,23 +139,7 @@ export const createPool = async (
   assetTokenDecimals: string,
   dispatch: Dispatch<PoolAction | WalletAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_CREATE_POOL_LOADING, payload: true });
 
@@ -204,23 +209,7 @@ export const addLiquidity = async (
   assetTokenDecimals: string,
   dispatch: Dispatch<PoolAction | WalletAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: true });
 
@@ -305,23 +294,7 @@ export const removeLiquidity = async (
   assetTokenDecimals: string,
   dispatch: Dispatch<PoolAction | WalletAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: true });
 
@@ -391,23 +364,7 @@ export const checkCreatePoolGasFee = async (
   account: any,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.createPool(firstArg, secondArg);
   const { partialFee } = await result.paymentInfo(account.address);
@@ -434,23 +391,7 @@ export const checkAddPoolLiquidityGasFee = async (
   minAssetTokenValue: string,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.addLiquidity(
     firstArg,
@@ -515,23 +456,7 @@ export const checkWithdrawPoolLiquidityGasFee = async (
   minAssetTokenValue: string,
   dispatch: Dispatch<PoolAction>
 ) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
+  const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
   const result = api.tx.assetConversion.removeLiquidity(
     firstArg,
