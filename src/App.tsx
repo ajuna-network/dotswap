@@ -30,9 +30,18 @@ const App: FC = () => {
 
   return (
     <AppStateProvider state={state} dispatch={dispatch}>
-      {walletConnected && <UpdateMetadataModal account={walletConnected} />}
-      <RouterProvider router={router} />
-      {!isMobile ? !isOnline ? <OfflinePage /> : <RouterProvider router={router} /> : <MobilePage />}
+      {!isMobile ? (
+        !isOnline ? (
+          <OfflinePage />
+        ) : (
+          <>
+            {walletConnected && <UpdateMetadataModal account={walletConnected} />}
+            <RouterProvider router={router} />
+          </>
+        )
+      ) : (
+        <MobilePage />
+      )}
     </AppStateProvider>
   );
 };

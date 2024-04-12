@@ -275,10 +275,10 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 
 // function for calculating max amount for cross in
 // existential deposit for kusama asset hub is 0.000003333 KSM
-// xcm instructions buffer for cross in is 0.0004176614 KSM
+// xcm instructions buffer for cross in is 0.0005298333 KSM
 // free balance - origin chain fee - destination chain fee - existential deposit
 export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
-  const xcmInstructionsBuffer = new Decimal("0.0004176614");
+  const xcmInstructionsBuffer = new Decimal("0.0005298333");
   const existentialDeposit = new Decimal("0.000003333");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
