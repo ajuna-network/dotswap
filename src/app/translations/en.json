@@ -56,6 +56,16 @@
     "expectedOutput": "Expected output",
     "minimumOutput": "Minimum output",
     "added": "added",
+    "notifications": {
+      "success": "Success",
+      "pending": "Pending",
+      "error": "Error",
+      "genericError": "An error occured. Please try again.",
+      "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates.",
+      "addLiquidity": "Adding Liquidity",
+      "removeLiquidity": "Removing Liquidity",
+      "proceed": "Proceed in your wallet"
+    },
     "swap": {
       "swapped": "Swapped",
       "successfullySwapped": "Successfully swapped",
@@ -88,8 +98,8 @@
     "account": "Account",
     "selectAccount": "Select Account",
     "infoMessage": {
-        "title": "Need to see all your accounts?",
-        "description": "Head over to your wallet and customize which accounts can access DOTSwap."
+      "title": "Need to see all your accounts?",
+      "description": "Head over to your wallet and customize which accounts can access DOTSwap."
     }
   },
   "destinationWalletAddress": {
@@ -143,7 +153,7 @@
   "pageNotFound": "Page not found",
   "dashboardPage": {
     "dashboard": "Dashboard",
-    "myTotalAssets" : "My Total Assets",
+    "myTotalAssets": "My Total Assets",
     "price": "Price",
     "loadingAssets": "Loading...",
     "noAssets": "No assets found",

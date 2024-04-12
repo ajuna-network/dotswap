@@ -22,7 +22,6 @@ import {
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
-import NotificationsModal from "../NotificationsModal";
 import {
   calculateCrosschainMaxAmount,
   calculateOriginFee,
@@ -448,6 +447,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               amount: parseFloat(crosschainExactTokenAmount),
             },
           },
+          notificationLink: null,
         },
       });
       if (crosschainSelectedChain.chainA.chainType === "Relay Chain" && relayApi) {
@@ -636,7 +636,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           handleCrosschainExec();
         }}
       />
-      <NotificationsModal />
     </div>
   );
 };

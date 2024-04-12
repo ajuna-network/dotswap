@@ -32,12 +32,34 @@ export const notificationReducer = (state: NotificationState, action: Notificati
           fromToken: action.payload,
         },
       };
+    case ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT:
+      return {
+        ...state,
+        notificationTransactionDetails: {
+          ...(state.notificationTransactionDetails || {}),
+          fromToken: {
+            symbol: state.notificationTransactionDetails?.fromToken?.symbol ?? "",
+            amount: action.payload,
+          },
+        },
+      };
     case ActionType.SET_NOTIFICATION_TRANSACTION_TO:
       return {
         ...state,
         notificationTransactionDetails: {
           ...(state.notificationTransactionDetails || {}),
           toToken: action.payload,
+        },
+      };
+    case ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT:
+      return {
+        ...state,
+        notificationTransactionDetails: {
+          ...(state.notificationTransactionDetails || {}),
+          toToken: {
+            symbol: state.notificationTransactionDetails?.toToken?.symbol ?? "",
+            amount: action.payload,
+          },
         },
       };
     case ActionType.SET_NOTIFICATION_CHAINS_DETAILS:

@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import SeoHelmet from "../components/atom/SeoHelmet";
 import Sidebar from "../components/organism/Sidebar";
 import ConnectWallet from "../components/organism/ConnectWallet";
+import NotificationsModal from "../components/organism/NotificationsModal";
 
 const MainLayout = () => {
   return (
@@ -12,6 +13,7 @@ const MainLayout = () => {
         <div className="flex w-full flex-col px-4">
           <div className="z-[9999] flex w-full justify-end">
             <ConnectWallet />
+            <NotificationsModal />
           </div>
           <Outlet />
         </div>
