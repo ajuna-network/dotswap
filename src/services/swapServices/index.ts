@@ -208,7 +208,7 @@ const handleSwapTransactionResponse = (
     console.log("Calling first pending. Response is: ", response.toHuman());
     dispatch({
       type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: t("swapPage.swapInitiatedNotification"),
+      payload: t("modal.notifications.transactionInitiatedNotification"),
     });
   }
   if (response.status.isInBlock) {

@@ -59,7 +59,8 @@
       "success": "Success",
       "pending": "Pending",
       "error": "Error",
-      "genericError": "An error occured. Please try again."
+      "genericError": "An error occured. Please try again.",
+      "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates."
     },
     "swap": {
       "swapped": "Swapped",
@@ -185,8 +186,7 @@
     "swap": "Swap",
     "poolExists": "No need to create a new pool. Liquidity can be added to the existing one.",
     "palletSlippageError": "Calculated amount out is less than provided minimum amount.",
-    "slippageError": "The transaction could not be completed due to the set slippage.",
-    "swapInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates."
+    "slippageError": "The transaction could not be completed due to the set slippage."
   },
   "crosschainPage": {
     "from": "From",
