@@ -1,4 +1,4 @@
-import { ApiPromise } from "@polkadot/api";
+import { ApiPromise, SubmittableResult } from "@polkadot/api";
 import { u8aToHex } from "@polkadot/util";
 import { getWalletBySource, type WalletAccount } from "@talismn/connect-wallets";
 import Decimal from "decimal.js";
@@ -15,8 +15,9 @@ import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
 import { convertMicroKSMToKSM } from "../swapServices";
+import { NotificationAction } from "../../store/notifications/interface";
 
-const { parents, nativeTokenSymbol } = useGetNetwork();
+const { parents, nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
 const exactAddedLiquidityInPool = (
   itemEvents: any,
@@ -74,27 +75,6 @@ export const getAllPools = async (api: ApiPromise) => {
   }
 };
 
-const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) => {
-  const firstArg = api
-    .createType("MultiLocation", {
-      parents: parents,
-      interior: {
-        here: null,
-      },
-    })
-    .toU8a();
-
-  const secondArg = api
-    .createType("MultiLocation", {
-      parents: 0,
-      interior: {
-        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
-      },
-    })
-    .toU8a();
-  return { firstArg, secondArg };
-};
-
 export const getPoolReserves = async (api: ApiPromise, assetTokenId: string) => {
   const multiLocation2 = api
     .createType("MultiLocation", {
@@ -127,6 +107,38 @@ export const getPoolReserves = async (api: ApiPromise, assetTokenId: string) => 
   return decoded.toHuman();
 };
 
+const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) => {
+  const firstArg = api
+    .createType("MultiLocation", {
+      parents: parents,
+      interior: {
+        here: null,
+      },
+    })
+    .toU8a();
+
+  const secondArg = api
+    .createType("MultiLocation", {
+      parents: 0,
+      interior: {
+        x2: [{ palletInstance: 50 }, { generalIndex: assetTokenId }],
+      },
+    })
+    .toU8a();
+  return { firstArg, secondArg };
+};
+const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  console.log(`Changing pending message. Response is:`, response.toHuman());
+  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
+  dispatch({
+    type: ActionType.SET_NOTIFICATION_LINK,
+    payload: {
+      text: "Transaction included in block",
+      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+    },
+  });
+};
+
 export const createPool = async (
   api: ApiPromise,
   assetTokenId: string,
@@ -137,7 +149,7 @@ export const createPool = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -207,7 +219,7 @@ export const addLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -237,11 +249,7 @@ export const addLiquidity = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        handleInBlockResponse(response, dispatch);
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
@@ -292,7 +300,7 @@ export const removeLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
-  dispatch: Dispatch<PoolAction | WalletAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -312,11 +320,7 @@ export const removeLiquidity = async (
   result
     .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
       if (response.status.isInBlock) {
-        dotAcpToast.success(`Completed at block hash #${response.status.asInBlock.toString()}`, {
-          style: {
-            maxWidth: "750px",
-          },
-        });
+        handleInBlockResponse(response, dispatch);
       } else {
         if (response.status.type === ServiceResponseStatus.Finalized && response.dispatchError) {
           if (response.dispatchError.isModule) {
