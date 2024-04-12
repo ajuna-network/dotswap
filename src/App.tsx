@@ -6,6 +6,7 @@ import router from "./app/router";
 import LocalStorage from "./app/util/localStorage";
 import { connectWalletAndFetchBalance } from "./services/polkadotWalletServices";
 import { AppStateProvider } from "./state";
+import UpdateMetadataModal from "./components/organism/UpdateMetadataModal";
 import { useOnlineStatus } from "./app/hooks/useOnlineStatus";
 import OfflinePage from "./OfflinePage";
 import { useIsMobile } from "./app/hooks/useIsMobile";
@@ -29,6 +30,8 @@ const App: FC = () => {
 
   return (
     <AppStateProvider state={state} dispatch={dispatch}>
+      {walletConnected && <UpdateMetadataModal account={walletConnected} />}
+      <RouterProvider router={router} />
       {!isMobile ? !isOnline ? <OfflinePage /> : <RouterProvider router={router} /> : <MobilePage />}
     </AppStateProvider>
   );

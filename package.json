@@ -37,6 +37,7 @@
     "@polkadot/keyring": "^12.3.2",
     "@polkadot/react-identicon": "^3.6.5",
     "@polkadot/types": "^10.12.1",
+    "@polkadot/types-known": "^10.12.1",
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@sentry/react": "^7.104.0",

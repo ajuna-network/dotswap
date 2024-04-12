@@ -5,10 +5,11 @@ import { Dispatch } from "react";
 import { CrosschainAction, CrosschainExtrinsic } from "../../store/crosschain/interface";
 import Decimal from "decimal.js";
 import { NotificationAction } from "../../store/notifications/interface";
-import { ActionType, ToasterType } from "../../app/types/enum";
+import { ActionType, CrosschainTransactionTypes, ToasterType } from "../../app/types/enum";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
+import { calculateMaxAmountForCrossIn, calculateMaxAmountForCrossOut } from "../../app/util/helper";
 
 // Relay chain -> parachain
 export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
@@ -31,6 +32,63 @@ export const calculateOriginFee = async (account: WalletAccount, extrinsic: Cros
   } else {
     return "";
   }
+};
+
+export const calculateCrosschainMaxAmount = async (
+  freeBalance: string,
+  decimals: string,
+  crosschainTransactionType: CrosschainTransactionTypes,
+  destinationAddress: string,
+  api: ApiPromise | null,
+  account: WalletAccount
+): Promise<string> => {
+  let maxAmount = "";
+  if (api) {
+    let sameFee = false;
+    while (!sameFee) {
+      const { originFeeA, originFeeB, calculatedMaxAmount } = await recurseMaxAmount(
+        freeBalance,
+        decimals,
+        crosschainTransactionType,
+        destinationAddress,
+        api,
+        account
+      );
+      if (originFeeA === originFeeB) {
+        maxAmount = calculatedMaxAmount;
+        sameFee = true;
+      }
+    }
+  }
+  return maxAmount;
+};
+
+const recurseMaxAmount = async (
+  tokenAmount: string,
+  decimals: string,
+  crosschainTransactionType: CrosschainTransactionTypes,
+  destinationAddress: string,
+  api: ApiPromise,
+  account: WalletAccount
+): Promise<{ originFeeA: string; originFeeB: string; calculatedMaxAmount: string }> => {
+  const tokenAmountDecimal = new Decimal(tokenAmount).times(Math.pow(10, parseInt(decimals))).toFixed();
+  let extrinsic, originFeeA, calculatedMaxAmount;
+  if (crosschainTransactionType === CrosschainTransactionTypes.crossIn) {
+    extrinsic = await createCrossInExtrinsic(api, tokenAmountDecimal, destinationAddress);
+    originFeeA = await calculateOriginFee(account, extrinsic);
+    calculatedMaxAmount = calculateMaxAmountForCrossIn(tokenAmount, originFeeA);
+  } else {
+    extrinsic = await createCrossOutExtrinsic(api, tokenAmountDecimal, destinationAddress);
+    originFeeA = await calculateOriginFee(account, extrinsic);
+    calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA);
+  }
+  const calculatedMaxAmountDecimal = new Decimal(calculatedMaxAmount).times(Math.pow(10, parseInt(decimals))).toFixed();
+  const verifyingExtrinsic =
+    crosschainTransactionType === CrosschainTransactionTypes.crossIn
+      ? await createCrossInExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress)
+      : await createCrossOutExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress);
+  const originFeeB = await calculateOriginFee(account, verifyingExtrinsic);
+  return { originFeeA, originFeeB, calculatedMaxAmount };
 };
 
 async function setupCallAndSign(
