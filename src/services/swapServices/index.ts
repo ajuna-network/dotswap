@@ -107,7 +107,6 @@ const prepareAssetMultiLocationArguments = (
 };
 
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
-  console.log(`Changing pending message. Response is:`, response.toHuman());
   dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
     type: ActionType.SET_NOTIFICATION_LINK,
@@ -158,7 +157,6 @@ const handleSuccessfulSwap = (
   tokenBDecimals: string,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
-  console.log("Setting sucess notification: ", response.toHuman());
   dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
   dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.success") });
   dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
@@ -204,9 +202,7 @@ const handleSwapTransactionResponse = (
   tokenBDecimals: string,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
-  console.log("Tracker: ", response.toHuman());
   if (response.status.isReady) {
-    console.log("Calling first pending. Response is: ", response.toHuman());
     dispatch({
       type: ActionType.SET_NOTIFICATION_MESSAGE,
       payload: t("modal.notifications.transactionInitiatedNotification"),

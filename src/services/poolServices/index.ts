@@ -129,7 +129,6 @@ const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) =>
 };
 
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
-  console.log(`Changing pending message. Response is:`, response.toHuman());
   dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
     type: ActionType.SET_NOTIFICATION_LINK,
@@ -253,7 +252,6 @@ const handlePoolTransactionResponse = async (
   poolType: "add" | "remove"
 ) => {
   if (response.status.isReady) {
-    console.log("Calling first pending. Response is: ", response.toHuman());
     dispatch({
       type: ActionType.SET_NOTIFICATION_MESSAGE,
       payload: t("modal.notifications.transactionInitiatedNotification"),
