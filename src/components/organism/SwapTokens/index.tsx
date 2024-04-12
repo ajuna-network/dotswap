@@ -2,7 +2,6 @@ import classNames from "classnames";
 import Decimal from "decimal.js";
 import { t } from "i18next";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { NumericFormat } from "react-number-format";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { InputEditedProps, PoolCardProps, TokenDecimalsErrorProps, TokenProps } from "../../../app/types";
 import {
@@ -52,6 +51,7 @@ import ReviewTransactionModal from "../ReviewTransactionModal";
 import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
+import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -1411,65 +1411,14 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               <CustomSlippageIcon />
             </button>
             {showSlippage && (
-              <div className="top absolute right-0 top-[45px] z-10 flex w-[333px] flex-col gap-2 rounded-lg border-[1px] border-purple-300 bg-purple-50 px-4 py-6">
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                  <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>
-                  <span>{slippageValue}%</span>
-                </div>
-                <div className="flex flex-row gap-2">
-                  <div className="flex w-full basis-3/4 flex-row rounded-lg border-[1px] border-purple-100 bg-white p-1 text-large font-normal text-gray-400">
-                    <button
-                      className={classNames(
-                        "flex basis-1/2 items-center justify-center rounded-lg px-4 py-1 leading-[19px] tracking-[0.2px]",
-                        {
-                          "bg-white": !slippageAuto,
-                          "bg-purple-100": slippageAuto,
-                        }
-                      )}
-                      onClick={() => {
-                        setSlippageAuto(true);
-                        setSlippageValue(15);
-                      }}
-                      disabled={assetLoading || !selectedAccount.address}
-                    >
-                      {t("tokenAmountInput.auto")}
-                    </button>
-
-                    <button
-                      className={classNames(
-                        "flex basis-1/2 items-center justify-center rounded-lg px-4 py-1 leading-[19px] tracking-[0.2px]",
-                        {
-                          "bg-white": slippageAuto,
-                          "bg-purple-100": !slippageAuto,
-                        }
-                      )}
-                      onClick={() => setSlippageAuto(false)}
-                      disabled={assetLoading || !selectedAccount.address}
-                    >
-                      {t("tokenAmountInput.custom")}
-                    </button>
-                  </div>
-                  <div className="flex basis-1/3">
-                    <div className="relative flex">
-                      <NumericFormat
-                        value={slippageValue}
-                        isAllowed={(values) => {
-                          const { formattedValue, floatValue } = values;
-                          return formattedValue === "" || (floatValue !== undefined && floatValue <= 99);
-                        }}
-                        onValueChange={({ value }) => {
-                          setSlippageValue(parseInt(value) >= 0 ? parseInt(value) : 0);
-                        }}
-                        fixedDecimalScale={true}
-                        thousandSeparator={false}
-                        allowNegative={false}
-                        className="w-full rounded-lg bg-purple-100 px-2 text-large  text-gray-200 outline-none"
-                        disabled={slippageAuto || swapLoading || assetLoading || !selectedAccount.address}
-                      />
-                      <span className="absolute bottom-1/4 right-2 text-medium text-gray-100">%</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300">
+                <SlippageControl
+                  slippageValue={slippageValue}
+                  setSlippageValue={setSlippageValue}
+                  slippageAuto={slippageAuto}
+                  setSlippageAuto={setSlippageAuto}
+                  loadingState={swapLoading || assetLoading}
+                />
               </div>
             )}
           </div>

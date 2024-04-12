@@ -1,8 +1,6 @@
-import classNames from "classnames";
 import Decimal from "decimal.js";
 import { t } from "i18next";
 import { useEffect, useMemo, useState } from "react";
-import { NumericFormat } from "react-number-format";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { SWAP_ROUTE } from "../../../app/router/routes";
@@ -36,6 +34,7 @@ import ReviewTransactionModal from "../ReviewTransactionModal";
 import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
+import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -91,7 +90,7 @@ const WithdrawPoolLiquidity = () => {
   const [nativeTokenWithSlippage, setNativeTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [assetTokenWithSlippage, setAssetTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number | undefined>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(15);
   const [lpTokensAmountToBurn, setLpTokensAmountToBurn] = useState<string>("");
   const [minimumTokenAmountExceeded, setMinimumTokenAmountExceeded] = useState<boolean>(false);
   const [withdrawAmountPercentage, setWithdrawAmountPercentage] = useState<number>(100);
@@ -509,60 +508,13 @@ const WithdrawPoolLiquidity = () => {
         />
 
         <div className="mt-1 text-small">{transferGasFeesMessage}</div>
-        <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6">
-          <div className="flex w-full justify-between text-medium font-normal text-gray-200">
-            <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>
-            <span>{slippageValue}%</span>
-          </div>
-          <div className="flex w-full gap-2">
-            <div className="flex w-full basis-8/12 rounded-xl bg-white p-1 text-large font-normal text-gray-400">
-              <button
-                className={classNames("flex basis-1/2 justify-center rounded-lg px-4 py-3", {
-                  "bg-white": !slippageAuto,
-                  "bg-purple-100": slippageAuto,
-                })}
-                onClick={() => {
-                  setSlippageAuto(true);
-                  setSlippageValue(15);
-                }}
-                disabled={assetLoading || !selectedAccount.address}
-              >
-                {t("tokenAmountInput.auto")}
-              </button>
-              <button
-                className={classNames("flex basis-1/2 justify-center rounded-lg px-4 py-3", {
-                  "bg-white": slippageAuto,
-                  "bg-purple-100": !slippageAuto,
-                })}
-                onClick={() => setSlippageAuto(false)}
-                disabled={assetLoading || !selectedAccount.address}
-              >
-                {t("tokenAmountInput.custom")}
-              </button>
-            </div>
-            <div className="flex basis-1/3">
-              <div className="relative flex">
-                <NumericFormat
-                  id="slippage"
-                  value={slippageValue}
-                  isAllowed={(values) => {
-                    const { formattedValue, floatValue } = values;
-                    return formattedValue === "" || (floatValue !== undefined && floatValue <= 99);
-                  }}
-                  onValueChange={({ value }) => {
-                    setSlippageValue(parseInt(value) >= 0 ? parseInt(value) : 0);
-                  }}
-                  fixedDecimalScale={true}
-                  thousandSeparator={false}
-                  allowNegative={false}
-                  className="w-full rounded-lg bg-purple-100 p-2 text-large  text-gray-200 outline-none"
-                  disabled={slippageAuto || withdrawLiquidityLoading || assetLoading || !selectedAccount.address}
-                />
-                <span className="absolute bottom-1/3 right-2 text-medium text-gray-100">%</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SlippageControl
+          slippageValue={slippageValue}
+          setSlippageValue={setSlippageValue}
+          slippageAuto={slippageAuto}
+          setSlippageAuto={setSlippageAuto}
+          loadingState={assetLoading}
+        />
         {selectedTokenNativeValue?.tokenValue !== "" && selectedTokenAssetValue?.tokenValue !== "" && (
           <>
             {" "}
