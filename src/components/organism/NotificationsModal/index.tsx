@@ -11,6 +11,7 @@ import { useAppContext } from "../../../state";
 import { ToasterType } from "../../../app/types/enum";
 import dotAcpToast from "../../../app/util/toast";
 import { ActionType } from "../../../app/types/enum";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 const NotificationsModal: FC = () => {
   const { state, dispatch } = useAppContext();
@@ -30,14 +31,15 @@ const NotificationsModal: FC = () => {
     notificationMessage,
     notificationTransactionDetails,
   } = state;
+  const fromTokenSymbol = notificationTransactionDetails?.fromToken?.symbol ?? "";
+  const toTokenSymbol = notificationTransactionDetails?.toToken?.symbol ?? "";
+  const fromTokenAmount = formatNumberEnUs(notificationTransactionDetails?.fromToken?.amount ?? 0, 4);
+  const toTokenAmount = formatNumberEnUs(notificationTransactionDetails?.toToken?.amount ?? 0, 4);
 
   const buildToasterMessage = () => {
-    const fromTokenDetails = notificationTransactionDetails?.fromToken;
-    const toTokenDetails = notificationTransactionDetails?.toToken;
-
     return (
-      `${notificationAction ? notificationAction + " " : ""}${fromTokenDetails?.amount} ${fromTokenDetails?.symbol}` +
-      `${toTokenDetails ? " -> " + toTokenDetails.amount + " " + toTokenDetails.symbol : ""}`
+      `${notificationAction ? notificationAction + " " : ""}${fromTokenAmount} ${fromTokenSymbol}` +
+      `${notificationTransactionDetails?.toToken ? " -> " + toTokenAmount + " " + toTokenSymbol : ""}`
     );
   };
 
@@ -112,17 +114,17 @@ const NotificationsModal: FC = () => {
     return (
       <div className="flex items-center gap-2 py-2">
         <div className="flex items-center gap-1">
-          <TokenIcon tokenSymbol={notificationTransactionDetails.fromToken?.symbol ?? ""} width="16" height="16" />
-          <p>{notificationTransactionDetails.fromToken?.amount ?? ""}</p>
-          <p className="uppercase">{notificationTransactionDetails.fromToken?.symbol ?? ""}</p>
+          <TokenIcon tokenSymbol={fromTokenSymbol} width="16" height="16" />
+          <p>{fromTokenAmount ?? ""}</p>
+          <p className="uppercase">{fromTokenSymbol}</p>
         </div>
         {notificationTransactionDetails.toToken && (
           <>
             <ArrowRight />
             <div className="flex items-center gap-1">
-              <TokenIcon tokenSymbol={notificationTransactionDetails.toToken.symbol ?? ""} width="16" height="16" />
-              <p>{notificationTransactionDetails.toToken.amount}</p>
-              <p className="uppercase">{notificationTransactionDetails.toToken.symbol}</p>
+              <TokenIcon tokenSymbol={toTokenSymbol} width="16" height="16" />
+              <p>{toTokenAmount}</p>
+              <p className="uppercase">{toTokenSymbol}</p>
             </div>
           </>
         )}
