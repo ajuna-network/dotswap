@@ -315,7 +315,10 @@ export const getAssetTokenSpotPrice = async (
 
   if (!assetToken) return "0";
 
-  const formattedToken = formatDecimalsFromToken(assetToken.toString().replace(/[, ]/g, ""), tokenDecimals) || 0;
+  const formattedToken =
+    Number(formatDecimalsFromToken(assetToken.toString().replace(/[, ]/g, ""), tokenDecimals)) || 0;
+  if (formattedToken === 0) return "0";
+
   const spotPrice = new Decimal(tokenBalances.spotPrice).times(
     new Decimal(tokenBalances?.balanceAsset?.free).div(formattedToken)
   );
