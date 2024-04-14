@@ -16,6 +16,8 @@ import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
 import { convertMicroKSMToKSM } from "../swapServices";
 import { NotificationAction } from "../../store/notifications/interface";
+import { TokenBalanceData } from "../../app/types/index";
+import { setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
 
 const { parents, nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
@@ -279,6 +281,7 @@ export const createPool = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
+  tokenBalance: TokenBalanceData,
   dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
@@ -302,6 +305,7 @@ export const createPool = async (
           minAssetTokenValue,
           nativeTokenDecimals,
           assetTokenDecimals,
+          tokenBalance,
           dispatch
         );
       }
@@ -345,6 +349,7 @@ export const addLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
+  tokenBalances: TokenBalanceData,
   dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
@@ -383,6 +388,10 @@ export const addLiquidity = async (
         account,
         "add"
       );
+      if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+        const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
+        balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+      }
     })
     .catch((error: any) => {
       dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
@@ -402,6 +411,7 @@ export const removeLiquidity = async (
   minAssetTokenValue: string,
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
+  tokenBalances: TokenBalanceData,
   dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
@@ -430,6 +440,10 @@ export const removeLiquidity = async (
         account,
         "remove"
       );
+      if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+        const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
+        balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+      }
     })
     .catch((error: any) => {
       dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });

@@ -120,7 +120,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
       clearTimeout(waitingForTransaction);
     }
     setIsTransactionTimeout(false);
-    if (api && selectedTokenAssetValue && selectedTokenNativeValue) {
+    if (api && selectedTokenAssetValue && selectedTokenNativeValue && tokenBalances) {
       const nativeTokenValue = formatInputTokenValue(selectedNativeTokenNumber, selectedTokenA?.nativeTokenDecimals)
         .toLocaleString()
         ?.replace(/[, ]/g, "");
@@ -140,6 +140,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
           assetTokenWithSlippage.tokenValue,
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       } catch (error) {

@@ -135,12 +135,13 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   const handlePool = async () => {
+    if (!tokenBalances) return;
     setReviewModalOpen(false);
     if (waitingForTransaction) {
       clearTimeout(waitingForTransaction);
     }
     setIsTransactionTimeout(false);
-    if (api && selectedTokenNativeValue && selectedTokenAssetValue) {
+    if (api && selectedTokenNativeValue && selectedTokenAssetValue && tokenBalances) {
       const nativeTokenValue = formatInputTokenValue(selectedNativeTokenNumber, selectedTokenA?.nativeTokenDecimals)
         .toLocaleString()
         ?.replace(/[, ]/g, "");
@@ -183,6 +184,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           assetTokenWithSlippage.tokenValue.toString(),
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       } catch (error) {
@@ -451,10 +453,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   }, []);
 
   useEffect(() => {
-    if (params?.id) {
+    if (params?.id && tokenBalances) {
       populateAssetToken();
     }
-  }, [params?.id]);
+  }, [params?.id, tokenBalances]);
 
   useEffect(() => {
     if (

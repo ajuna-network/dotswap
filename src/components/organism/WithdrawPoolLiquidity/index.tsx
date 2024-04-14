@@ -174,7 +174,7 @@ const WithdrawPoolLiquidity = () => {
     });
 
     try {
-      if (api) {
+      if (api && tokenBalances) {
         await removeLiquidity(
           api,
           selectedTokenB.assetTokenId,
@@ -184,6 +184,7 @@ const WithdrawPoolLiquidity = () => {
           assetTokenWithSlippage.tokenValue.toString(),
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       }
@@ -446,10 +447,10 @@ const WithdrawPoolLiquidity = () => {
   }, []);
 
   useEffect(() => {
-    if (params?.id) {
+    if (params?.id && tokenBalances) {
       populateAssetToken();
     }
-  }, [params?.id]);
+  }, [params?.id, tokenBalances]);
 
   useEffect(() => {
     getNativeAndAssetTokensFromPool();

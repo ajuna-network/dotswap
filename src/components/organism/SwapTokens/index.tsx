@@ -593,7 +593,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       },
     });
 
-    if (!api) return;
+    if (!api || !tokenBalances) return;
 
     const tokenAValue = formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals);
     const tokenBValue = formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals);
@@ -618,6 +618,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           selectedTokens.tokenA.decimals,
           selectedTokens.tokenB.decimals,
           false,
+          tokenBalances,
           dispatch,
           isExactIn
         );
@@ -631,6 +632,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           selectedTokens.tokenA.decimals,
           selectedTokens.tokenB.decimals,
           true,
+          tokenBalances,
           dispatch,
           isExactIn
         );
@@ -644,6 +646,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           tokenBValue,
           selectedTokens.tokenA.decimals,
           selectedTokens.tokenB.decimals,
+          tokenBalances,
           dispatch,
           isExactIn
         );
