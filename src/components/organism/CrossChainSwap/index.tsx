@@ -22,6 +22,7 @@ import {
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
+import { formatNumberEnUs } from "../../../app/util/helper";
 import {
   calculateCrosschainMaxAmount,
   calculateOriginFee,
@@ -628,12 +629,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       <CrosschainReviewTransactionModal
         open={reviewModalOpen}
         tokenSymbol={selectedToken.tokenSymbol}
+        tokenDecimals={selectedToken.decimals}
         nativeChainName={crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType}
         destinationChainName={crosschainSelectedChain.chainB.chainType}
         destinationBalance={
           selectedAccount.address !== crosschainDestinationWalletAddress
-            ? destinationWalletBalance
-            : availableBalanceB.toString()
+            ? formatNumberEnUs(Number(destinationWalletBalance), Number(selectedToken.decimals))
+            : formatNumberEnUs(Number(availableBalanceB), Number(selectedToken.decimals))
         }
         transactionType={
           crosschainSelectedChain.chainA.chainType === "Asset Hub"

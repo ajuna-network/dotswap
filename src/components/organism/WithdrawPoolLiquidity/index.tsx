@@ -34,6 +34,7 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -542,7 +543,9 @@ const WithdrawPoolLiquidity = () => {
             <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
               <div className="flex w-full flex-row text-medium font-normal text-gray-200">
                 <span>
-                  1 {selectedTokenA.nativeTokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokenB.tokenSymbol}
+                  1 {selectedTokenA.nativeTokenSymbol} ={" "}
+                  {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
+                  {selectedTokenB.tokenSymbol}
                 </span>
               </div>
             </div>
@@ -556,7 +559,12 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Expected output</div>
                 <span>
                   {selectedTokenNativeValue?.tokenValue &&
-                    new Decimal(selectedTokenNativeValue?.tokenValue).times(withdrawAmountPercentage / 100).toString() +
+                    formatNumberEnUs(
+                      new Decimal(selectedTokenNativeValue?.tokenValue)
+                        .times(withdrawAmountPercentage / 100)
+                        .toNumber(),
+                      Number(selectedTokenA.nativeTokenDecimals)
+                    ) +
                       " " +
                       selectedTokenA.nativeTokenSymbol}
                 </span>
@@ -564,7 +572,12 @@ const WithdrawPoolLiquidity = () => {
               <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
                 <div className="flex">Minimum output</div>
                 <span>
-                  {formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals) +
+                  {formatNumberEnUs(
+                    Number(
+                      formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals)
+                    ),
+                    Number(selectedTokenA.nativeTokenDecimals)
+                  ) +
                     " " +
                     selectedTokenA.nativeTokenSymbol}
                 </span>
@@ -573,7 +586,10 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Expected output</div>
                 <span>
                   {selectedTokenAssetValue?.tokenValue &&
-                    new Decimal(selectedTokenAssetValue?.tokenValue).times(withdrawAmountPercentage / 100).toString() +
+                    formatNumberEnUs(
+                      new Decimal(selectedTokenAssetValue?.tokenValue).times(withdrawAmountPercentage / 100).toNumber(),
+                      Number(selectedTokenB.decimals)
+                    ) +
                       " " +
                       selectedTokenB.tokenSymbol}
                 </span>
@@ -582,7 +598,10 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Minimum output</div>
 
                 <span>
-                  {formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals) +
+                  {formatNumberEnUs(
+                    Number(formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals)),
+                    Number(selectedTokenB.decimals)
+                  ) +
                     " " +
                     selectedTokenB.tokenSymbol}
                 </span>
@@ -615,6 +634,8 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           inputValueB={formattedTokenBValue()}
+          tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+          tokenDecimalsB={selectedTokenB.decimals}
           tokenValueA={
             selectedTokenNativeValue?.tokenValue &&
             new Decimal(selectedTokenNativeValue?.tokenValue).times(withdrawAmountPercentage / 100).toString()

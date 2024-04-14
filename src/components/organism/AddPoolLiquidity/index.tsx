@@ -28,6 +28,7 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -571,7 +572,9 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
               <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
                 <div className="flex w-full flex-row text-medium font-normal text-gray-200">
                   <span>
-                    1 {selectedTokenA.nativeTokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokenB.tokenSymbol}
+                    1 {selectedTokenA.nativeTokenSymbol} ={" "}
+                    {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
+                    {selectedTokenB.tokenSymbol}
                   </span>
                 </div>
               </div>
@@ -586,8 +589,15 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                   </div>
                   <span>
                     {inputEdited.inputType === InputEditedType.exactIn
-                      ? selectedTokenAssetValue.tokenValue + " " + selectedTokenB.tokenSymbol
-                      : selectedTokenNativeValue.tokenValue + " " + selectedTokenA.nativeTokenSymbol}
+                      ? formatNumberEnUs(Number(selectedTokenAssetValue.tokenValue), Number(selectedTokenB.decimals)) +
+                        " " +
+                        selectedTokenB.tokenSymbol
+                      : formatNumberEnUs(
+                          Number(selectedTokenNativeValue.tokenValue),
+                          Number(selectedTokenA.nativeTokenDecimals)
+                        ) +
+                        " " +
+                        selectedTokenA.nativeTokenSymbol}
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
@@ -596,12 +606,20 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                   </div>
                   <span>
                     {inputEdited.inputType === InputEditedType.exactIn
-                      ? formatDecimalsFromToken(assetTokenWithSlippage?.tokenValue, selectedTokenB.decimals) +
+                      ? formatNumberEnUs(
+                          Number(formatDecimalsFromToken(assetTokenWithSlippage?.tokenValue, selectedTokenB.decimals)),
+                          Number(selectedTokenB.decimals)
+                        ) +
                         " " +
                         selectedTokenB.tokenSymbol
-                      : formatDecimalsFromToken(
-                          nativeTokenWithSlippage?.tokenValue,
-                          selectedTokenA.nativeTokenDecimals
+                      : formatNumberEnUs(
+                          Number(
+                            formatDecimalsFromToken(
+                              nativeTokenWithSlippage?.tokenValue,
+                              selectedTokenA.nativeTokenDecimals
+                            )
+                          ),
+                          Number(selectedTokenA.nativeTokenDecimals)
                         ) +
                         " " +
                         selectedTokenA.nativeTokenSymbol}
@@ -624,6 +642,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             priceImpact={priceImpact}
             inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue?.tokenValue : ""}
             inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue?.tokenValue : ""}
+            tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+            tokenDecimalsB={selectedTokenB.decimals}
             tokenValueA={
               inputEdited.inputType === InputEditedType.exactIn
                 ? selectedTokenAssetValue?.tokenValue

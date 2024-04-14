@@ -3,6 +3,7 @@ import Modal from "../../atom/Modal";
 import Button from "../../atom/Button";
 import { ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/types/enum";
 import TokenIcon from "../../atom/TokenIcon";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 interface SwapSelectTokenModalProps {
   open: boolean;
@@ -12,7 +13,9 @@ interface SwapSelectTokenModalProps {
   priceImpact?: string;
   swapGasFee?: string;
   tokenValueA?: string;
+  tokenDecimalsA?: string;
   tokenValueB?: string;
+  tokenDecimalsB?: string;
   tokenValueASecond?: string;
   tokenValueBSecond?: string;
   tokenSymbolA?: string;
@@ -32,8 +35,10 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   // priceImpact,
   swapGasFee,
   tokenValueA,
+  tokenDecimalsA = "4",
   tokenValueASecond,
   tokenValueB,
+  tokenDecimalsB = "4",
   tokenValueBSecond,
   tokenSymbolA,
   tokenSymbolB,
@@ -54,7 +59,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.createPool && "You pay"}
           </span>
           <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-4 font-bold text-gray-400">
-            <div className="flex overflow-y-scroll">{inputValueA}</div>
+            <div className="flex overflow-y-scroll">
+              {formatNumberEnUs(Number(inputValueA), Number(tokenDecimalsA))}
+            </div>
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
         </div>
@@ -66,7 +73,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.createPool && "You pay"}
           </span>
           <span className="flex w-full items-center justify-between gap-6 font-unbounded-variable text-heading-4 font-bold text-gray-400">
-            <div className="flex overflow-y-scroll">{inputValueB}</div>
+            <div className="flex overflow-y-scroll">
+              {formatNumberEnUs(Number(inputValueB), Number(tokenDecimalsB))}
+            </div>
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
         </div>
@@ -83,25 +92,25 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                   <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">Expected output</span>
                     <span className="font-inter text-medium text-gray-400">
-                      {tokenValueA} {tokenSymbolA}
+                      {formatNumberEnUs(Number(tokenValueA), Number(tokenDecimalsA))} {tokenSymbolA}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">Minimum output</span>
                     <span className="font-inter text-medium text-gray-400">
-                      {tokenValueB} {tokenSymbolA}
+                      {formatNumberEnUs(Number(tokenValueB), Number(tokenDecimalsB))} {tokenSymbolA}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">Expected output</span>
                     <span className="font-inter text-medium text-gray-400">
-                      {tokenValueASecond} {tokenSymbolB}
+                      {formatNumberEnUs(Number(tokenValueASecond), Number(tokenDecimalsA))} {tokenSymbolB}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="font-inter text-medium text-gray-300">Minimum output</span>
                     <span className="font-inter text-medium text-gray-400">
-                      {tokenValueBSecond} {tokenSymbolB}
+                      {formatNumberEnUs(Number(tokenValueBSecond), Number(tokenDecimalsB))} {tokenSymbolB}
                     </span>
                   </div>
                 </>
@@ -120,7 +129,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                       {inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
                     </span>
                     <span className="font-inter text-medium text-gray-400">
-                      {tokenValueB} {tokenSymbolB}
+                      {formatNumberEnUs(Number(tokenValueB), Number(tokenDecimalsB))} {tokenSymbolB}
                     </span>
                   </div>
                   <div className="flex justify-between text-medium font-normal text-gray-300">

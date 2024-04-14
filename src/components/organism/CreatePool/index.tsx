@@ -464,6 +464,8 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
               tokenValueA={selectedTokenA.nativeTokenSymbol}
               inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue.tokenValue : ""}
               tokenValueB={selectedTokenB.tokenSymbol}
+              tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+              tokenDecimalsB={selectedTokenB.decimals}
               onClose={() => {
                 setReviewModalOpen(false);
               }}

@@ -52,6 +52,7 @@ import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -1487,7 +1488,9 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
               <div className="flex w-full flex-row text-medium font-normal">
                 <div className="flex w-full items-center justify-between">
                   <span>
-                    1 {selectedTokens.tokenA.tokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokens.tokenB.tokenSymbol}
+                    1 {selectedTokens.tokenA.tokenSymbol} ={" "}
+                    {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokens.tokenB.decimals))}{" "}
+                    {selectedTokens.tokenB.tokenSymbol}
                   </span>
                   <button onClick={() => setSwapInfo(!swapInfo)} className="relative z-10">
                     {
@@ -1512,15 +1515,25 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
                   </div>
                   <span className="text-dark-500">
                     {inputEdited.inputType === InputEditedType.exactIn
-                      ? formatDecimalsFromToken(
-                          formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals),
-                          selectedTokens.tokenB.decimals
+                      ? formatNumberEnUs(
+                          Number(
+                            formatDecimalsFromToken(
+                              formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals),
+                              selectedTokens.tokenB.decimals
+                            )
+                          ),
+                          Number(selectedTokens.tokenB.decimals)
                         ) +
                         " " +
                         selectedTokens.tokenB.tokenSymbol
-                      : formatDecimalsFromToken(
-                          formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
-                          selectedTokens.tokenA.decimals
+                      : formatNumberEnUs(
+                          Number(
+                            formatDecimalsFromToken(
+                              formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
+                              selectedTokens.tokenA.decimals
+                            )
+                          ),
+                          Number(selectedTokens.tokenA.decimals)
                         ) +
                         " " +
                         selectedTokens.tokenA.tokenSymbol}
@@ -1533,12 +1546,17 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
                 <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">Liquidity Fee</div>
                   <span className="text-dark-500">
-                    {formatDecimalsFromToken(
-                      liquidityProviderFee(
-                        formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
-                        lpFee
+                    {formatNumberEnUs(
+                      Number(
+                        formatDecimalsFromToken(
+                          liquidityProviderFee(
+                            formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
+                            lpFee
+                          ),
+                          selectedTokens.tokenA.decimals
+                        )
                       ),
-                      selectedTokens.tokenA.decimals
+                      Number(selectedTokens.tokenA.decimals)
                     ) +
                       " " +
                       selectedTokens.tokenA.tokenSymbol}
@@ -1590,6 +1608,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           transactionType={TransactionTypes.swap}
           inputValueA={selectedTokenAValue.tokenValue}
           inputValueB={selectedTokenBValue.tokenValue}
+          tokenDecimalsA={selectedTokens.tokenA.decimals}
+          tokenDecimalsB={selectedTokens.tokenB.decimals}
           tokenValueA={
             inputEdited.inputType === InputEditedType.exactIn
               ? selectedTokenBValue.tokenValue
