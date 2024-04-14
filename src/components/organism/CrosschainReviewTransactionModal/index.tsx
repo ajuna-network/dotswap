@@ -41,10 +41,12 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
   } = state;
 
   const destinationBalanceAfter = formatNumberEnUs(
-    new Decimal(destinationBalance)
-      .plus(crosschainExactTokenAmount)
+    new Decimal(Number(destinationBalance))
+      .plus(Number(crosschainExactTokenAmount))
       .minus(
-        destinationChainName === "Asset Hub" ? messageQueueProcessedFee.crossOut : messageQueueProcessedFee.crossIn
+        destinationChainName === "Asset Hub"
+          ? Number(messageQueueProcessedFee.crossOut)
+          : Number(messageQueueProcessedFee.crossIn)
       )
       .toNumber(),
     Number(tokenDecimals)

@@ -417,8 +417,8 @@ const WithdrawPoolLiquidity = () => {
         nativeTokenSymbol: tokenBalances.tokenSymbol,
         nativeTokenDecimals: tokenBalances.tokenDecimals,
         nativeTokenId: "",
-        nativeTokenBalance: new Decimal(tokenBalances?.balanceAsset?.free)
-          .minus(tokenBalances.balanceAsset.frozen)
+        nativeTokenBalance: new Decimal(tokenBalances?.balanceAsset?.free || 0)
+          .minus(tokenBalances?.balanceAsset?.frozen || 0)
           .toString(),
       });
     }
