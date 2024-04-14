@@ -8,6 +8,8 @@ import Modal from "../../atom/Modal";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
 import { t } from "i18next";
+import { formatNumberEnUs } from "../../../app/util/helper";
+import Decimal from "decimal.js";
 
 type AccordionAssetItemProps = {
   token: AssetListToken;
@@ -56,9 +58,12 @@ const AccordionAssetItem = ({
           token.assetTokenMetadata.decimals as string
         ) || "0";
 
-  const formattedTotalBalance = token.tokenId !== "" ? totalBalance : Number(totalBalance).toFixed(2);
+  const formattedTotalBalance =
+    token.tokenId !== ""
+      ? formatNumberEnUs(Number(totalBalance), Number(token.assetTokenMetadata.decimals))
+      : formatNumberEnUs(Number(totalBalance));
 
-  const usdTotalBalance = (parseFloat(token.spotPrice) * parseFloat(totalBalance)).toFixed(2);
+  const usdTotalBalance = formatNumberEnUs(new Decimal(Number(token.spotPrice) * Number(totalBalance)).toNumber());
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -160,7 +165,7 @@ const AccordionAssetItem = ({
       {children && (
         <div
           ref={itemsElm}
-          className={`flex w-full flex-col overflow-hidden px-8 pb-8 transition-all duration-300 ease-in-out`}
+          className={`flex w-full flex-col px-8 pb-8 transition-all duration-300 ease-in-out`}
           data-height={accordionHeight.itemsElmHeight}
           style={{ height: isOpen ? "100%" : 0 }}
         >

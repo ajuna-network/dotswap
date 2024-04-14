@@ -122,10 +122,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             });
             if (tokenAlreadySelected) {
               setSelectedTokenB({
-                tokenSymbol: tokenAlreadySelected?.assetTokenMetadata?.symbol,
+                tokenSymbol: tokenAlreadySelected.assetTokenMetadata?.symbol,
                 assetTokenId: params?.id,
-                decimals: tokenAlreadySelected?.assetTokenMetadata?.decimals,
-                assetTokenBalance: tokenAlreadySelected?.tokenAsset?.balance,
+                decimals: tokenAlreadySelected.assetTokenMetadata?.decimals,
+                assetTokenBalance: tokenAlreadySelected.tokenAsset?.balance,
               });
             }
           }
@@ -526,7 +526,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenA?.nativeTokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenA.tokenBalance !== ""}
+            showUSDValue={false}
             spotPrice={selectedTokenA.tokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenA.tokenBalance}
             tokenId={selectedTokenA.tokenId}
@@ -541,7 +541,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenB?.assetTokenBalance !== ""}
+            showUSDValue={false}
             spotPrice={selectedTokenB?.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenB.assetTokenBalance ? selectedTokenB.assetTokenBalance : "0"}
             tokenId={selectedTokenB.assetTokenId}

@@ -44,6 +44,7 @@ type AssetTokenProps = {
 type NativeTokenProps = {
   nativeTokenSymbol: any; //to do
   nativeTokenDecimals: any; //to do
+  nativeTokenId: any; //to do
   nativeTokenBalance: any; //to do
 };
 type TokenValueProps = {
@@ -73,6 +74,7 @@ const WithdrawPoolLiquidity = () => {
   const [selectedTokenA, setSelectedTokenA] = useState<NativeTokenProps>({
     nativeTokenSymbol: "",
     nativeTokenDecimals: "",
+    nativeTokenId: "",
     nativeTokenBalance: "",
   });
   const [selectedTokenB, setSelectedTokenB] = useState<AssetTokenProps>({
@@ -410,9 +412,12 @@ const WithdrawPoolLiquidity = () => {
   useEffect(() => {
     if (tokenBalances) {
       setSelectedTokenA({
-        nativeTokenSymbol: tokenBalances?.tokenSymbol,
-        nativeTokenDecimals: tokenBalances?.tokenDecimals,
-        nativeTokenBalance: tokenBalances?.balanceAsset?.free,
+        nativeTokenSymbol: tokenBalances.tokenSymbol,
+        nativeTokenDecimals: tokenBalances.tokenDecimals,
+        nativeTokenId: "",
+        nativeTokenBalance: new Decimal(tokenBalances?.balanceAsset?.free)
+          .minus(tokenBalances.balanceAsset.frozen)
+          .toString(),
       });
     }
   }, [tokenBalances]);
@@ -483,7 +488,7 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenA.nativeTokenBalance !== ""}
+          showUSDValue={false}
           spotPrice={tokenBalances?.spotPrice}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
@@ -491,6 +496,7 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           tokenBalance={selectedTokenA?.nativeTokenBalance}
+          tokenDecimals={selectedTokenA?.nativeTokenDecimals}
           onClick={() => null}
           onSetTokenValue={() => null}
           selectDisabled={true}
@@ -502,10 +508,11 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenB.assetTokenBalance !== ""}
+          showUSDValue={false}
           spotPrice={selectedTokenB.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
           tokenValue={formattedTokenBValue()}
           tokenBalance={selectedTokenB?.assetTokenBalance}
+          tokenDecimals={selectedTokenB?.decimals}
           onClick={() => setIsModalOpen(true)}
           onSetTokenValue={() => null}
           selectDisabled={true}
