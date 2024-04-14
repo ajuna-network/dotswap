@@ -50,8 +50,6 @@ const AccordionAssetItem = ({
     setCrossChainModalOpen(!crossChainModalOpen);
   };
 
-  console.log(token, "token");
-
   const totalBalance =
     token.tokenId === ""
       ? token.tokenAsset.totalBalance
