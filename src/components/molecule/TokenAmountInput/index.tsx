@@ -79,16 +79,6 @@ const TokenAmountInput = ({
 
   const formId = `token-amount-${generateRandomString(4)}`;
 
-  const [fontSize, setFontSize] = useState<number>(28);
-
-  useEffect(() => {
-    if (inputRef.current && inputRef.current.scrollWidth > inputRef.current.offsetWidth) {
-      setFontSize(fontSize - 2);
-    } else {
-      setFontSize(28);
-    }
-  }, [tokenValue]);
-
   return (
     <div
       ref={wrapperRef}
@@ -112,8 +102,7 @@ const TokenAmountInput = ({
           displayType={"input"}
           disabled={disabled || !tokenText}
           placeholder={"0"}
-          className="w-full basis-auto bg-transparent font-unbounded-variable font-bold text-gray-300 outline-none placeholder:text-gray-200"
-          style={{ fontSize: `${fontSize}px` }}
+          className="w-full basis-auto bg-transparent font-unbounded-variable text-heading-4 font-bold text-gray-300 outline-none placeholder:text-gray-200"
           onFocus={() => setIsFocused(true)}
           value={tokenValue}
           isAllowed={({ floatValue }) => {
