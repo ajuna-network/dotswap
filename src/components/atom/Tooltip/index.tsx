@@ -1,5 +1,5 @@
 import TooltipIcon from "../../../assets/img/tooltip-icon.svg?react";
-
+// to do: change svg
 const Tooltip = ({ message }: { message: string }) => {
   return (
     <div className="group relative flex items-center justify-center">
