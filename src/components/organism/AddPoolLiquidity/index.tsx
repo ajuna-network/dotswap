@@ -28,6 +28,7 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -122,10 +123,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             });
             if (tokenAlreadySelected) {
               setSelectedTokenB({
-                tokenSymbol: tokenAlreadySelected?.assetTokenMetadata?.symbol,
+                tokenSymbol: tokenAlreadySelected.assetTokenMetadata?.symbol,
                 assetTokenId: params?.id,
-                decimals: tokenAlreadySelected?.assetTokenMetadata?.decimals,
-                assetTokenBalance: tokenAlreadySelected?.tokenAsset?.balance,
+                decimals: tokenAlreadySelected.assetTokenMetadata?.decimals,
+                assetTokenBalance: tokenAlreadySelected.tokenAsset?.balance,
               });
             }
           }
@@ -135,12 +136,13 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   const handlePool = async () => {
+    if (!tokenBalances) return;
     setReviewModalOpen(false);
     if (waitingForTransaction) {
       clearTimeout(waitingForTransaction);
     }
     setIsTransactionTimeout(false);
-    if (api && selectedTokenNativeValue && selectedTokenAssetValue) {
+    if (api && selectedTokenNativeValue && selectedTokenAssetValue && tokenBalances) {
       const nativeTokenValue = formatInputTokenValue(selectedNativeTokenNumber, selectedTokenA?.nativeTokenDecimals)
         .toLocaleString()
         ?.replace(/[, ]/g, "");
@@ -183,6 +185,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           assetTokenWithSlippage.tokenValue.toString(),
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       } catch (error) {
@@ -435,7 +438,9 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         nativeTokenSymbol: tokenBalances.tokenSymbol,
         nativeTokenDecimals: tokenBalances.tokenDecimals,
         tokenId: "",
-        tokenBalance: new Decimal(tokenBalances.balanceAsset.free).minus(tokenBalances.balanceAsset.frozen).toString(),
+        tokenBalance: new Decimal(tokenBalances?.balanceAsset?.free || 0)
+          .minus(tokenBalances?.balanceAsset?.frozen || 0)
+          .toString(),
       });
     }
   }, [tokenBalances]);
@@ -451,10 +456,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   }, []);
 
   useEffect(() => {
-    if (params?.id) {
+    if (params?.id && tokenBalances) {
       populateAssetToken();
     }
-  }, [params?.id]);
+  }, [params?.id, tokenBalances]);
 
   useEffect(() => {
     if (
@@ -526,7 +531,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenA?.nativeTokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenA.tokenBalance !== ""}
+            showUSDValue={false}
             spotPrice={selectedTokenA.tokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenA.tokenBalance}
             tokenId={selectedTokenA.tokenId}
@@ -541,7 +546,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenB?.assetTokenBalance !== ""}
+            showUSDValue={false}
             spotPrice={selectedTokenB?.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenB.assetTokenBalance ? selectedTokenB.assetTokenBalance : "0"}
             tokenId={selectedTokenB.assetTokenId}
@@ -569,7 +574,9 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
               <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
                 <div className="flex w-full flex-row text-medium font-normal text-gray-200">
                   <span>
-                    1 {selectedTokenA.nativeTokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokenB.tokenSymbol}
+                    1 {selectedTokenA.nativeTokenSymbol} ={" "}
+                    {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
+                    {selectedTokenB.tokenSymbol}
                   </span>
                 </div>
               </div>
@@ -584,8 +591,15 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                   </div>
                   <span>
                     {inputEdited.inputType === InputEditedType.exactIn
-                      ? selectedTokenAssetValue.tokenValue + " " + selectedTokenB.tokenSymbol
-                      : selectedTokenNativeValue.tokenValue + " " + selectedTokenA.nativeTokenSymbol}
+                      ? formatNumberEnUs(Number(selectedTokenAssetValue.tokenValue), Number(selectedTokenB.decimals)) +
+                        " " +
+                        selectedTokenB.tokenSymbol
+                      : formatNumberEnUs(
+                          Number(selectedTokenNativeValue.tokenValue),
+                          Number(selectedTokenA.nativeTokenDecimals)
+                        ) +
+                        " " +
+                        selectedTokenA.nativeTokenSymbol}
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
@@ -594,12 +608,20 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                   </div>
                   <span>
                     {inputEdited.inputType === InputEditedType.exactIn
-                      ? formatDecimalsFromToken(assetTokenWithSlippage?.tokenValue, selectedTokenB.decimals) +
+                      ? formatNumberEnUs(
+                          Number(formatDecimalsFromToken(assetTokenWithSlippage?.tokenValue, selectedTokenB.decimals)),
+                          Number(selectedTokenB.decimals)
+                        ) +
                         " " +
                         selectedTokenB.tokenSymbol
-                      : formatDecimalsFromToken(
-                          nativeTokenWithSlippage?.tokenValue,
-                          selectedTokenA.nativeTokenDecimals
+                      : formatNumberEnUs(
+                          Number(
+                            formatDecimalsFromToken(
+                              nativeTokenWithSlippage?.tokenValue,
+                              selectedTokenA.nativeTokenDecimals
+                            )
+                          ),
+                          Number(selectedTokenA.nativeTokenDecimals)
                         ) +
                         " " +
                         selectedTokenA.nativeTokenSymbol}
@@ -622,6 +644,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             priceImpact={priceImpact}
             inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue?.tokenValue : ""}
             inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue?.tokenValue : ""}
+            tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+            tokenDecimalsB={selectedTokenB.decimals}
             tokenValueA={
               inputEdited.inputType === InputEditedType.exactIn
                 ? selectedTokenAssetValue?.tokenValue

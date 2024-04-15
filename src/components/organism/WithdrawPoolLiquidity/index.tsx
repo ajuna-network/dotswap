@@ -34,6 +34,7 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -44,6 +45,7 @@ type AssetTokenProps = {
 type NativeTokenProps = {
   nativeTokenSymbol: any; //to do
   nativeTokenDecimals: any; //to do
+  nativeTokenId: any; //to do
   nativeTokenBalance: any; //to do
 };
 type TokenValueProps = {
@@ -73,6 +75,7 @@ const WithdrawPoolLiquidity = () => {
   const [selectedTokenA, setSelectedTokenA] = useState<NativeTokenProps>({
     nativeTokenSymbol: "",
     nativeTokenDecimals: "",
+    nativeTokenId: "",
     nativeTokenBalance: "",
   });
   const [selectedTokenB, setSelectedTokenB] = useState<AssetTokenProps>({
@@ -172,7 +175,7 @@ const WithdrawPoolLiquidity = () => {
     });
 
     try {
-      if (api) {
+      if (api && tokenBalances) {
         await removeLiquidity(
           api,
           selectedTokenB.assetTokenId,
@@ -182,6 +185,7 @@ const WithdrawPoolLiquidity = () => {
           assetTokenWithSlippage.tokenValue.toString(),
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       }
@@ -410,9 +414,12 @@ const WithdrawPoolLiquidity = () => {
   useEffect(() => {
     if (tokenBalances) {
       setSelectedTokenA({
-        nativeTokenSymbol: tokenBalances?.tokenSymbol,
-        nativeTokenDecimals: tokenBalances?.tokenDecimals,
-        nativeTokenBalance: tokenBalances?.balanceAsset?.free,
+        nativeTokenSymbol: tokenBalances.tokenSymbol,
+        nativeTokenDecimals: tokenBalances.tokenDecimals,
+        nativeTokenId: "",
+        nativeTokenBalance: new Decimal(tokenBalances?.balanceAsset?.free || 0)
+          .minus(tokenBalances?.balanceAsset?.frozen || 0)
+          .toString(),
       });
     }
   }, [tokenBalances]);
@@ -441,10 +448,10 @@ const WithdrawPoolLiquidity = () => {
   }, []);
 
   useEffect(() => {
-    if (params?.id) {
+    if (params?.id && tokenBalances) {
       populateAssetToken();
     }
-  }, [params?.id]);
+  }, [params?.id, tokenBalances]);
 
   useEffect(() => {
     getNativeAndAssetTokensFromPool();
@@ -483,7 +490,7 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenA.nativeTokenBalance !== ""}
+          showUSDValue={false}
           spotPrice={tokenBalances?.spotPrice}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
@@ -491,6 +498,7 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           tokenBalance={selectedTokenA?.nativeTokenBalance}
+          tokenDecimals={selectedTokenA?.nativeTokenDecimals}
           onClick={() => null}
           onSetTokenValue={() => null}
           selectDisabled={true}
@@ -502,10 +510,11 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenB.assetTokenBalance !== ""}
+          showUSDValue={false}
           spotPrice={selectedTokenB.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
           tokenValue={formattedTokenBValue()}
           tokenBalance={selectedTokenB?.assetTokenBalance}
+          tokenDecimals={selectedTokenB?.decimals}
           onClick={() => setIsModalOpen(true)}
           onSetTokenValue={() => null}
           selectDisabled={true}
@@ -534,7 +543,9 @@ const WithdrawPoolLiquidity = () => {
             <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
               <div className="flex w-full flex-row text-medium font-normal text-gray-200">
                 <span>
-                  1 {selectedTokenA.nativeTokenSymbol} = {assetBPriceOfOneAssetA} {selectedTokenB.tokenSymbol}
+                  1 {selectedTokenA.nativeTokenSymbol} ={" "}
+                  {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
+                  {selectedTokenB.tokenSymbol}
                 </span>
               </div>
             </div>
@@ -548,7 +559,12 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Expected output</div>
                 <span>
                   {selectedTokenNativeValue?.tokenValue &&
-                    new Decimal(selectedTokenNativeValue?.tokenValue).times(withdrawAmountPercentage / 100).toString() +
+                    formatNumberEnUs(
+                      new Decimal(selectedTokenNativeValue?.tokenValue)
+                        .times(withdrawAmountPercentage / 100)
+                        .toNumber(),
+                      Number(selectedTokenA.nativeTokenDecimals)
+                    ) +
                       " " +
                       selectedTokenA.nativeTokenSymbol}
                 </span>
@@ -556,7 +572,12 @@ const WithdrawPoolLiquidity = () => {
               <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
                 <div className="flex">Minimum output</div>
                 <span>
-                  {formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals) +
+                  {formatNumberEnUs(
+                    Number(
+                      formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals)
+                    ),
+                    Number(selectedTokenA.nativeTokenDecimals)
+                  ) +
                     " " +
                     selectedTokenA.nativeTokenSymbol}
                 </span>
@@ -565,7 +586,10 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Expected output</div>
                 <span>
                   {selectedTokenAssetValue?.tokenValue &&
-                    new Decimal(selectedTokenAssetValue?.tokenValue).times(withdrawAmountPercentage / 100).toString() +
+                    formatNumberEnUs(
+                      new Decimal(selectedTokenAssetValue?.tokenValue).times(withdrawAmountPercentage / 100).toNumber(),
+                      Number(selectedTokenB.decimals)
+                    ) +
                       " " +
                       selectedTokenB.tokenSymbol}
                 </span>
@@ -574,7 +598,10 @@ const WithdrawPoolLiquidity = () => {
                 <div className="flex">Minimum output</div>
 
                 <span>
-                  {formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals) +
+                  {formatNumberEnUs(
+                    Number(formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals)),
+                    Number(selectedTokenB.decimals)
+                  ) +
                     " " +
                     selectedTokenB.tokenSymbol}
                 </span>
@@ -607,6 +634,8 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           inputValueB={formattedTokenBValue()}
+          tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+          tokenDecimalsB={selectedTokenB.decimals}
           tokenValueA={
             selectedTokenNativeValue?.tokenValue &&
             new Decimal(selectedTokenNativeValue?.tokenValue).times(withdrawAmountPercentage / 100).toString()

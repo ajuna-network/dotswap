@@ -5,7 +5,7 @@ import { LpTokenAsset } from "../../../app/types";
 import { t } from "i18next";
 import { useNavigate } from "react-router-dom";
 import { ADD_LIQUIDITY_TO_EXISTING, REMOVE_LIQUIDITY_FROM_EXISTING } from "../../../app/router/routes";
-import { urlTo } from "../../../app/util/helper";
+import { urlTo, formatNumberEnUs } from "../../../app/util/helper";
 import { useAppContext } from "../../../state";
 import { ReactNode } from "react";
 
@@ -112,11 +112,11 @@ const PoolDataCard = ({
           <div className="flex flex-col items-start">
             <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
               {nativeTokenIcon}
-              {nativeTokens}
+              {formatNumberEnUs(Number(nativeTokens), 4)}
             </span>
             <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
               {assetTokenIcon}
-              {assetTokens}
+              {formatNumberEnUs(Number(assetTokens), 4)}
             </span>
           </div>
           <p className="text-small font-medium uppercase text-gray-200">{t("poolDataCard.totalTokensLocked")}</p>

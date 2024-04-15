@@ -6,7 +6,12 @@ import { whitelist } from "../../../whitelist";
 import AssetItemChild from "../../molecule/AccordionAssetItem/AssetItemChild";
 import Modal from "../../atom/Modal";
 import SwapTokens from "../SwapTokens";
-import { formatDecimalsFromToken, getSpotPrice } from "../../../app/util/helper";
+import {
+  formatDecimalsFromToken,
+  getSpotPrice,
+  formatNumberEnUs,
+  getAssetTokenSpotPrice,
+} from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
 import { ActionType } from "../../../app/types/enum";
 import ConnectWallet from "../ConnectWallet";
@@ -15,6 +20,7 @@ import LocalStorage from "../../../app/util/localStorage.ts";
 import { WalletAction } from "../../../store/wallet/interface.ts";
 import { t } from "i18next";
 import Decimal from "decimal.js";
+import Tooltip from "../../atom/Tooltip/index.tsx";
 
 const AssetsTable = () => {
   const { state, dispatch } = useAppContext();
@@ -30,7 +36,20 @@ const AssetsTable = () => {
     const newTokens = await Promise.all(
       tokens.map(async (token: AssetListToken) => {
         if (token.tokenId === "1107") {
-          return token;
+          // get price from pool instead of spot price
+          if (!api || !tokenBalances) return token;
+
+          const spotPrice = await getAssetTokenSpotPrice(
+            api,
+            token.tokenId,
+            token.assetTokenMetadata.decimals,
+            tokenBalances
+          );
+
+          return {
+            ...token,
+            spotPrice: spotPrice.toString() || "0",
+          };
         }
         const price = await getSpotPrice(token.assetTokenMetadata.symbol).then((data: string | void) => {
           if (typeof data === "string") {
@@ -51,8 +70,6 @@ const AssetsTable = () => {
     let totalUsdBalance = 0;
 
     tokens.map((token: AssetListToken) => {
-      if (token.tokenId === "1107") return token;
-
       const formattedBalance =
         token.tokenId === tokens[0].tokenId
           ? token.tokenAsset.totalBalance
@@ -129,19 +146,23 @@ const AssetsTable = () => {
     <div className="flex h-full w-full flex-col">
       <div className="flex w-full justify-between px-8 py-4">
         <div className="flex flex-col items-start justify-center">
-          <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
-            {t("dashboardPage.myTotalAssets")}
+          <div className="flex items-center gap-2">
+            <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+              {t("dashboardPage.myTotalAssets")}
+            </div>
+            <Tooltip message={t("dashboardPage.totalAssetsTooltip")} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
-            {!walletConnected ? "$0.00" : "$" + walletBalanceUSD.toFixed(2)}
+            {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(walletBalanceUSD) || 0)}
           </div>
         </div>
         <div className="flex flex-col items-start justify-center">
-          <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+          <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
             {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
+            <Tooltip message={t("dashboardPage.tokenPriceTooltip")} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
-            {!walletConnected ? "$0.00" : "$" + parseFloat(tokenBalances?.spotPrice || "0").toFixed(2)}
+            {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(tokenBalances?.spotPrice || 0))}
           </div>
         </div>
       </div>

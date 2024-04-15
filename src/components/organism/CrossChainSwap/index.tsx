@@ -193,11 +193,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setOriginChainFee();
   }, [crosschainExtrinsic]);
 
-  const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free)).minus(
-    Number(tokenBalances?.balanceAsset?.frozen)
+  const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free || 0)).minus(
+    Number(tokenBalances?.balanceAsset?.frozen || 0)
   );
-  const relayChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceRelay?.free)).minus(
-    Number(tokenBalances?.balanceRelay?.frozen)
+  const relayChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceRelay?.free || 0)).minus(
+    Number(tokenBalances?.balanceRelay?.frozen || 0)
   );
 
   const availableBalanceA =
@@ -283,9 +283,21 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
   const getCrosschainButtonProperties = useMemo(() => {
+    const fees =
+      crosschainSelectedChain.chainA.chainType === "Asset Hub"
+        ? {
+            xcmInstructionsBuffer: new Decimal("0.0005298333"),
+            existentialDeposit: new Decimal("0.000003333"),
+          }
+        : {
+            xcmInstructionsBuffer: new Decimal("0.000371525"),
+            existentialDeposit: new Decimal("0.000333333"),
+          };
     const tokenBalanceDecimal = new Decimal(availableBalanceA)
       .minus(Number(crosschainOriginChainFee))
-      .minus(Number(crosschainDestinationChainFee));
+      .minus(Number(crosschainDestinationChainFee))
+      .minus(Number(fees.xcmInstructionsBuffer))
+      .minus(Number(fees.existentialDeposit));
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {

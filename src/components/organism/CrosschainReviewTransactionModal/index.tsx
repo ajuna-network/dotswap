@@ -5,6 +5,7 @@ import Button from "../../atom/Button";
 import { ButtonVariants, CrosschainTransactionTypes } from "../../../app/types/enum";
 import ArrowRightIcon from "../../../assets/img/arrow-right-long.svg?react";
 import { useAppContext } from "../../../state";
+import Decimal from "decimal.js";
 
 interface CrosschainReviewTransactionModalProps {
   tokenSymbol: string;
@@ -36,13 +37,14 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
     messageQueueProcessedFee,
   } = state;
 
-  const destinationBalanceAfter = (
-    parseFloat(destinationBalance) +
-    parseFloat(crosschainExactTokenAmount) -
-    parseFloat(
-      destinationChainName === "Asset Hub" ? messageQueueProcessedFee.crossOut : messageQueueProcessedFee.crossIn
+  const destinationBalanceAfter = new Decimal(Number(destinationBalance))
+    .plus(Number(crosschainExactTokenAmount))
+    .minus(
+      destinationChainName === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
     )
-  ).toFixed(6);
+    .toNumber();
 
   return (
     <Modal

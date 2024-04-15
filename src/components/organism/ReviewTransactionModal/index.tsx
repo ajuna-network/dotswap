@@ -12,7 +12,9 @@ interface SwapSelectTokenModalProps {
   priceImpact?: string;
   swapGasFee?: string;
   tokenValueA?: string;
+  tokenDecimalsA?: string;
   tokenValueB?: string;
+  tokenDecimalsB?: string;
   tokenValueASecond?: string;
   tokenValueBSecond?: string;
   tokenSymbolA?: string;
@@ -32,8 +34,10 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   // priceImpact,
   swapGasFee,
   tokenValueA,
+  tokenDecimalsA = "4",
   tokenValueASecond,
   tokenValueB,
+  tokenDecimalsB = "4",
   tokenValueBSecond,
   tokenSymbolA,
   tokenSymbolB,
@@ -46,7 +50,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
       <div className="flex w-[360px] flex-col gap-5">
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start" data-dec={tokenDecimalsA}>
           <span className="font-inter text-small text-gray-200">
             {transactionType === TransactionTypes.add && ""}
             {transactionType === TransactionTypes.swap && "You pay"}
@@ -58,7 +62,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
         </div>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start" data-dec={tokenDecimalsB}>
           <span className="font-inter text-small text-gray-200">
             {transactionType === TransactionTypes.add && ""}
             {transactionType === TransactionTypes.swap && "You receive"}

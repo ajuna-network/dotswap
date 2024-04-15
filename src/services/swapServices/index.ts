@@ -8,6 +8,8 @@ import { formatDecimalsFromToken } from "../../app/util/helper";
 import { SwapAction } from "../../store/swap/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { NotificationAction } from "../../store/notifications/interface";
+import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
+import { TokenBalanceData } from "../../app/types";
 
 const { parents } = useGetNetwork();
 
@@ -226,6 +228,7 @@ export const performSwapNativeForAsset = async (
   tokenADecimals: string,
   tokenBDecimals: string,
   reverse: boolean,
+  tokenBalances: TokenBalanceData,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>,
   isExactIn: boolean
 ) => {
@@ -252,8 +255,12 @@ export const performSwapNativeForAsset = async (
   const wallet = getWalletBySource(account.wallet?.extensionName);
 
   result
-    .signAndSend(account.address, { signer: wallet?.signer }, (response) => {
+    .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
       handleSwapTransactionResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
+      if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+        const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
+        balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+      }
     })
     .catch((error) => {
       dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
@@ -274,6 +281,7 @@ export const performSwapAssetForAsset = async (
   assetTokenBValue: string,
   tokenADecimals: string,
   tokenBDecimals: string,
+  tokenBalances: TokenBalanceData,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>,
   isExactIn: boolean
 ) => {
@@ -298,8 +306,18 @@ export const performSwapAssetForAsset = async (
   const wallet = getWalletBySource(account.wallet?.extensionName);
 
   result
-    .signAndSend(account.address, { signer: wallet?.signer }, (response) => {
+    .signAndSend(account.address, { signer: wallet?.signer }, async (response) => {
       handleSwapTransactionResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
+      if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+        const balances = await setTokenBalanceAfterAssetsSwapUpdate(
+          api,
+          account.address,
+          assetTokenAId,
+          assetTokenBId,
+          tokenBalances
+        );
+        balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+      }
     })
     .catch((error) => {
       dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });

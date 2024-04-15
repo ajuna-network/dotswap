@@ -4,6 +4,8 @@ import AssetHubToken from "../../../assets/img/asset-hub.svg?react";
 import { useAppContext } from "../../../state";
 import { t } from "i18next";
 import Decimal from "decimal.js";
+import Tooltip from "../../atom/Tooltip";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 type AssetItemChildProps = {
   isRelayChain?: boolean;
@@ -80,16 +82,17 @@ const AssetItemChild = ({
         <div className="flex items-start justify-end gap-8">
           {balances && balances.lockedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200">
                 {t("assetItem.locked")}
+                <Tooltip message={t("assetItem.lockedTooltip")} />
               </div>
               <div className="text-base font-semibold">
                 {balances && balances.lockedTokenBalance !== 0
-                  ? balances.lockedTokenBalance.toFixed(2) +
+                  ? formatNumberEnUs(balances.lockedTokenBalance) +
                     " " +
                     tokenSymbol +
                     " ($" +
-                    balances.usdLockedTokenBalance.toFixed(2) +
+                    formatNumberEnUs(balances.usdLockedTokenBalance) +
                     ")"
                   : "0"}
               </div>
@@ -103,11 +106,11 @@ const AssetItemChild = ({
               </div>
               <div className="text-base font-semibold">
                 {balances && balances.reservedTokenBalance !== 0
-                  ? balances.reservedTokenBalance.toFixed(2) +
+                  ? formatNumberEnUs(balances.reservedTokenBalance) +
                     " " +
                     tokenSymbol +
                     " ($" +
-                    balances.usdReservedTokenBalance.toFixed(2) +
+                    formatNumberEnUs(balances.usdReservedTokenBalance) +
                     ")"
                   : "0"}
               </div>
@@ -120,11 +123,11 @@ const AssetItemChild = ({
             </div>
             <div className="text-base font-semibold">
               {balances
-                ? balances.freeTokenBalance.toFixed(2) +
+                ? formatNumberEnUs(balances.freeTokenBalance) +
                   " " +
                   tokenSymbol +
                   " ($" +
-                  balances.usdFreeTokenBalance.toFixed(2) +
+                  formatNumberEnUs(balances.usdFreeTokenBalance) +
                   ")"
                 : "0"}
             </div>

@@ -2,9 +2,10 @@ import type { AnyJson } from "@polkadot/types/types/codec";
 import * as Sentry from "@sentry/react";
 import { Decimal } from "decimal.js";
 import { t } from "i18next";
-import { UrlParamType } from "../types";
+import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
+import { getAssetTokenFromNativeToken } from "../../services/tokenServices/index.ts";
 
 export const init = () => {
   // Sentry
@@ -299,4 +300,42 @@ export const generateRandomString = (length: number) => {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
+};
+
+// get asset token price from native token
+export const getAssetTokenSpotPrice = async (
+  api: any,
+  tokenId: string,
+  tokenDecimals: string,
+  tokenBalances: TokenBalanceData
+) => {
+  if (tokenId === "") return tokenBalances.spotPrice;
+  const nativeTokenValue = formatInputTokenValue(tokenBalances?.balanceAsset?.free, tokenBalances.tokenDecimals);
+  const assetToken = await getAssetTokenFromNativeToken(api, tokenId, nativeTokenValue);
+
+  if (!assetToken) return "0";
+
+  const formattedToken =
+    Number(formatDecimalsFromToken(assetToken.toString().replace(/[, ]/g, ""), tokenDecimals)) || 0;
+  if (formattedToken === 0) return "0";
+
+  const spotPrice = new Decimal(tokenBalances.spotPrice).times(
+    new Decimal(tokenBalances?.balanceAsset?.free).div(formattedToken)
+  );
+
+  return spotPrice.toString();
+};
+
+// function for formatting numbers
+export const formatNumberEnUs = (value: number, fixed?: number) => {
+  let decimals = fixed || 2;
+  if (value > 1 && fixed) {
+    decimals = 4;
+  }
+  const formatter = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return formatter.format(value);
 };

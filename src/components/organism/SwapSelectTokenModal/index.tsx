@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { FC } from "react";
 import { TokenProps } from "../../../app/types";
-import { formatDecimalsFromToken } from "../../../app/util/helper";
+import { formatDecimalsFromToken, formatNumberEnUs } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import CheckIcon from "../../../assets/img/selected-token-check.svg?react";
 import Modal from "../../atom/Modal";
@@ -88,11 +88,19 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
                       <div className="flex gap-1">
                         <div className="text-[12px] group-hover:text-white">
                           {item.tokenId && item.tokenAsset.balance !== 0
-                            ? formatDecimalsFromToken(
-                                Number(item.tokenAsset.balance.replace(/[, ]/g, "")),
-                                item.assetTokenMetadata.decimals
+                            ? formatNumberEnUs(
+                                Number(
+                                  formatDecimalsFromToken(
+                                    Number(item.tokenAsset.balance.replace(/[, ]/g, "")),
+                                    item.assetTokenMetadata.decimals
+                                  )
+                                ),
+                                Number(item.assetTokenMetadata.decimals)
                               )
-                            : item.tokenAsset.balance}
+                            : formatNumberEnUs(
+                                Number(item.tokenAsset.balance),
+                                Number(item.assetTokenMetadata.decimals)
+                              )}
                         </div>
                         {item.tokenId === selected.tokenId ? <CheckIcon /> : null}
                       </div>

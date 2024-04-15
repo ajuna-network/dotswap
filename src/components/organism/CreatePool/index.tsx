@@ -120,7 +120,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
       clearTimeout(waitingForTransaction);
     }
     setIsTransactionTimeout(false);
-    if (api && selectedTokenAssetValue && selectedTokenNativeValue) {
+    if (api && selectedTokenAssetValue && selectedTokenNativeValue && tokenBalances) {
       const nativeTokenValue = formatInputTokenValue(selectedNativeTokenNumber, selectedTokenA?.nativeTokenDecimals)
         .toLocaleString()
         ?.replace(/[, ]/g, "");
@@ -140,6 +140,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
           assetTokenWithSlippage.tokenValue,
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
+          tokenBalances,
           dispatch
         );
       } catch (error) {
@@ -262,7 +263,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
         return { label: t("button.enterAmount"), disabled: true };
       }
 
-      if (selectedNativeTokenNumber.gt(tokenBalances.balanceAsset.free)) {
+      if (selectedNativeTokenNumber.gt(tokenBalances.balanceAsset?.free)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -270,7 +271,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
       }
 
       const fee = convertToBaseUnit(poolGasFee);
-      if (selectedNativeTokenNumber.plus(fee).gt(tokenBalances.balanceAsset.free)) {
+      if (selectedNativeTokenNumber.plus(fee).gt(tokenBalances.balanceAsset?.free)) {
         return {
           label: t("button.insufficientTokenAmount", { token: selectedTokenA.nativeTokenSymbol }),
           disabled: true,
@@ -329,7 +330,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
         nativeTokenSymbol: tokenBalances?.tokenSymbol,
         nativeTokenDecimals: tokenBalances?.tokenDecimals,
         tokenId: "",
-        tokenBalance: tokenBalances.balanceAsset.free.toString(),
+        tokenBalance: tokenBalances?.balanceAsset?.free.toString(),
       });
     }
   }, [tokenBalances?.assets]);
@@ -463,6 +464,8 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
               tokenValueA={selectedTokenA.nativeTokenSymbol}
               inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue.tokenValue : ""}
               tokenValueB={selectedTokenB.tokenSymbol}
+              tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
+              tokenDecimalsB={selectedTokenB.decimals}
               onClose={() => {
                 setReviewModalOpen(false);
               }}

@@ -6,8 +6,9 @@ import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import Button from "../../atom/Button";
-import { generateRandomString, getSpotPrice } from "../../../app/util/helper";
+import { generateRandomString, getSpotPrice, formatNumberEnUs } from "../../../app/util/helper";
 import { formatDecimalsFromToken } from "../../../app/util/helper";
+import Decimal from "decimal.js";
 
 type TokenAmountInputProps = {
   tokenText: string;
@@ -63,14 +64,14 @@ const TokenAmountInput = ({
   useEffect(() => {
     if (!showUSDValue) return;
     setSpotPriceLoaded(false);
-    if (spotPrice !== "") {
-      setTokenPriceUSD((parseFloat(spotPrice || "") * parseFloat(tokenBalance || "0")).toFixed(2));
+    if (spotPrice || spotPrice !== "") {
+      setTokenPriceUSD(new Decimal(Number(spotPrice || 0)).mul(Number(tokenBalance || 0)).toFixed(2));
       setSpotPriceLoaded(true);
       return;
     }
     getSpotPrice(tokenText).then((data: string | void) => {
       if (typeof data === "string") {
-        setTokenPriceUSD((parseFloat(data) * parseFloat(tokenBalance || "0")).toFixed(2));
+        setTokenPriceUSD(new Decimal(Number(data)).mul(Number(tokenBalance || 0)).toFixed(2));
         setSpotPriceLoaded(true);
       }
     });
@@ -124,7 +125,7 @@ const TokenAmountInput = ({
             onClick={() => onClick()}
             variant={ButtonVariants.btnSelectGray}
             disabled={disabled || selectDisabled}
-            className="basis-2/5 disabled:basis-[23%]"
+            className="h-[42px] basis-2/5 disabled:basis-[23%]"
           >
             {tokenText}
           </Button>
@@ -133,7 +134,7 @@ const TokenAmountInput = ({
             type="button"
             onClick={() => onClick()}
             variant={ButtonVariants.btnSelectPink}
-            className="basis-[57%]"
+            className="h-[42px] basis-[57%]"
             disabled={disabled}
           >
             {!disabled ? assetLoading ? <LottieSmall /> : t("button.selectToken") : t("button.selectToken")}
@@ -146,12 +147,17 @@ const TokenAmountInput = ({
         ) : null}
         <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
           Balance:{" "}
-          {tokenId && tokenText && Number(tokenBalance) !== 0
-            ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), tokenDecimals as string)
-            : tokenBalance || 0}
+          {tokenId && tokenText && tokenDecimals && tokenBalance
+            ? formatNumberEnUs(
+                Number(
+                  formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), Number(tokenDecimals).toString())
+                ) || 0,
+                Number(tokenDecimals)
+              ) || 0
+            : (tokenDecimals && formatNumberEnUs(Number(tokenBalance), Number(tokenDecimals))) || 0}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
-              <span>&nbsp;(${tokenPriceUSD})</span>
+              <span>&nbsp;(${formatNumberEnUs(Number(tokenPriceUSD))})</span>
             ) : (
               <>
                 &nbsp;
