@@ -6,11 +6,9 @@ import { ButtonVariants, CrosschainTransactionTypes } from "../../../app/types/e
 import ArrowRightIcon from "../../../assets/img/arrow-right-long.svg?react";
 import { useAppContext } from "../../../state";
 import Decimal from "decimal.js";
-import { formatNumberEnUs } from "../../../app/util/helper";
 
 interface CrosschainReviewTransactionModalProps {
   tokenSymbol: string;
-  tokenDecimals: string;
   open: boolean;
   nativeChainName: string;
   destinationChainName: string;
@@ -22,7 +20,6 @@ interface CrosschainReviewTransactionModalProps {
 
 const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps> = ({
   tokenSymbol,
-  tokenDecimals = "4",
   open,
   nativeChainName,
   destinationChainName,
@@ -40,17 +37,14 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
     messageQueueProcessedFee,
   } = state;
 
-  const destinationBalanceAfter = formatNumberEnUs(
-    new Decimal(Number(destinationBalance))
-      .plus(Number(crosschainExactTokenAmount))
-      .minus(
-        destinationChainName === "Asset Hub"
-          ? Number(messageQueueProcessedFee.crossOut)
-          : Number(messageQueueProcessedFee.crossIn)
-      )
-      .toNumber(),
-    Number(tokenDecimals)
-  );
+  const destinationBalanceAfter = new Decimal(Number(destinationBalance))
+    .plus(Number(crosschainExactTokenAmount))
+    .minus(
+      destinationChainName === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
+    )
+    .toNumber();
 
   return (
     <Modal
