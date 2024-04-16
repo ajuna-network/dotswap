@@ -102,12 +102,18 @@ const TokenAmountInput = ({
           displayType={"input"}
           disabled={disabled || !tokenText}
           placeholder={"0"}
-          className="w-full basis-auto bg-transparent font-unbounded-variable text-heading-4 font-bold text-gray-300 outline-none placeholder:text-gray-200"
+          className="no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-4 font-bold text-gray-300 outline-none placeholder:text-gray-200"
           onFocus={() => setIsFocused(true)}
           value={tokenValue}
           isAllowed={({ floatValue }) => {
             if (floatValue) {
-              return floatValue?.toString()?.length <= 15;
+              const value = floatValue.toString();
+              const [, decimalPart] = value.split(".");
+              const decimalCount = decimalPart?.length || 0;
+              if (decimalCount > Number(tokenDecimals)) {
+                return false;
+              }
+              return true;
             } else {
               return true;
             }
