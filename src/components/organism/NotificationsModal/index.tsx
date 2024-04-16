@@ -20,7 +20,7 @@ const NotificationsModal: FC = () => {
   const onModalClose = () => {
     dispatch({ type: ActionType.SET_NOTIFICATION_MODAL_OPEN, payload: false });
   };
-  //
+
   const {
     notificationModalOpen,
     notificationAction,
