@@ -178,11 +178,14 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 
   if (tokenId === "" || tokenSymbol === "GUPPY") return;
 
+  //Nikola: YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=
+  //Robert: bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=
+
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
-      "X-API-KEY": "YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=",
+      "X-API-KEY": "bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=",
     },
   };
   const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
