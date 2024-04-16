@@ -337,5 +337,9 @@ export const formatNumberEnUs = (value: number, fixed?: number) => {
     maximumFractionDigits: decimals,
   });
 
-  return formatter.format(value);
+  let formattedValue = formatter.format(value);
+
+  if (fixed) formattedValue = formattedValue.replace(/\.?0+$/, "");
+
+  return formattedValue;
 };

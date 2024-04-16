@@ -33,8 +33,8 @@ const NotificationsModal: FC = () => {
   } = state;
   const fromTokenSymbol = notificationTransactionDetails?.fromToken?.symbol ?? "";
   const toTokenSymbol = notificationTransactionDetails?.toToken?.symbol ?? "";
-  const fromTokenAmount = formatNumberEnUs(notificationTransactionDetails?.fromToken?.amount ?? 0, 4);
-  const toTokenAmount = formatNumberEnUs(notificationTransactionDetails?.toToken?.amount ?? 0, 4);
+  const fromTokenAmount = formatNumberEnUs(notificationTransactionDetails?.fromToken?.amount ?? 0, 12);
+  const toTokenAmount = formatNumberEnUs(notificationTransactionDetails?.toToken?.amount ?? 0, 12);
 
   const buildToasterMessage = () => {
     return (
