@@ -166,6 +166,7 @@
   "assetItem": {
     "locked": "Locked",
     "lockedTooltip": "Locked balance, not included in your available balance.",
+    "reservedTooltip": "Reserved balance, not included in your available balance.",
     "reserved": "Reserved",
     "available": "Available balance",
     "total": "Total balance"

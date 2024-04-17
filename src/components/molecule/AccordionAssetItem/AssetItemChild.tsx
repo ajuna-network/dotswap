@@ -101,8 +101,9 @@ const AssetItemChild = ({
 
           {balances && balances.reservedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200">
                 {t("assetItem.reserved")}
+                <Tooltip message={t("assetItem.reservedTooltip")} />
               </div>
               <div className="text-base font-semibold">
                 {balances && balances.reservedTokenBalance !== 0
