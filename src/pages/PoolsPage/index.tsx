@@ -29,18 +29,17 @@ const PoolsPage = () => {
         <div className="grid w-full grid-cols-2 gap-4 xl:grid-cols-3 2xl:grid-cols-4">
           {poolsCards.map((item: PoolCardProps, index: number) => {
             return (
-              <div key={index}>
-                <PoolDataCard
-                  tokenPair={item.name}
-                  nativeTokens={item.totalTokensLocked.nativeToken.formattedValue}
-                  assetTokens={item.totalTokensLocked.assetToken.formattedValue}
-                  lpTokenAsset={item.lpTokenAsset}
-                  assetTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[1]} width="32" height="32" />}
-                  nativeTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[0]} width="32" height="32" />}
-                  assetTokenId={item.assetTokenId}
-                  lpTokenId={item.lpTokenId}
-                />
-              </div>
+              <PoolDataCard
+                key={index}
+                tokenPair={item.name}
+                nativeTokens={item.totalTokensLocked.nativeToken.formattedValue}
+                assetTokens={item.totalTokensLocked.assetToken.formattedValue}
+                lpTokenAsset={item.lpTokenAsset}
+                assetTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[1]} width="32" height="32" />}
+                nativeTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[0]} width="32" height="32" />}
+                assetTokenId={item.assetTokenId}
+                lpTokenId={item.lpTokenId}
+              />
             );
           })}
         </div>
