@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import Decimal from "decimal.js";
 import { ButtonVariants, ToasterType } from "../../../app/types/enum";
 import Button from "../../atom/Button";
-import CrossChainBtnIcon from "../../../assets/img/cross-chain-button.svg?react";
+import CrossChainBtnIcon from "../../../assets/img/switch-arrow.svg?react";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
 import DotToken from "../../../assets/img/dot-token.svg?react";
 import AssetHub from "../../../assets/img/asset-hub.svg?react";
@@ -30,6 +30,7 @@ import {
   executeCrossIn,
   executeCrossOut,
 } from "../../../services/crosschain";
+import WarningMessage from "../../atom/WarningMessage";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -56,6 +57,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainSelectedChain,
     crosschainExtrinsic,
     assetLoading,
+    messageQueueProcessedFee,
   } = state;
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -132,7 +134,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   }, [selectedAccount, crosschainDestinationWalletAddress, crosschainSelectedChain, api, relayApi, tokenBalances]);
 
   const handleChainSwitch = () => {
-    // handleTokenValueChange("");
+    if (crosschainExactTokenAmount === "0") {
+      handleTokenValueChange("");
+    }
     dispatch({
       type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
       payload: {
@@ -282,22 +286,29 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const [selectedTokenValue, setSelectedTokenValue] = useState<TokenValueProps>({ tokenValue: "" });
 
-  const getCrosschainButtonProperties = useMemo(() => {
-    const fees =
+  const [maxValue, setMaxValue] = useState<string>("");
+  const [isGreaterThanMax, setIsGreaterThanMax] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!selectedToken.tokenSymbol || !selectedToken.tokenBalance || !crosschainSelectedChain || !selectedAccount)
+      return;
+    calculateCrosschainMaxAmount(
+      availableBalanceA.toString(),
+      selectedToken.decimals,
       crosschainSelectedChain.chainA.chainType === "Asset Hub"
-        ? {
-            xcmInstructionsBuffer: new Decimal("0.0005298333"),
-            existentialDeposit: new Decimal("0.000003333"),
-          }
-        : {
-            xcmInstructionsBuffer: new Decimal("0.000371525"),
-            existentialDeposit: new Decimal("0.000333333"),
-          };
-    const tokenBalanceDecimal = new Decimal(availableBalanceA)
-      .minus(Number(crosschainOriginChainFee))
-      .minus(Number(crosschainDestinationChainFee))
-      .minus(Number(fees.xcmInstructionsBuffer))
-      .minus(Number(fees.existentialDeposit));
+        ? CrosschainTransactionTypes.crossIn
+        : CrosschainTransactionTypes.crossOut,
+      crosschainDestinationWalletAddress,
+      crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+      selectedAccount
+    ).then((value) => {
+      setMaxValue(value);
+    });
+  }, [selectedToken.tokenSymbol, selectedToken.tokenBalance, selectedToken.decimals, crosschainSelectedChain]);
+
+  const tokenBalanceDecimal = new Decimal(Number(maxValue) || 0);
+
+  const getCrosschainButtonProperties = useMemo(() => {
     const tokenDecimals = new Decimal(selectedTokenValue.tokenValue || 0);
     if (tokenBalances?.assets) {
       if (selectedToken.tokenSymbol === "") {
@@ -369,6 +380,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainLoading,
     selectedTokenValue.tokenValue,
     crosschainSelectedChain,
+    maxValue,
   ]);
 
   useEffect(() => {
@@ -400,7 +412,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // And update the input field with the calculated amount after which the extrinsic will be created
   // and the origin chain fee will be calculated
   const handleTokenValueChange = async (value: string, maxTriggered?: boolean) => {
+    console.log("handleTokenValueChange", value);
+
     let payloadTokenValue = "";
+    setIsGreaterThanMax(false);
     if (maxTriggered) {
       payloadTokenValue = await tokenValue(
         await calculateCrosschainMaxAmount(
@@ -418,6 +433,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       payloadTokenValue = await tokenValue(value);
     }
     dispatch({ type: ActionType.SET_CROSSCHAIN_EXACT_TOKEN_AMOUNT, payload: payloadTokenValue });
+
+    if (
+      payloadTokenValue !== "0" &&
+      payloadTokenValue !== "" &&
+      Number(payloadTokenValue) < availableBalanceA.toNumber() &&
+      Number(payloadTokenValue) > tokenBalanceDecimal.toNumber()
+    ) {
+      setIsGreaterThanMax(true);
+    }
 
     const destinationChainFee =
       crosschainSelectedChain.chainA.chainType === "Asset Hub"
@@ -494,6 +518,23 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     }
   };
 
+  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee))
+    .plus(
+      crosschainSelectedChain.chainB.chainType === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
+    )
+    .toString();
+
+  const originChainFee = new Decimal(Number(crosschainOriginChainFee))
+    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.000371525") : Number("0.0005298333"))
+    .plus(
+      crosschainSelectedChain.chainB.chainType === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
+    )
+    .toString();
+
   return (
     <div className="flex w-full max-w-[552px] flex-col items-center justify-center gap-5">
       <div className="relative flex w-full gap-7 rounded-2xl bg-white p-8">
@@ -538,7 +579,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           }}
           disabled={!selectedAccount || crosschainLoading || !tokenBalances?.assets}
         >
-          <CrossChainBtnIcon width={42} height={42} />
+          <CrossChainBtnIcon className="-rotate-90 hover:rotate-90 hover:cursor-pointer" width={42} height={42} />
         </button>
       </div>
       <div className="flex  w-full flex-col gap-[14px] rounded-2xl bg-white p-8">
@@ -594,13 +635,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.originChainFee")}</div>
               <span className="text-gray-400">
-                {crosschainOriginChainFee} {selectedToken.tokenSymbol}
+                ~ {originChainFee} {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.destinationChainFee")}</div>
               <span className="text-gray-400">
-                {crosschainDestinationChainFee} {selectedToken.tokenSymbol}
+                ~ {destinationChainFee} {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium tracking-[.2px]">
@@ -647,6 +688,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         onConfirmTransaction={() => {
           handleCrosschainExec();
         }}
+      />
+      <WarningMessage
+        show={crosschainExactTokenAmount === "0" && selectedTokenValue.tokenValue !== ""}
+        message={t("crosschainPage.insufficientBalanceWarning")}
+      />
+      <WarningMessage
+        show={isGreaterThanMax && selectedTokenValue.tokenValue !== "" && selectedTokenValue.tokenValue !== "0"}
+        message={`${t("crosschainPage.isGreaterThanMaxWarning")} ${maxValue} ${selectedToken.tokenSymbol}`}
       />
     </div>
   );

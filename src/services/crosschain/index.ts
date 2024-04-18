@@ -83,6 +83,10 @@ const recurseMaxAmount = async (
     calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA);
   }
   const calculatedMaxAmountDecimal = new Decimal(calculatedMaxAmount).times(Math.pow(10, parseInt(decimals))).toFixed();
+  // if the calculated max amount is less 0 then return 0
+  if (new Decimal(calculatedMaxAmount).lessThanOrEqualTo(0)) {
+    return { originFeeA, originFeeB: originFeeA, calculatedMaxAmount: "0" };
+  }
   const verifyingExtrinsic =
     crosschainTransactionType === CrosschainTransactionTypes.crossIn
       ? await createCrossInExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress)
