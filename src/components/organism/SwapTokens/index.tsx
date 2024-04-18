@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import Decimal from "decimal.js";
 import { t } from "i18next";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { InputEditedProps, PoolCardProps, TokenDecimalsErrorProps, TokenProps } from "../../../app/types";
 import {
@@ -22,7 +22,6 @@ import {
   liquidityProviderFee,
 } from "../../../app/util/helper";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
-import CustomSlippageIcon from "../../../assets/img/custom-slippage-icon.svg?react";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 import { LottieMedium } from "../../../assets/loader";
@@ -43,7 +42,6 @@ import {
   sellMax,
 } from "../../../services/tokenServices";
 import { useAppContext } from "../../../state";
-import useClickOutside from "../../../app/hooks/useClickOutside";
 import Button from "../../atom/Button";
 import WarningMessage from "../../atom/WarningMessage";
 import TokenAmountInput from "../../molecule/TokenAmountInput";
@@ -74,7 +72,6 @@ type SwapTokensProps = {
 const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
-  const slippageRef = useRef<HTMLInputElement>(null);
 
   const {
     tokenBalances,
@@ -141,17 +138,10 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   const [waitingForTransaction, setWaitingForTransaction] = useState<NodeJS.Timeout>();
   const [priceImpact, setPriceImpact] = useState<string>("");
   const [assetBPriceOfOneAssetA, setAssetBPriceOfOneAssetA] = useState<string>("");
-  const [showSlippage, setShowSlippage] = useState<boolean>(false);
   const [swapInfo, setSwapInfo] = useState<boolean>(false);
 
   const [isMaxValueLessThenMinAmount, setIsMaxValueLessThenMinAmount] = useState<boolean>(false);
 
-  const toggleShowSlippage = () => {
-    setShowSlippage(!showSlippage);
-  };
-  useClickOutside(slippageRef, () => {
-    setShowSlippage(false);
-  });
   const nativeToken = tokenBalances && {
     tokenId: "",
     assetTokenMetadata: {
@@ -1410,22 +1400,13 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
         <div className="relative flex w-full items-center justify-between">
           <h3 className="heading-6 font-unbounded-variable font-normal">{t("swapPage.swap")}</h3>
-          <div ref={slippageRef}>
-            <button onClick={toggleShowSlippage}>
-              <CustomSlippageIcon />
-            </button>
-            {showSlippage && (
-              <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300">
-                <SlippageControl
-                  slippageValue={slippageValue}
-                  setSlippageValue={setSlippageValue}
-                  slippageAuto={slippageAuto}
-                  setSlippageAuto={setSlippageAuto}
-                  loadingState={swapLoading || assetLoading}
-                />
-              </div>
-            )}
-          </div>
+          <SlippageControl
+            slippageValue={slippageValue}
+            setSlippageValue={setSlippageValue}
+            slippageAuto={slippageAuto}
+            setSlippageAuto={setSlippageAuto}
+            loadingState={swapLoading || assetLoading}
+          />
         </div>
         <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
         <TokenAmountInput

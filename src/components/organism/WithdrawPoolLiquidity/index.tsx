@@ -477,14 +477,25 @@ const WithdrawPoolLiquidity = () => {
   return (
     <div className="flex w-full max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
-        <button className="absolute left-[18px] top-[18px]" onClick={navigateToPools}>
-          <BackArrow width={24} height={24} />
-        </button>
-        <h3 className="heading-6 font-unbounded-variable font-normal">
-          {location?.state?.pageType === LiquidityPageType.removeLiquidity
-            ? t("poolsPage.removeLiquidity")
-            : t("poolsPage.addLiquidity")}
-        </h3>
+        <div className="grid w-full grid-cols-4">
+          <button className="col-span-1 flex justify-start" onClick={navigateToPools}>
+            <BackArrow width={24} height={24} />
+          </button>
+          <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal">
+            {location?.state?.pageType === LiquidityPageType.removeLiquidity
+              ? t("poolsPage.removeLiquidity")
+              : t("poolsPage.addLiquidity")}
+          </h3>
+          <div className="col-span-1 flex justify-end">
+            <SlippageControl
+              slippageValue={slippageValue}
+              setSlippageValue={setSlippageValue}
+              slippageAuto={slippageAuto}
+              setSlippageAuto={setSlippageAuto}
+              loadingState={assetLoading}
+            />
+          </div>
+        </div>
         <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
         <TokenAmountInput
           tokenText={selectedTokenA?.nativeTokenSymbol}
@@ -530,13 +541,6 @@ const WithdrawPoolLiquidity = () => {
         />
 
         <div className="mt-1 text-small">{transferGasFeesMessage}</div>
-        <SlippageControl
-          slippageValue={slippageValue}
-          setSlippageValue={setSlippageValue}
-          slippageAuto={slippageAuto}
-          setSlippageAuto={setSlippageAuto}
-          loadingState={assetLoading}
-        />
         {selectedTokenNativeValue?.tokenValue !== "" && selectedTokenAssetValue?.tokenValue !== "" && (
           <>
             {" "}
