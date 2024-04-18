@@ -35,7 +35,7 @@ const UpdateMetadataModal = ({ account }: { account: WalletAccount | undefined }
       }
     };
     updatesCheck();
-  }, [api, relayApi, account]);
+  }, [api, relayApi]);
 
   return (
     <Modal
