@@ -689,6 +689,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             open={reviewModalOpen}
             title="Review adding liquidity"
             transactionType={TransactionTypes.add}
+            swapGasFee={addLiquidityGasFee}
             priceImpact={priceImpact}
             inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue?.tokenValue : ""}
             inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue?.tokenValue : ""}
