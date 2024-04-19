@@ -52,10 +52,10 @@ const NotificationsModal: FC = () => {
           dotAcpToast.success(toasterMessage ?? "", undefined, notificationLink?.href);
           break;
         case ToasterType.PENDING:
-          dotAcpToast.pending(toasterMessage ?? "");
+          dotAcpToast.pending(toasterMessage ?? "", undefined, notificationLink?.href);
           break;
         case ToasterType.ERROR:
-          dotAcpToast.error(notificationMessage ?? "");
+          dotAcpToast.error(notificationMessage ?? "", undefined, notificationLink?.href);
           break;
         default:
           break;

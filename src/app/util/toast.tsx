@@ -4,8 +4,8 @@ import { ToasterType } from "../types/enum";
 
 interface DotAcpToast {
   success: (message: string, options?: ToastOptions, blockExplorerLink?: string) => void;
-  error: (message: string, options?: ToastOptions) => void;
-  pending: (message: string, options?: ToastOptions) => void;
+  error: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
+  pending: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
 }
 
 const dotAcpToast: DotAcpToast = {
@@ -22,15 +22,29 @@ const dotAcpToast: DotAcpToast = {
       options
     );
   },
-  pending: (message, options) => {
+  pending: (message, options, blockExplorerLink) => {
     toast.custom(
-      (t) => <Toaster description={message} close={() => toast.dismiss(t.id)} type={ToasterType.PENDING} />,
+      (t) => (
+        <Toaster
+          description={message}
+          close={() => toast.dismiss(t.id)}
+          type={ToasterType.PENDING}
+          blockExplorerLink={blockExplorerLink}
+        />
+      ),
       options
     );
   },
-  error: (message, options) => {
+  error: (message, options, blockExplorerLink) => {
     toast.custom(
-      (t) => <Toaster description={message} close={() => toast.dismiss(t.id)} type={ToasterType.ERROR} />,
+      (t) => (
+        <Toaster
+          description={message}
+          close={() => toast.dismiss(t.id)}
+          type={ToasterType.ERROR}
+          blockExplorerLink={blockExplorerLink}
+        />
+      ),
       options
     );
   },
