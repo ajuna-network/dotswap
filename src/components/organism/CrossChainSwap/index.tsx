@@ -412,8 +412,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   // And update the input field with the calculated amount after which the extrinsic will be created
   // and the origin chain fee will be calculated
   const handleTokenValueChange = async (value: string, maxTriggered?: boolean) => {
-    console.log("handleTokenValueChange", value);
-
     let payloadTokenValue = "";
     setIsGreaterThanMax(false);
     if (maxTriggered) {
