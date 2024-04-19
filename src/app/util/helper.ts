@@ -342,7 +342,28 @@ export const formatNumberEnUs = (value: number, fixed?: number) => {
 
   let formattedValue = formatter.format(value);
 
-  if (fixed) formattedValue = formattedValue.replace(/\.?0+$/, "");
+  if (fixed) {
+    formattedValue = formattedValue.replace(/\.?0+$/, "");
+    if (formattedValue.endsWith(".")) {
+      formattedValue = formattedValue.slice(0, -1);
+    }
+    if (value < 1 && formattedValue.includes(".")) {
+      const [integerPart, decimalPart] = formattedValue.split(".");
+      if (decimalPart && integerPart === "0") {
+        if (decimalPart[0] !== "0") {
+          formattedValue = formattedValue.slice(0, 4);
+        } else {
+          const firstNonZeroIndex = decimalPart.split("").findIndex((char) => char !== "0");
+          formattedValue = integerPart + "." + decimalPart.slice(0, firstNonZeroIndex + 4);
+        }
+      }
+    }
+  }
+  if (value > 0 && formattedValue === "0.00") {
+    formattedValue = "~ 0.00";
+  } else if (value > 0 && formattedValue === "0") {
+    formattedValue = "~ 0";
+  }
 
   return formattedValue;
 };

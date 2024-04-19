@@ -1448,7 +1448,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
             handleSwitchTokens();
           }}
         >
-          <SwitchArrow />
+          <SwitchArrow className="hover:rotate-180 hover:cursor-pointer" />
         </button>
         <Button
           onClick={() => (getSwapButtonProperties.disabled ? null : setReviewModalOpen(true))}
