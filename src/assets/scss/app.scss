@@ -31,3 +31,12 @@ input::-webkit-inner-spin-button {
     animation: loading 1.5s infinite;
   }
 }
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

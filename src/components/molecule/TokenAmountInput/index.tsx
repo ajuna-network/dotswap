@@ -119,7 +119,6 @@ const TokenAmountInput = ({
             }
           }}
           onValueChange={({ floatValue }) => {
-            if (!floatValue) return;
             onSetTokenValue(floatValue?.toString() || "");
           }}
         />

@@ -37,6 +37,23 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
     messageQueueProcessedFee,
   } = state;
 
+  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee))
+    .plus(
+      destinationChainName === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
+    )
+    .toString();
+
+  const originChainFee = new Decimal(Number(crosschainOriginChainFee))
+    .plus(destinationChainName === "Asset Hub" ? Number("0.000371525") : Number("0.0005298333"))
+    .plus(
+      destinationChainName === "Asset Hub"
+        ? Number(messageQueueProcessedFee.crossOut)
+        : Number(messageQueueProcessedFee.crossIn)
+    )
+    .toString();
+
   const destinationBalanceAfter = new Decimal(Number(destinationBalance))
     .plus(Number(crosschainExactTokenAmount))
     .minus(
@@ -99,7 +116,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {t(`crosschainReviewTransactionModal.originChainFee`)}
             </span>
             <span className="font-inter text-medium text-gray-400">
-              {crosschainOriginChainFee} {tokenSymbol}
+              ~ {originChainFee} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between">
@@ -107,7 +124,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {t(`crosschainReviewTransactionModal.destinationChainFee`)}
             </span>
             <span className="font-inter text-medium text-gray-400">
-              {crosschainDestinationChainFee} {tokenSymbol}
+              ~ {destinationChainFee} {tokenSymbol}
             </span>
           </div>
           {destinationBalance && (
@@ -118,7 +135,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
                   {destinationChainName} {t(`crosschainReviewTransactionModal.newBalance`)}
                 </span>
                 <span className="font-inter text-medium text-gray-400">
-                  {destinationBalanceAfter} {tokenSymbol}
+                  ~ {destinationBalanceAfter} {tokenSymbol}
                 </span>
               </div>
             </>
