@@ -134,7 +134,10 @@ const handleDispatchError = (
     });
     dispatch({
       type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      payload: {
+        text: "View in block explorer",
+        href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+      },
     });
   } else if (response.dispatchError?.toString() === t("pageError.tokenCanNotCreate")) {
     dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP, payload: true });
@@ -147,7 +150,10 @@ const handleDispatchError = (
     });
     dispatch({
       type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      payload: {
+        text: "View in block explorer",
+        href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+      },
     });
   }
   dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
