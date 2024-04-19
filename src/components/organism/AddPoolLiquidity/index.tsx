@@ -152,8 +152,13 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         ?.replace(/[, ]/g, "");
 
       dispatch({
-        type: ActionType.SET_NOTIFICATION_DATA,
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: "liquidity",
+      });
+      dispatch({
+        type: ActionType.ADD_NOTIFICATION,
         payload: {
+          id: "liquidity",
           notificationModalOpen: true,
           notificationAction: t("modal.notifications.addLiquidity"),
           notificationType: ToasterType.PENDING,
@@ -189,10 +194,18 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           dispatch
         );
       } catch (error) {
-        dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-        dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-        dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Error: ${error}` });
-        dispatch({ type: ActionType.SET_NOTIFICATION_LINK, payload: null });
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "liquidity",
+            props: {
+              notificationType: ToasterType.ERROR,
+              notificationTitle: t("modal.notifications.error"),
+              notificationMessage: `Transaction failed: ${error}`,
+              notificationLink: null,
+            },
+          },
+        });
       }
     }
   };

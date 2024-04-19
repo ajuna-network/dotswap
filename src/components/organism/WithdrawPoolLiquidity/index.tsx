@@ -145,10 +145,14 @@ const WithdrawPoolLiquidity = () => {
       clearTimeout(waitingForTransaction);
     }
     setIsTransactionTimeout(false);
-
     dispatch({
-      type: ActionType.SET_NOTIFICATION_DATA,
+      type: ActionType.REMOVE_NOTIFICATION,
+      payload: "liquidity",
+    });
+    dispatch({
+      type: ActionType.ADD_NOTIFICATION,
       payload: {
+        id: "liquidity",
         notificationModalOpen: true,
         notificationAction: t("modal.notifications.removeLiquidity"),
         notificationType: ToasterType.PENDING,
@@ -190,10 +194,18 @@ const WithdrawPoolLiquidity = () => {
         );
       }
     } catch (error) {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Error: ${error}` });
-      dispatch({ type: ActionType.SET_NOTIFICATION_LINK, payload: null });
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "liquidity",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+            notificationLink: null,
+          },
+        },
+      });
     }
   };
 

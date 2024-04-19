@@ -71,12 +71,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   //To do: Temporary notification clear until new notifications are implemented app-wide
 
   useEffect(() => {
-    return () => {
-      dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
-    };
-  }, []);
-
-  useEffect(() => {
     setSelectedToken({
       tokenSymbol: "",
       tokenId: "0",
@@ -464,8 +458,13 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     setReviewModalOpen(false);
     if (crosschainExtrinsic) {
       dispatch({
-        type: ActionType.SET_NOTIFICATION_DATA,
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: "crosschain",
+      });
+      dispatch({
+        type: ActionType.ADD_NOTIFICATION,
         payload: {
+          id: "crosschain",
           notificationModalOpen: true,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,

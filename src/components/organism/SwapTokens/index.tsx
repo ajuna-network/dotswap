@@ -570,10 +570,14 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     setSwapSuccessfulReset(false);
     setIsTransactionTimeout(false);
     setIsMaxValueLessThenMinAmount(false);
-
     dispatch({
-      type: ActionType.SET_NOTIFICATION_DATA,
+      type: ActionType.REMOVE_NOTIFICATION,
+      payload: "swap",
+    });
+    dispatch({
+      type: ActionType.ADD_NOTIFICATION,
       payload: {
+        id: "swap",
         notificationModalOpen: true,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
