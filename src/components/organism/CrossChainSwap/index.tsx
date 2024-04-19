@@ -186,7 +186,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   useEffect(() => {
     if (!api || !relayApi) return;
     createExtrinsic();
-  }, [crosschainExactTokenAmount, selectedToken.tokenBalance, crosschainSelectedChain, api, relayApi]);
+  }, [
+    crosschainExactTokenAmount,
+    selectedToken.tokenBalance,
+    crosschainSelectedChain,
+    api,
+    relayApi,
+    crosschainDestinationWalletAddress,
+  ]);
 
   const setOriginChainFee = async () => {
     const originChainFee = await calculateOriginFee(selectedAccount, crosschainExtrinsic);
