@@ -518,7 +518,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             setSelectedTokenValue({ tokenValue: "" });
           });
       } else {
-        // TODO: implement teleportation across parachains
+        // TODO: implement teleportation across parachains here
       }
     }
   };
