@@ -102,8 +102,8 @@ const ConnectWallet = () => {
     <>
       <div className="flex items-center justify-end gap-8">
         {pendingNotifications && pendingNotifications.length > 0 && (
-          <div className="font-large group relative flex cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center lowercase leading-none text-white">
-            <span>
+          <div className="group relative flex cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center">
+            <span className="font-medium lowercase leading-none text-white">
               {pendingNotifications.length} {t("modal.notifications.pending")}
             </span>
             <CircleLoader className="animate-spin" />
