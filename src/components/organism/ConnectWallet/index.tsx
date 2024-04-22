@@ -1,4 +1,4 @@
-import { ActionType, ButtonVariants, WalletConnectSteps } from "../../../app/types/enum.ts";
+import { ActionType, ButtonVariants, ToasterType, WalletConnectSteps } from "../../../app/types/enum.ts";
 import { reduceAddress } from "../../../app/util/helper";
 import {
   connectWalletAndFetchBalance,
@@ -19,10 +19,13 @@ import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader/index.tsx";
 import { TokenBalanceData } from "../../../app/types/index.ts";
 import Identicon from "@polkadot/react-identicon";
+import CircleLoader from "../../../assets/img/rotating-circle.svg?react";
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
-  const { walletConnectLoading, api, relayApi, accounts } = state;
+  const { walletConnectLoading, api, relayApi, accounts, notifications } = state;
+
+  const pendingNotifications = notifications.filter((n) => n.notificationType === ToasterType.PENDING);
 
   const [walletAccount, setWalletAccount] = useState<WalletAccount>({} as WalletAccount);
   const [modalStep, setModalStep] = useState<ModalStepProps>({ step: WalletConnectSteps.stepExtensions });
@@ -98,6 +101,14 @@ const ConnectWallet = () => {
   return (
     <>
       <div className="flex items-center justify-end gap-8">
+        {pendingNotifications && pendingNotifications.length > 0 && (
+          <div className="font-large flex items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center lowercase leading-none text-white">
+            <span>
+              {pendingNotifications.length} {t("modal.notifications.pending")}
+            </span>
+            <CircleLoader className="animate-spin" />
+          </div>
+        )}
         {walletConnected ? (
           <>
             {walletConnectLoading ? (
