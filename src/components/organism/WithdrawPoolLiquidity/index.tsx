@@ -596,11 +596,11 @@ const WithdrawPoolLiquidity = () => {
                 })}
               >
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                  <div className="flex">Price impact</div>
+                  <div className="flex">{t("poolsPage.priceImpact")}</div>
                   <span>~ {priceImpact}%</span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                  <div className="flex">{`Minimum withdrawn (${selectedTokenA.nativeTokenSymbol})`}</div>
+                  <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenA.nativeTokenSymbol})`}</div>
                   <span>
                     {formatNumberEnUs(
                       Number(
@@ -613,7 +613,7 @@ const WithdrawPoolLiquidity = () => {
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                  <div className="flex">{`Minimum withdrawn (${selectedTokenB.tokenSymbol})`}</div>
+                  <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenB.tokenSymbol})`}</div>
 
                   <span>
                     {formatNumberEnUs(
@@ -625,13 +625,13 @@ const WithdrawPoolLiquidity = () => {
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                  <div className="flex">Transaction Cost</div>
+                  <div className="flex">{t("poolsPage.transactionCost")}</div>
                   <span className="text-dark-500">{addLiquidityGasFee}</span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                  <div className="flex">Route</div>
+                  <div className="flex">{t("poolsPage.route")}</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
-                    <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                    <HubIcon /> <span className="text-dark-500">{t("poolsPage.assetHub")}</span>
                   </div>
                 </div>
               </div>

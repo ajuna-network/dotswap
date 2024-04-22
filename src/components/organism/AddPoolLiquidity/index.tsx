@@ -633,14 +633,14 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                   })}
                 >
                   <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                    <div className="flex">Price impact</div>
+                    <div className="flex">{t("poolsPage.priceImpact")}</div>
                     <span>~ {priceImpact}%</span>
                   </div>
                   <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                     <div className="flex">
                       {inputEdited.inputType === InputEditedType.exactIn
-                        ? `Minimum deposited (${selectedTokenB.tokenSymbol})`
-                        : `Maximum deposited (${selectedTokenB.tokenSymbol})`}
+                        ? `${t("poolsPage.minimumDeposited")} (${selectedTokenB.tokenSymbol})`
+                        : `${t("poolsPage.maximumDeposited")} (${selectedTokenB.tokenSymbol})`}
                     </div>
                     <span>
                       {inputEdited.inputType === InputEditedType.exactIn
@@ -666,13 +666,13 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                     </span>
                   </div>
                   <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
-                    <div className="flex">Transaction Cost</div>
+                    <div className="flex">{t("poolsPage.transactionCost")}</div>
                     <span className="text-dark-500">{addLiquidityGasFee}</span>
                   </div>
                   <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex text-dark-500">Route</div>
+                    <div className="flex text-dark-500">{t("poolsPage.route")}</div>
                     <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
-                      <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                      <HubIcon /> <span className="text-dark-500">{t("poolsPage.assetHub")}</span>
                     </div>
                   </div>
                 </div>
