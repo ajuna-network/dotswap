@@ -35,6 +35,9 @@ import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
 import { formatNumberEnUs } from "../../../app/util/helper";
+import classNames from "classnames";
+import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
+import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -65,7 +68,7 @@ const WithdrawPoolLiquidity = () => {
     api,
     selectedAccount,
     pools,
-    transferGasFeesMessage,
+    addLiquidityGasFee,
     withdrawLiquidityLoading,
     assetLoading,
     isTokenCanNotCreateWarningPools,
@@ -99,6 +102,7 @@ const WithdrawPoolLiquidity = () => {
   const [waitingForTransaction, setWaitingForTransaction] = useState<NodeJS.Timeout>();
   const [assetBPriceOfOneAssetA, setAssetBPriceOfOneAssetA] = useState<string>("");
   const [priceImpact, setPriceImpact] = useState<string>("");
+  const [poolInfo, setPoolInfo] = useState(false);
 
   const navigateToPools = () => {
     navigate(urlTo("/" + SWAP_ROUTE), {
@@ -489,14 +493,25 @@ const WithdrawPoolLiquidity = () => {
   return (
     <div className="flex w-full max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
-        <button className="absolute left-[18px] top-[18px]" onClick={navigateToPools}>
-          <BackArrow width={24} height={24} />
-        </button>
-        <h3 className="heading-6 font-unbounded-variable font-normal">
-          {location?.state?.pageType === LiquidityPageType.removeLiquidity
-            ? t("poolsPage.removeLiquidity")
-            : t("poolsPage.addLiquidity")}
-        </h3>
+        <div className="grid w-full grid-cols-4">
+          <button className="col-span-1 flex justify-start" onClick={navigateToPools}>
+            <BackArrow width={24} height={24} />
+          </button>
+          <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal">
+            {location?.state?.pageType === LiquidityPageType.removeLiquidity
+              ? t("poolsPage.removeLiquidity")
+              : t("poolsPage.addLiquidity")}
+          </h3>
+          <div className="col-span-1 flex justify-end">
+            <SlippageControl
+              slippageValue={slippageValue}
+              setSlippageValue={setSlippageValue}
+              slippageAuto={slippageAuto}
+              setSlippageAuto={setSlippageAuto}
+              loadingState={assetLoading}
+            />
+          </div>
+        </div>
         <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
         <TokenAmountInput
           tokenText={selectedTokenA?.nativeTokenSymbol}
@@ -540,87 +555,6 @@ const WithdrawPoolLiquidity = () => {
           onChange={(value) => setWithdrawAmountPercentage(value)}
           disabled={withdrawLiquidityLoading}
         />
-
-        <div className="mt-1 text-small">{transferGasFeesMessage}</div>
-        <SlippageControl
-          slippageValue={slippageValue}
-          setSlippageValue={setSlippageValue}
-          slippageAuto={slippageAuto}
-          setSlippageAuto={setSlippageAuto}
-          loadingState={assetLoading}
-        />
-        {selectedTokenNativeValue?.tokenValue !== "" && selectedTokenAssetValue?.tokenValue !== "" && (
-          <>
-            {" "}
-            <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4">
-              <div className="flex w-full flex-row text-medium font-normal text-gray-200">
-                <span>
-                  1 {selectedTokenA.nativeTokenSymbol} ={" "}
-                  {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
-                  {selectedTokenB.tokenSymbol}
-                </span>
-              </div>
-            </div>
-            <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6">
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Price impact</div>
-                <span>~ {priceImpact}%</span>
-              </div>
-
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Expected output</div>
-                <span>
-                  {selectedTokenNativeValue?.tokenValue &&
-                    formatNumberEnUs(
-                      new Decimal(selectedTokenNativeValue?.tokenValue)
-                        .times(withdrawAmountPercentage / 100)
-                        .toNumber(),
-                      Number(selectedTokenA.nativeTokenDecimals)
-                    ) +
-                      " " +
-                      selectedTokenA.nativeTokenSymbol}
-                </span>
-              </div>
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Minimum output</div>
-                <span>
-                  {formatNumberEnUs(
-                    Number(
-                      formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals)
-                    ),
-                    Number(selectedTokenA.nativeTokenDecimals)
-                  ) +
-                    " " +
-                    selectedTokenA.nativeTokenSymbol}
-                </span>
-              </div>
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Expected output</div>
-                <span>
-                  {selectedTokenAssetValue?.tokenValue &&
-                    formatNumberEnUs(
-                      new Decimal(selectedTokenAssetValue?.tokenValue).times(withdrawAmountPercentage / 100).toNumber(),
-                      Number(selectedTokenB.decimals)
-                    ) +
-                      " " +
-                      selectedTokenB.tokenSymbol}
-                </span>
-              </div>
-              <div className="flex w-full flex-row justify-between text-medium font-normal text-gray-200">
-                <div className="flex">Minimum output</div>
-
-                <span>
-                  {formatNumberEnUs(
-                    Number(formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals)),
-                    Number(selectedTokenB.decimals)
-                  ) +
-                    " " +
-                    selectedTokenB.tokenSymbol}
-                </span>
-              </div>
-            </div>
-          </>
-        )}
         <Button
           onClick={() => (getWithdrawButtonProperties.disabled ? null : setReviewModalOpen(true))}
           variant={ButtonVariants.btnInteractivePink}
@@ -628,6 +562,111 @@ const WithdrawPoolLiquidity = () => {
         >
           {withdrawLiquidityLoading ? <LottieMedium /> : getWithdrawButtonProperties.label}
         </Button>
+        {selectedTokenNativeValue?.tokenValue !== "" && selectedTokenAssetValue?.tokenValue !== "" && (
+          <>
+            {" "}
+            <div
+              className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
+                " translate-all  easy-and-out h-[52px] duration-300": !poolInfo,
+                "translate-all easy-and-out h-[222px] duration-300 ": poolInfo,
+              })}
+            >
+              <div className="flex w-full flex-row text-medium font-normal">
+                <div className="flex w-full items-center justify-between">
+                  <span>
+                    1 {selectedTokenA.nativeTokenSymbol} ={" "}
+                    {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
+                    {selectedTokenB.tokenSymbol}
+                  </span>
+                  <button onClick={() => setPoolInfo(!poolInfo)} className="relative z-10">
+                    {
+                      <ArrowDownIcon
+                        className={classNames("transform transition-transform duration-300", {
+                          "rotate-[-180deg]": poolInfo,
+                        })}
+                      />
+                    }
+                  </button>
+                </div>
+              </div>
+              <div
+                className={classNames("flex flex-col justify-between gap-2", {
+                  "translate-all easy-and-out  bottom-[-170px] opacity-0 duration-300": !poolInfo,
+                  "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
+                })}
+              >
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Price impact</div>
+                  <span>~ {priceImpact}%</span>
+                </div>
+
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Expected output</div>
+                  <span>
+                    {selectedTokenNativeValue?.tokenValue &&
+                      formatNumberEnUs(
+                        new Decimal(selectedTokenNativeValue?.tokenValue)
+                          .times(withdrawAmountPercentage / 100)
+                          .toNumber(),
+                        Number(selectedTokenA.nativeTokenDecimals)
+                      ) +
+                        " " +
+                        selectedTokenA.nativeTokenSymbol}
+                  </span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Minimum output</div>
+                  <span>
+                    {formatNumberEnUs(
+                      Number(
+                        formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals)
+                      ),
+                      Number(selectedTokenA.nativeTokenDecimals)
+                    ) +
+                      " " +
+                      selectedTokenA.nativeTokenSymbol}
+                  </span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Expected output</div>
+                  <span>
+                    {selectedTokenAssetValue?.tokenValue &&
+                      formatNumberEnUs(
+                        new Decimal(selectedTokenAssetValue?.tokenValue)
+                          .times(withdrawAmountPercentage / 100)
+                          .toNumber(),
+                        Number(selectedTokenB.decimals)
+                      ) +
+                        " " +
+                        selectedTokenB.tokenSymbol}
+                  </span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Minimum output</div>
+
+                  <span>
+                    {formatNumberEnUs(
+                      Number(formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals)),
+                      Number(selectedTokenB.decimals)
+                    ) +
+                      " " +
+                      selectedTokenB.tokenSymbol}
+                  </span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Transaction Cost</div>
+                  <span className="text-dark-500">{addLiquidityGasFee}</span>
+                </div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex">Route</div>
+                  <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
+                    <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
         <PoolSelectTokenModal
           onSelect={setSelectedTokenB}
           onClose={() => setIsModalOpen(false)}
