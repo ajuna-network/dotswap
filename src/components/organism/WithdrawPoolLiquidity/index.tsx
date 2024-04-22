@@ -568,11 +568,11 @@ const WithdrawPoolLiquidity = () => {
             <div
               className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
                 " translate-all  easy-and-out h-[52px] duration-300": !poolInfo,
-                "translate-all easy-and-out h-[222px] duration-300 ": poolInfo,
+                "translate-all easy-and-out h-[180px] duration-300 ": poolInfo,
               })}
             >
               <div className="flex w-full flex-row text-medium font-normal">
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between text-dark-500">
                   <span>
                     1 {selectedTokenA.nativeTokenSymbol} ={" "}
                     {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
@@ -595,27 +595,12 @@ const WithdrawPoolLiquidity = () => {
                   "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
                 })}
               >
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                   <div className="flex">Price impact</div>
                   <span>~ {priceImpact}%</span>
                 </div>
-
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Expected output</div>
-                  <span>
-                    {selectedTokenNativeValue?.tokenValue &&
-                      formatNumberEnUs(
-                        new Decimal(selectedTokenNativeValue?.tokenValue)
-                          .times(withdrawAmountPercentage / 100)
-                          .toNumber(),
-                        Number(selectedTokenA.nativeTokenDecimals)
-                      ) +
-                        " " +
-                        selectedTokenA.nativeTokenSymbol}
-                  </span>
-                </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Minimum output</div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                  <div className="flex">{`Minimum withdrawn (${selectedTokenA.nativeTokenSymbol})`}</div>
                   <span>
                     {formatNumberEnUs(
                       Number(
@@ -627,22 +612,8 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenA.nativeTokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Expected output</div>
-                  <span>
-                    {selectedTokenAssetValue?.tokenValue &&
-                      formatNumberEnUs(
-                        new Decimal(selectedTokenAssetValue?.tokenValue)
-                          .times(withdrawAmountPercentage / 100)
-                          .toNumber(),
-                        Number(selectedTokenB.decimals)
-                      ) +
-                        " " +
-                        selectedTokenB.tokenSymbol}
-                  </span>
-                </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Minimum output</div>
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                  <div className="flex">{`Minimum withdrawn (${selectedTokenB.tokenSymbol})`}</div>
 
                   <span>
                     {formatNumberEnUs(
@@ -653,11 +624,11 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenB.tokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                   <div className="flex">Transaction Cost</div>
                   <span className="text-dark-500">{addLiquidityGasFee}</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                   <div className="flex">Route</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
                     <HubIcon /> <span className="text-dark-500">Asset Hub</span>

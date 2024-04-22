@@ -605,10 +605,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
               <div
                 className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
                   " translate-all  easy-and-out h-[52px] duration-300": !poolInfo,
-                  "translate-all easy-and-out h-[185px] duration-300 ": poolInfo,
+                  "translate-all easy-and-out h-[150px] duration-300 ": poolInfo,
                 })}
               >
-                <div className="flex w-full flex-row text-medium font-normal">
+                <div className="flex w-full flex-row text-medium font-normal text-dark-500">
                   <div className="flex w-full items-center justify-between">
                     <span>
                       1 {selectedTokenA.nativeTokenSymbol} ={" "}
@@ -632,33 +632,15 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                     "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
                   })}
                 >
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                     <div className="flex">Price impact</div>
                     <span>~ {priceImpact}%</span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                     <div className="flex">
-                      {inputEdited.inputType === InputEditedType.exactIn ? "Expected output" : "Expected input"}
-                    </div>
-                    <span>
                       {inputEdited.inputType === InputEditedType.exactIn
-                        ? formatNumberEnUs(
-                            Number(selectedTokenAssetValue.tokenValue),
-                            Number(selectedTokenB.decimals)
-                          ) +
-                          " " +
-                          selectedTokenB.tokenSymbol
-                        : formatNumberEnUs(
-                            Number(selectedTokenNativeValue.tokenValue),
-                            Number(selectedTokenA.nativeTokenDecimals)
-                          ) +
-                          " " +
-                          selectedTokenA.nativeTokenSymbol}
-                    </span>
-                  </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex">
-                      {inputEdited.inputType === InputEditedType.exactIn ? "Minimum output" : "Maximum input"}
+                        ? `Minimum deposited (${selectedTokenB.tokenSymbol})`
+                        : `Maximum deposited (${selectedTokenB.tokenSymbol})`}
                     </div>
                     <span>
                       {inputEdited.inputType === InputEditedType.exactIn
@@ -683,12 +665,12 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                           selectedTokenA.nativeTokenSymbol}
                     </span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
                     <div className="flex">Transaction Cost</div>
                     <span className="text-dark-500">{addLiquidityGasFee}</span>
                   </div>
                   <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex">Route</div>
+                    <div className="flex text-dark-500">Route</div>
                     <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
                       <HubIcon /> <span className="text-dark-500">Asset Hub</span>
                     </div>
