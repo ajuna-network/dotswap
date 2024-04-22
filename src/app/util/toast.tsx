@@ -14,7 +14,9 @@ const dotAcpToast: DotAcpToast = {
       (t) => (
         <Toaster
           description={message}
-          close={() => toast.dismiss(t.id)}
+          close={() => {
+            toast.remove(t.id);
+          }}
           type={ToasterType.SUCCESS}
           blockExplorerLink={blockExplorerLink}
         />
@@ -27,7 +29,9 @@ const dotAcpToast: DotAcpToast = {
       (t) => (
         <Toaster
           description={message}
-          close={() => toast.dismiss(t.id)}
+          close={() => {
+            toast.remove(t.id);
+          }}
           type={ToasterType.PENDING}
           blockExplorerLink={blockExplorerLink}
         />
@@ -40,7 +44,9 @@ const dotAcpToast: DotAcpToast = {
       (t) => (
         <Toaster
           description={message}
-          close={() => toast.dismiss(t.id)}
+          close={() => {
+            toast.remove(t.id);
+          }}
           type={ToasterType.ERROR}
           blockExplorerLink={blockExplorerLink}
         />
