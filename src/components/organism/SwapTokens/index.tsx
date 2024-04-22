@@ -657,22 +657,22 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         );
       }
     } finally {
-      setSelectedTokens({
-        tokenA: {
-          tokenSymbol: "",
-          tokenId: "0",
-          decimals: "",
-          tokenBalance: "",
-        },
-        tokenB: {
-          tokenSymbol: "",
-          tokenId: "0",
-          decimals: "",
-          tokenBalance: "",
-        },
-      });
-      setSelectedTokenAValue({ tokenValue: "" });
-      setSelectedTokenBValue({ tokenValue: "" });
+      // setSelectedTokens({
+      //   tokenA: {
+      //     tokenSymbol: "",
+      //     tokenId: "0",
+      //     decimals: "",
+      //     tokenBalance: "",
+      //   },
+      //   tokenB: {
+      //     tokenSymbol: "",
+      //     tokenId: "0",
+      //     decimals: "",
+      //     tokenBalance: "",
+      //   },
+      // });
+      // setSelectedTokenAValue({ tokenValue: "" });
+      // setSelectedTokenBValue({ tokenValue: "" });
     }
   };
 
