@@ -312,8 +312,9 @@ export const getAssetTokenSpotPrice = async (
   tokenDecimals: string,
   tokenBalances: TokenBalanceData
 ) => {
+  if (!api || !Object.keys(api).length || !tokenBalances || !Object.keys(tokenBalances).length) return "0";
   if (tokenId === "") return tokenBalances.spotPrice;
-  const nativeTokenValue = formatInputTokenValue(tokenBalances?.balanceAsset?.free, tokenBalances.tokenDecimals);
+  const nativeTokenValue = formatInputTokenValue(tokenBalances.balanceAsset.free, tokenBalances.tokenDecimals);
   const assetToken = await getAssetTokenFromNativeToken(api, tokenId, nativeTokenValue);
 
   if (!assetToken) return "0";

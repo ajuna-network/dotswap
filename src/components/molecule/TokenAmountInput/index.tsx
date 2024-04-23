@@ -61,33 +61,39 @@ const TokenAmountInput = ({
   const [tokenPriceUSD, setTokenPriceUSD] = useState<string>("");
   const [spotPriceLoaded, setSpotPriceLoaded] = useState<boolean>(false);
 
+  const formattedTokenBalance =
+    tokenId && tokenText && tokenDecimals && tokenBalance
+      ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), Number(tokenDecimals).toString()) || "0"
+      : tokenBalance || "0";
+
   useEffect(() => {
     if (!showUSDValue) return;
     setSpotPriceLoaded(false);
     if (spotPrice || spotPrice !== "") {
-      setTokenPriceUSD(new Decimal(Number(spotPrice || 0)).mul(Number(tokenBalance || 0)).toFixed(2));
+      setTokenPriceUSD(new Decimal(Number(spotPrice || 0)).mul(Number(formattedTokenBalance || 0)).toFixed(2));
       setSpotPriceLoaded(true);
       return;
     }
     getSpotPrice(tokenText).then((data: string | void) => {
       if (typeof data === "string") {
-        setTokenPriceUSD(new Decimal(Number(data)).mul(Number(tokenBalance || 0)).toFixed(2));
+        setTokenPriceUSD(new Decimal(Number(data)).mul(Number(formattedTokenBalance || 0)).toFixed(2));
         setSpotPriceLoaded(true);
       }
     });
-  }, [tokenText, tokenBalance]);
+  }, [tokenText, tokenBalance, spotPrice, showUSDValue]);
 
   const formId = `token-amount-${generateRandomString(4)}`;
 
-  const formattedDecimalsFromToken =
-    tokenDecimals && tokenBalance
-      ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), Number(tokenDecimals).toString())
-      : "0";
-
-  const formattedTokenBalance =
-    tokenId && formattedDecimalsFromToken
-      ? formatNumberEnUs(Number(formattedDecimalsFromToken) || 0, Number(tokenDecimals)) || 0
-      : (tokenDecimals && formatNumberEnUs(Number(tokenBalance), Number(tokenDecimals))) || 0;
+  const [inputValueUsd, setInputValueUsd] = useState<string>("");
+  useEffect(() => {
+    if (inputRef.current?.value !== undefined && inputRef.current?.value !== null && spotPrice && spotPrice !== "") {
+      setInputValueUsd(
+        formatNumberEnUs(new Decimal(Number(inputRef.current?.value || 0)).mul(Number(spotPrice || 0)).toNumber())
+      );
+    } else {
+      setInputValueUsd("");
+    }
+  }, [inputRef.current?.value, spotPrice, showUSDValue]);
 
   return (
     <div
@@ -100,7 +106,7 @@ const TokenAmountInput = ({
         }
       )}
     >
-      <div className="flex">
+      <div className="flex w-full">
         <label htmlFor={formId} className="absolute top-4 text-small font-normal text-gray-200">
           {labelText}
         </label>
@@ -160,11 +166,11 @@ const TokenAmountInput = ({
         {withdrawAmountPercentage ? (
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
         ) : null}
-        <div
-          className="flex w-full justify-end pr-1 text-medium text-gray-200"
-          data-balance={formattedDecimalsFromToken ? `${formattedDecimalsFromToken}` : ""}
-        >
-          Balance: {formattedTokenBalance}
+        {inputValueUsd !== "" && !withdrawAmountPercentage ? (
+          <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">${inputValueUsd}</span>
+        ) : null}
+        <div className="flex flex-1 justify-end pr-1 text-medium text-gray-200">
+          Balance: {formatNumberEnUs(Number(formattedTokenBalance), Number(tokenDecimals)) || 0}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
               <span>&nbsp;(${formatNumberEnUs(Number(tokenPriceUSD))})</span>
