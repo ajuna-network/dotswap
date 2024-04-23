@@ -13,7 +13,9 @@ const MainLayout = () => {
         <div className="flex w-full flex-col px-4">
           <div className="z-[9999] flex w-full justify-end">
             <ConnectWallet />
-            <NotificationsModal />
+            <NotificationsModal id="swap" />
+            <NotificationsModal id="crosschain" />
+            <NotificationsModal id="liquidity" />
           </div>
           <Outlet />
         </div>

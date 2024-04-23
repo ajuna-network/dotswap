@@ -158,8 +158,13 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
         ?.replace(/[, ]/g, "");
 
       dispatch({
-        type: ActionType.SET_NOTIFICATION_DATA,
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: "liquidity",
+      });
+      dispatch({
+        type: ActionType.ADD_NOTIFICATION,
         payload: {
+          id: "liquidity",
           notificationModalOpen: true,
           notificationAction: t("modal.notifications.addLiquidity"),
           notificationType: ToasterType.PENDING,
@@ -195,10 +200,18 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           dispatch
         );
       } catch (error) {
-        dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-        dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-        dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Error: ${error}` });
-        dispatch({ type: ActionType.SET_NOTIFICATION_LINK, payload: null });
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "liquidity",
+            props: {
+              notificationType: ToasterType.ERROR,
+              notificationTitle: t("modal.notifications.error"),
+              notificationMessage: `Transaction failed: ${error}`,
+              notificationLink: null,
+            },
+          },
+        });
       }
     }
   };
@@ -603,7 +616,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
               <div
                 className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
                   " translate-all  easy-and-out h-[52px] duration-300": !poolInfo,
-                  "translate-all easy-and-out h-[185px] duration-300 ": poolInfo,
+                  "translate-all easy-and-out h-[180px] duration-300 ": poolInfo,
                 })}
               >
                 <div className="flex w-full flex-row text-medium font-normal">
@@ -630,35 +643,46 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                     "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
                   })}
                 >
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex">Price impact</div>
-                    <span>~ {priceImpact}%</span>
+                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                    <div className="flex">{t("poolsPage.priceImpact")}</div>
+                    <span className="text-dark-500">~ {priceImpact}%</span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
                     <div className="flex">
-                      {inputEdited.inputType === InputEditedType.exactIn ? "Expected output" : "Expected input"}
+                      {inputEdited.inputType === InputEditedType.exactIn
+                        ? `${t("poolsPage.minimumDeposited")} (${selectedTokenA.nativeTokenSymbol})`
+                        : `${t("poolsPage.maximumDeposited")} (${selectedTokenA.nativeTokenSymbol})`}
                     </div>
-                    <span>
+                    <span className="text-dark-500">
                       {inputEdited.inputType === InputEditedType.exactIn
                         ? formatNumberEnUs(
-                            Number(selectedTokenAssetValue.tokenValue),
-                            Number(selectedTokenB.decimals)
-                          ) +
-                          " " +
-                          selectedTokenB.tokenSymbol
-                        : formatNumberEnUs(
-                            Number(selectedTokenNativeValue.tokenValue),
+                            Number(
+                              formatDecimalsFromToken(
+                                nativeTokenWithSlippage?.tokenValue,
+                                selectedTokenA.nativeTokenDecimals
+                              )
+                            ),
                             Number(selectedTokenA.nativeTokenDecimals)
                           ) +
                           " " +
-                          selectedTokenA.nativeTokenSymbol}
+                          selectedTokenA.nativeTokenSymbol
+                        : formatNumberEnUs(
+                            Number(
+                              formatDecimalsFromToken(assetTokenWithSlippage?.tokenValue, selectedTokenB.decimals)
+                            ),
+                            Number(selectedTokenB.decimals)
+                          ) +
+                          " " +
+                          selectedTokenB.tokenSymbol}
                     </span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
                     <div className="flex">
-                      {inputEdited.inputType === InputEditedType.exactIn ? "Minimum output" : "Maximum input"}
+                      {inputEdited.inputType === InputEditedType.exactIn
+                        ? `${t("poolsPage.minimumDeposited")} (${selectedTokenB.tokenSymbol})`
+                        : `${t("poolsPage.maximumDeposited")} (${selectedTokenB.tokenSymbol})`}
                     </div>
-                    <span>
+                    <span className="text-dark-500">
                       {inputEdited.inputType === InputEditedType.exactIn
                         ? formatNumberEnUs(
                             Number(
@@ -681,14 +705,14 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                           selectedTokenA.nativeTokenSymbol}
                     </span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex">Transaction Cost</div>
+                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                    <div className="flex">{t("poolsPage.transactionCost")}</div>
                     <span className="text-dark-500">{addLiquidityGasFee}</span>
                   </div>
                   <div className="flex w-full flex-row justify-between text-medium font-normal">
-                    <div className="flex">Route</div>
+                    <div className="flex">{t("poolsPage.route")}</div>
                     <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
-                      <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                      <HubIcon /> <span className="text-dark-500">{t("poolsPage.assetHub")}</span>
                     </div>
                   </div>
                 </div>

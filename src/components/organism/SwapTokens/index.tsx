@@ -561,10 +561,14 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     setSwapSuccessfulReset(false);
     setIsTransactionTimeout(false);
     setIsMaxValueLessThenMinAmount(false);
-
     dispatch({
-      type: ActionType.SET_NOTIFICATION_DATA,
+      type: ActionType.REMOVE_NOTIFICATION,
+      payload: "swap",
+    });
+    dispatch({
+      type: ActionType.ADD_NOTIFICATION,
       payload: {
+        id: "swap",
         notificationModalOpen: true,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
@@ -598,7 +602,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     const isAssetToAssetSwap =
       selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
       selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol;
-
     try {
       if (isNativeToAssetSwap) {
         await performSwapNativeForAsset(
@@ -643,23 +646,18 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           isExactIn
         );
       }
-    } finally {
-      setSelectedTokens({
-        tokenA: {
-          tokenSymbol: "",
-          tokenId: "0",
-          decimals: "",
-          tokenBalance: "",
-        },
-        tokenB: {
-          tokenSymbol: "",
-          tokenId: "0",
-          decimals: "",
-          tokenBalance: "",
+    } catch (error) {
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
         },
       });
-      setSelectedTokenAValue({ tokenValue: "" });
-      setSelectedTokenBValue({ tokenValue: "" });
     }
   };
 

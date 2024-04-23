@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 interface ToasterProps {
   description: string;
   type: ToasterType;
-  blockExplorerLink?: string;
+  blockExplorerLink?: string | null;
   close: () => void;
 }
 

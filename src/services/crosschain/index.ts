@@ -105,26 +105,30 @@ async function setupCallAndSign(
   return await extrinsic
     .signAsync(walletAccount.address, { signer: wallet.signer })
     .then((res) => {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.PENDING });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: "Pending" });
       dispatch({
-        type: ActionType.SET_NOTIFICATION_MESSAGE,
-        payload: "Transaction is processing. You can close this modal anytime.",
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "crosschain",
+          props: {
+            notificationType: ToasterType.PENDING,
+            notificationTitle: "Pending",
+            notificationMessage: "Transaction is processing. You can close this modal anytime.",
+          },
+        },
       });
 
       return res;
     })
     .catch((err) => {
       dispatch({
-        type: ActionType.SET_NOTIFICATION_DATA,
+        type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          notificationModalOpen: true,
-          notificationType: ToasterType.ERROR,
-          notificationTitle: "Error",
-          notificationMessage: err.message || "Error executing crosschain",
-          notificationTransactionDetails: null,
-          notificationChainDetails: null,
-          notificationLink: null,
+          id: "crosschain",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: "Error",
+            notificationMessage: err.message || "Error executing crosschain",
+          },
         },
       });
     });
@@ -147,13 +151,20 @@ async function sendTransaction(
             reject(new Error(dispatchError.toString()));
           }
         } else {
-          dispatch({ type: ActionType.SET_CROSSCHAIN_TRANSFER_FINALIZED, payload: true });
-          dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
-          dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: "Success" });
-          dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
           dispatch({
-            type: ActionType.SET_NOTIFICATION_LINK_HREF,
-            payload: `${subScanURL}/extrinsic/${txHash.toString()}`,
+            type: ActionType.UPDATE_NOTIFICATION,
+            payload: {
+              id: "crosschain",
+              props: {
+                notificationType: ToasterType.SUCCESS,
+                notificationTitle: "Success",
+                notificationMessage: null,
+                notificationLink: {
+                  text: "View in block explorer",
+                  href: `${subScanURL}/extrinsic/${txHash.toString()}`,
+                },
+              },
+            },
           });
           resolve(txHash.toString());
         }

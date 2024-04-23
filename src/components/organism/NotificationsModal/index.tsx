@@ -13,68 +13,80 @@ import dotAcpToast from "../../../app/util/toast";
 import { ActionType } from "../../../app/types/enum";
 import { formatNumberEnUs } from "../../../app/util/helper";
 
-const NotificationsModal: FC = () => {
+interface Props {
+  id: string;
+}
+
+const NotificationsModal: FC<Props> = ({ id }) => {
   const { state, dispatch } = useAppContext();
   const [notificationViewed, setNotificationViewed] = useState(false);
 
   const onModalClose = () => {
-    dispatch({ type: ActionType.SET_NOTIFICATION_MODAL_OPEN, payload: false });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_MODAL_OPEN,
+      payload: { id: id, notificationModalOpen: false },
+    });
   };
 
-  const {
-    notificationModalOpen,
-    notificationAction,
-    notificationType,
-    notificationTitle,
-    notificationLink,
-    notificationChainDetails,
-    notificationMessage,
-    notificationTransactionDetails,
-  } = state;
-  const fromTokenSymbol = notificationTransactionDetails?.fromToken?.symbol ?? "";
-  const toTokenSymbol = notificationTransactionDetails?.toToken?.symbol ?? "";
-  const fromTokenAmount = formatNumberEnUs(notificationTransactionDetails?.fromToken?.amount ?? 0, 12);
-  const toTokenAmount = formatNumberEnUs(notificationTransactionDetails?.toToken?.amount ?? 0, 12);
+  const { notifications } = state;
+
+  const currentNotification = notifications.find((notification) => notification.id === id);
+
+  const fromTokenSymbol = currentNotification?.notificationTransactionDetails?.fromToken?.symbol ?? "";
+  const toTokenSymbol = currentNotification?.notificationTransactionDetails?.toToken?.symbol ?? "";
+  const fromTokenAmount = formatNumberEnUs(
+    currentNotification?.notificationTransactionDetails?.fromToken?.amount ?? 0,
+    12
+  );
+  const toTokenAmount = formatNumberEnUs(currentNotification?.notificationTransactionDetails?.toToken?.amount ?? 0, 12);
 
   const buildToasterMessage = () => {
     return (
-      `${notificationAction ? notificationAction + " " : ""}${fromTokenAmount} ${fromTokenSymbol}` +
-      `${notificationTransactionDetails?.toToken ? " -> " + toTokenAmount + " " + toTokenSymbol : ""}`
+      `${currentNotification?.notificationAction ? currentNotification?.notificationAction + " " : ""}${fromTokenAmount} ${fromTokenSymbol}` +
+      `${currentNotification?.notificationTransactionDetails?.toToken ? " -> " + toTokenAmount + " " + toTokenSymbol : ""}`
     );
   };
 
   useEffect(() => {
-    if (!notificationModalOpen && !notificationViewed) {
+    if (!currentNotification?.notificationModalOpen && !notificationViewed) {
       const toasterMessage = buildToasterMessage();
 
-      switch (notificationType) {
+      switch (currentNotification?.notificationType) {
         case ToasterType.SUCCESS:
-          dotAcpToast.success(toasterMessage ?? "", undefined, notificationLink?.href);
+          dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
           break;
         case ToasterType.PENDING:
-          dotAcpToast.pending(toasterMessage ?? "");
+          dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
           break;
         case ToasterType.ERROR:
-          dotAcpToast.error(notificationMessage ?? "");
+          dotAcpToast.error(
+            currentNotification?.notificationMessage ?? "",
+            undefined,
+            currentNotification?.notificationLink?.href
+          );
           break;
         default:
           break;
       }
     }
 
-    if (!notificationModalOpen) {
+    if (!currentNotification?.notificationModalOpen) {
       setNotificationViewed(false);
     }
-  }, [notificationModalOpen, notificationType, notificationMessage]);
+  }, [
+    currentNotification?.notificationModalOpen,
+    currentNotification?.notificationType,
+    currentNotification?.notificationMessage,
+  ]);
 
   useEffect(() => {
-    if (notificationModalOpen && notificationType !== ToasterType.PENDING) {
+    if (currentNotification?.notificationModalOpen && currentNotification?.notificationType !== ToasterType.PENDING) {
       setNotificationViewed(true);
     }
-  }, [notificationModalOpen, notificationType]);
+  }, [currentNotification?.notificationModalOpen, currentNotification?.notificationType]);
 
   const renderNotificationIcon = () => {
-    switch (notificationType) {
+    switch (currentNotification?.notificationType) {
       case ToasterType.SUCCESS:
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success">
@@ -99,17 +111,17 @@ const NotificationsModal: FC = () => {
   };
 
   const renderNotificationTitle = () => {
-    if (!notificationTitle) return null;
+    if (!currentNotification?.notificationTitle) return null;
 
     return (
       <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em]">
-        {notificationTitle}
+        {currentNotification?.notificationTitle}
       </div>
     );
   };
 
   const renderTransactionDetails = () => {
-    if (!notificationTransactionDetails) return null;
+    if (!currentNotification?.notificationTransactionDetails) return null;
 
     return (
       <div className="flex items-center gap-2 py-2">
@@ -118,7 +130,7 @@ const NotificationsModal: FC = () => {
           <p>{fromTokenAmount ?? ""}</p>
           <p className="uppercase">{fromTokenSymbol}</p>
         </div>
-        {notificationTransactionDetails.toToken && (
+        {currentNotification?.notificationTransactionDetails.toToken && (
           <>
             <ArrowRight />
             <div className="flex items-center gap-1">
@@ -133,17 +145,19 @@ const NotificationsModal: FC = () => {
   };
 
   const renderChainDetails = () => {
-    if (!notificationChainDetails) return null;
+    if (!currentNotification?.notificationChainDetails) return null;
 
     return (
       <div className="flex items-center justify-center gap-1">
         <div className="flex items-center gap-2 rounded-medium bg-gray-500 px-2 py-0.5">
-          <span className="font-fira-sans text-sm leading-relaxed">{notificationChainDetails.originChain}</span>
+          <span className="font-fira-sans text-sm leading-relaxed">
+            {currentNotification?.notificationChainDetails.originChain}
+          </span>
           <ArrowRightLong />
         </div>
         <div className="flex items-center justify-center rounded-medium bg-black px-2 py-0.5">
           <span className="font-fira-sans text-sm leading-relaxed text-white">
-            {notificationChainDetails.destinationChain}
+            {currentNotification?.notificationChainDetails.destinationChain}
           </span>
         </div>
       </div>
@@ -151,29 +165,29 @@ const NotificationsModal: FC = () => {
   };
 
   const renderNotificationMessage = () => {
-    if (!notificationMessage) return null;
+    if (!currentNotification?.notificationMessage) return null;
 
     return (
       <div className="flex max-w-notification">
         <p className="text-center font-inter text-medium leading-tight tracking-[0.0125em] text-black text-opacity-70">
-          {notificationMessage}
+          {currentNotification?.notificationMessage}
         </p>
       </div>
     );
   };
 
   const renderNotificationLink = () => {
-    if (!notificationLink) return null;
+    if (!currentNotification?.notificationLink) return null;
 
     return (
       <div className="flex w-max gap-1 border-b border-solid border-black">
         <a
-          href={notificationLink.href}
+          href={currentNotification?.notificationLink.href}
           target="_blank"
           rel="noreferrer"
           className="text-center font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90"
         >
-          <span>{notificationLink.text}</span>
+          <span>{currentNotification?.notificationLink.text}</span>
         </a>
         <ArrowOpenLink />
       </div>
@@ -181,7 +195,7 @@ const NotificationsModal: FC = () => {
   };
 
   return (
-    <Modal isOpen={notificationModalOpen} onClose={onModalClose}>
+    <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
       <div className="min-w-modal max-w-full">
         <div className="flex flex-col items-center gap-3 py-10">
           {renderNotificationIcon()}

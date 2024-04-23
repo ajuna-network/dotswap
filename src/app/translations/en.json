@@ -173,6 +173,13 @@
   },
   "poolsPage": {
     "pools": "Pools",
+    "transactionCost": "Transaction Cost",
+    "route": "Route",
+    "assetHub": "Asset Hub",
+    "priceImpact": "Price Impact",
+    "minimumDeposited": "Minimum Deposited",
+    "maximumDeposited": "Maximum Deposited",
+    "minimumWithdrawn": "Minimum Withdrawn",
     "earnFeesByProvidingLiquidity": "Earn fees by providing liquidity.",
     "activeLiquidityPositions": "Active liquidity positions will appear here.",
     "connectWalletToView": "Connect wallet to view your liquidity positions.",
