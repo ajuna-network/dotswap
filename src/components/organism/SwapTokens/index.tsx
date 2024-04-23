@@ -601,7 +601,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     const isAssetToAssetSwap =
       selectedTokens.tokenA.tokenSymbol !== nativeTokenSymbol &&
       selectedTokens.tokenB.tokenSymbol !== nativeTokenSymbol;
-
     try {
       if (isNativeToAssetSwap) {
         await performSwapNativeForAsset(
@@ -646,23 +645,18 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           isExactIn
         );
       }
-    } finally {
-      // setSelectedTokens({
-      //   tokenA: {
-      //     tokenSymbol: "",
-      //     tokenId: "0",
-      //     decimals: "",
-      //     tokenBalance: "",
-      //   },
-      //   tokenB: {
-      //     tokenSymbol: "",
-      //     tokenId: "0",
-      //     decimals: "",
-      //     tokenBalance: "",
-      //   },
-      // });
-      // setSelectedTokenAValue({ tokenValue: "" });
-      // setSelectedTokenBValue({ tokenValue: "" });
+    } catch (error) {
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
+        },
+      });
     }
   };
 

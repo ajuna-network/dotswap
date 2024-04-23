@@ -272,8 +272,8 @@ export const performSwapNativeForAsset = async (
       )
     : api.tx.assetConversion.swapTokensForExactTokens(
         prepareNativeMultiLocationArguments(api, assetTokenId, reverse),
-        reverse ? amountIn : amountOut,
         reverse ? amountOut : amountIn,
+        reverse ? amountIn : amountOut,
         account.address,
         false
       );
@@ -394,8 +394,8 @@ export const checkSwapNativeForAssetGasFee = async (
       )
     : api.tx.assetConversion.swapTokensForExactTokens(
         prepareNativeMultiLocationArguments(api, assetTokenId, reverse),
-        reverse ? amountIn : amountOut,
         reverse ? amountOut : amountIn,
+        reverse ? amountIn : amountOut,
         account.address,
         false
       );
