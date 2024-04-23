@@ -53,7 +53,7 @@ const SwapPage: FC = () => {
           dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
         }
       };
-      fetchPools();
+      fetchPools().then();
     }
   }, [api]);
 

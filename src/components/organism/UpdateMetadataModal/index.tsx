@@ -34,7 +34,7 @@ const UpdateMetadataModal = ({ account }: { account: WalletAccount | undefined }
         });
       }
     };
-    updatesCheck();
+    updatesCheck().then();
   }, [api, relayApi]);
 
   return (
@@ -59,15 +59,15 @@ const UpdateMetadataModal = ({ account }: { account: WalletAccount | undefined }
               });
             }}
           >
-            Cancel
+            {t("button.cancel")}
           </button>
           <button
             className={ButtonVariants.btnPrimaryPinkSm}
             onClick={() => {
-              updateMetadata();
+              updateMetadata().then();
             }}
           >
-            Update
+            {t("button.update")}
           </button>
         </div>
       </div>

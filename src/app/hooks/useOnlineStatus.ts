@@ -9,7 +9,7 @@ export const useOnlineStatus = () => {
       setOnline(navigator.onLine);
     };
 
-    // listen for online and ofline event
+    // listen for online and offline event
     window.addEventListener("online", handleStatusChange);
     window.addEventListener("offline", handleStatusChange);
 

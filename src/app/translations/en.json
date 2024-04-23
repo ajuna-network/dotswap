@@ -44,8 +44,22 @@
     "crossIn": "Cross in",
     "crossOut": "Cross out",
     "confirmSwap": "Confirm Swap",
+    "confirm": "Confirm",
     "connectWallet": "Connect Wallet",
-    "support": "Support"
+    "support": "Support",
+    "max": "Max",
+    "close": "Close",
+    "cancel": "Cancel",
+    "update": "Update",
+    "continue": "Continue",
+    "install": "Install",
+    "disconnectWallet": "Disconnect Wallet"
+  },
+  "toaster": {
+    "viewInBlockExplorer": "View in block explorer",
+    "success": "Success",
+    "pending": "Pending",
+    "errorConnecting": "Error connecting:"
   },
   "modal": {
     "updateMetadata": "For better experience, it's recommended to upgrade metadata.",
@@ -74,7 +88,8 @@
     "createPool": {
       "reviewAddingLiquidity": "Review adding liquidity",
       "poolSuccessfullyCreated": "Pool Successfully Created",
-      "creationOfPoolFailed": "Creation of liquidity pool failed"
+      "creationOfPoolFailed": "Creation of liquidity pool failed",
+      "review": "Review create pool"
     },
     "removeFromPool": {
       "reviewRemoveLiquidity": "Review remove liquidity",
@@ -85,6 +100,16 @@
       "reviewAddingLiquidity": "Review adding liquidity",
       "successfullyAddedToPool": "Successfully Added to the Pool",
       "successfullyAddedLiquidity": "Successfully Added Liquidity"
+    },
+    "reviewTransaction": {
+      "youPay": "You pay",
+      "youReceive": "You receive",
+      "withdrawAmount": "Withdrawal amount",
+      "expectedOutput": "Expected output",
+      "minimumOutput": "Minimum output",
+      "minimumReceived": "Minimum Received",
+      "maximumPaid": "Maximum Paid",
+      "transactionCost": "Transaction Cost"
     }
   },
   "poolDataCard": {
@@ -100,7 +125,11 @@
     "infoMessage": {
       "title": "Need to see all your accounts?",
       "description": "Head over to your wallet and customize which accounts can access DOTSwap."
-    }
+    },
+    "pendingMultiple": "transactions are",
+    "pendingSingle": "transaction is",
+    "pending": "pending",
+    "noAssetFound": "No Asset found in wallet"
   },
   "destinationWalletAddress": {
     "destination": "Destination",
@@ -201,7 +230,12 @@
     "swap": "Swap",
     "poolExists": "No need to create a new pool. Liquidity can be added to the existing one.",
     "palletSlippageError": "Calculated amount out is less than provided minimum amount.",
-    "slippageError": "The transaction could not be completed due to the set slippage."
+    "slippageError": "The transaction could not be completed due to the set slippage.",
+    "priceImpact": "Price Impact",
+    "liquidityFee": "Liquidity Fee",
+    "transactionCost": "Transaction Cost",
+    "route": "Route",
+    "assetHub": "Asset Hub"
   },
   "crosschainPage": {
     "from": "From",
