@@ -243,7 +243,7 @@ const handleSwapTransactionResponse = (
   }
 };
 
-// Main swap functions//
+// Main swap functions
 
 export const performSwapNativeForAsset = async (
   api: ApiPromise,
