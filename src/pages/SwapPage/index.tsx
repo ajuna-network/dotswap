@@ -9,12 +9,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SWAP_ROUTE } from "../../app/router/routes";
 import { urlTo } from "../../app/util/helper";
 import { createPoolCardsArray } from "../../services/poolServices";
+import { useTranslation } from "react-i18next";
 
 const SwapPage: FC = () => {
   const { state, dispatch } = useAppContext();
   const { api, pools, selectedAccount, tokenBalances } = state;
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [swapOrPools, setSwapOrPools] = useState<SwapOrPools>(
     location.state?.pageType === SwapOrPools.pools ? SwapOrPools.pools : SwapOrPools.swap
