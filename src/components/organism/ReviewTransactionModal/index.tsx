@@ -137,14 +137,17 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                       {tokenValueA} {tokenSymbolA}
                     </span>
                   </div> */}
-                  <div className="flex justify-between">
-                    <span className="font-inter text-medium text-gray-300">
-                      {inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
-                    </span>
-                    <span className="font-inter text-medium text-gray-400">
-                      {tokenValueB} {tokenSymbolB}
-                    </span>
-                  </div>
+                  {transactionType !== TransactionTypes.add && transactionType !== TransactionTypes.withdraw && (
+                    <div className="flex justify-between">
+                      <span className="font-inter text-medium text-gray-300">
+                        {inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
+                      </span>
+                      <span className="font-inter text-medium text-gray-400">
+                        {tokenValueB} {tokenSymbolB}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between text-medium font-normal text-gray-300">
                     <div className="flex">Transaction Cost</div>
                     <span className="font-inter text-medium text-gray-400">{swapGasFee}</span>

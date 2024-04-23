@@ -131,12 +131,17 @@ const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) =>
 };
 
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
-  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
-    type: ActionType.SET_NOTIFICATION_LINK,
+    type: ActionType.UPDATE_NOTIFICATION,
     payload: {
-      text: "Transaction included in block",
-      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+      id: "liquidity",
+      props: {
+        notificationMessage: null,
+        notificationLink: {
+          text: "Transaction included in block",
+          href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+        },
+      },
     },
   });
 };
@@ -148,28 +153,38 @@ const handleDispatchError = (
 ) => {
   if (response.dispatchError?.isModule) {
     const { docs } = api.registry.findMetaError(response.dispatchError.asModule);
-    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: `${docs.join(" ")}`,
-    });
-    dispatch({
-      type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationType: ToasterType.ERROR,
+          notificationTitle: t("modal.notifications.error"),
+          notificationMessage: `${docs.join(" ")}`,
+          notificationLink: {
+            text: "View in block explorer",
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
+          },
+        },
+      },
     });
   } else if (response.dispatchError?.toString() === t("pageError.tokenCanNotCreate")) {
     dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_POOLS, payload: true });
   } else {
-    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
-    });
-    dispatch({
-      type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationType: ToasterType.ERROR,
+          notificationTitle: t("modal.notifications.error"),
+          notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+          notificationLink: {
+            text: "View in block explorer",
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
+          },
+        },
+      },
     });
   }
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
@@ -182,17 +197,21 @@ const handleSuccessfulPool = (
   dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
   poolType: "add" | "remove"
 ) => {
-  dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
-  dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.success") });
-  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
-    type: ActionType.SET_NOTIFICATION_LINK,
+    type: ActionType.UPDATE_NOTIFICATION,
     payload: {
-      text: "View in block explorer",
-      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+      id: "liquidity",
+      props: {
+        notificationType: ToasterType.SUCCESS,
+        notificationTitle: t("modal.notifications.success"),
+        notificationMessage: null,
+        notificationLink: {
+          text: "View in block explorer",
+          href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+        },
+      },
     },
   });
-
   if (poolType === "add") {
     const { nativeTokenIn, assetTokenIn } = exactAddedLiquidityInPool(
       response.toHuman(),
@@ -202,11 +221,11 @@ const handleSuccessfulPool = (
     );
     dispatch({
       type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT,
-      payload: parseFloat(nativeTokenIn),
+      payload: { id: "liquidity", amount: parseFloat(nativeTokenIn) },
     });
     dispatch({
       type: ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT,
-      payload: parseFloat(assetTokenIn),
+      payload: { id: "liquidity", amount: parseFloat(assetTokenIn) },
     });
   } else if (poolType === "remove") {
     const { nativeTokenOut, assetTokenOut } = exactWithdrawnLiquidityFromPool(
@@ -217,11 +236,11 @@ const handleSuccessfulPool = (
     );
     dispatch({
       type: ActionType.SET_NOTIFICATION_TRANSACTION_FROM_AMOUNT,
-      payload: parseFloat(nativeTokenOut),
+      payload: { id: "liquidity", amount: parseFloat(nativeTokenOut) },
     });
     dispatch({
       type: ActionType.SET_NOTIFICATION_TRANSACTION_TO_AMOUNT,
-      payload: parseFloat(assetTokenOut),
+      payload: { id: "liquidity", amount: parseFloat(assetTokenOut) },
     });
   }
 
@@ -255,8 +274,13 @@ const handlePoolTransactionResponse = async (
 ) => {
   if (response.status.isReady) {
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: t("modal.notifications.transactionInitiatedNotification"),
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+        },
+      },
     });
   }
   if (response.status.isInBlock) {
@@ -394,9 +418,17 @@ export const addLiquidity = async (
       }
     })
     .catch((error: any) => {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
+        },
+      });
       dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
       dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
     });
@@ -446,9 +478,17 @@ export const removeLiquidity = async (
       }
     })
     .catch((error: any) => {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
+        },
+      });
       dispatch({ type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE, payload: "" });
       dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
     });

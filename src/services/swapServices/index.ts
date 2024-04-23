@@ -109,12 +109,17 @@ const prepareAssetMultiLocationArguments = (
 };
 
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
-  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
-    type: ActionType.SET_NOTIFICATION_LINK,
+    type: ActionType.UPDATE_NOTIFICATION,
     payload: {
-      text: "Transaction included in block",
-      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+      id: "swap",
+      props: {
+        notificationMessage: null,
+        notificationLink: {
+          text: "Transaction included in block",
+          href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+        },
+      },
     },
   });
 };
@@ -126,28 +131,38 @@ const handleDispatchError = (
 ) => {
   if (response.dispatchError?.isModule) {
     const { docs } = api.registry.findMetaError(response.dispatchError.asModule);
-    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
-    });
-    dispatch({
-      type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "swap",
+        props: {
+          notificationType: ToasterType.ERROR,
+          notificationTitle: t("modal.notifications.error"),
+          notificationMessage: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
+          notificationLink: {
+            text: "View in block explorer",
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
+          },
+        },
+      },
     });
   } else if (response.dispatchError?.toString() === t("pageError.tokenCanNotCreate")) {
     dispatch({ type: ActionType.SET_TOKEN_CAN_NOT_CREATE_WARNING_SWAP, payload: true });
   } else {
-    dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-    dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
-    });
-    dispatch({
-      type: ActionType.SET_NOTIFICATION_LINK,
-      payload: null,
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "swap",
+        props: {
+          notificationType: ToasterType.ERROR,
+          notificationTitle: t("modal.notifications.error"),
+          notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+          notificationLink: {
+            text: "View in block explorer",
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
+          },
+        },
+      },
     });
   }
   dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
@@ -159,16 +174,22 @@ const handleSuccessfulSwap = (
   tokenBDecimals: string,
   dispatch: Dispatch<SwapAction | WalletAction | NotificationAction>
 ) => {
-  dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.SUCCESS });
-  dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.success") });
-  dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: null });
   dispatch({
-    type: ActionType.SET_NOTIFICATION_LINK,
+    type: ActionType.UPDATE_NOTIFICATION,
     payload: {
-      text: "View in block explorer",
-      href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+      id: "swap",
+      props: {
+        notificationType: ToasterType.SUCCESS,
+        notificationTitle: t("modal.notifications.success"),
+        notificationMessage: null,
+        notificationLink: {
+          text: "View in block explorer",
+          href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
+        },
+      },
     },
   });
+
   exactSwapAmounts(response.toHuman(), tokenADecimals, tokenBDecimals, dispatch);
   dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
   dispatch({ type: ActionType.SET_SWAP_FINALIZED, payload: true });
@@ -206,13 +227,18 @@ const handleSwapTransactionResponse = (
 ) => {
   if (response.status.isReady) {
     dispatch({
-      type: ActionType.SET_NOTIFICATION_MESSAGE,
-      payload: t("modal.notifications.transactionInitiatedNotification"),
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "swap",
+        props: {
+          notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+        },
+      },
     });
   }
   if (response.status.isInBlock) {
     handleInBlockResponse(response, dispatch);
-  } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+  } else if (response.status.type === ServiceResponseStatus.Finalized) {
     handleFinalizedResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
   }
 };
@@ -246,8 +272,8 @@ export const performSwapNativeForAsset = async (
       )
     : api.tx.assetConversion.swapTokensForExactTokens(
         prepareNativeMultiLocationArguments(api, assetTokenId, reverse),
-        reverse ? amountIn : amountOut,
         reverse ? amountOut : amountIn,
+        reverse ? amountIn : amountOut,
         account.address,
         false
       );
@@ -263,9 +289,18 @@ export const performSwapNativeForAsset = async (
       }
     })
     .catch((error) => {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
+        },
+      });
+
       dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
     });
 
@@ -320,9 +355,17 @@ export const performSwapAssetForAsset = async (
       }
     })
     .catch((error) => {
-      dispatch({ type: ActionType.SET_NOTIFICATION_TYPE, payload: ToasterType.ERROR });
-      dispatch({ type: ActionType.SET_NOTIFICATION_TITLE, payload: t("modal.notifications.error") });
-      dispatch({ type: ActionType.SET_NOTIFICATION_MESSAGE, payload: `Transaction failed: ${error}` });
+      dispatch({
+        type: ActionType.UPDATE_NOTIFICATION,
+        payload: {
+          id: "swap",
+          props: {
+            notificationType: ToasterType.ERROR,
+            notificationTitle: t("modal.notifications.error"),
+            notificationMessage: `Transaction failed: ${error}`,
+          },
+        },
+      });
       dispatch({ type: ActionType.SET_SWAP_LOADING, payload: false });
     });
 
@@ -351,8 +394,8 @@ export const checkSwapNativeForAssetGasFee = async (
       )
     : api.tx.assetConversion.swapTokensForExactTokens(
         prepareNativeMultiLocationArguments(api, assetTokenId, reverse),
-        reverse ? amountIn : amountOut,
         reverse ? amountOut : amountIn,
+        reverse ? amountIn : amountOut,
         account.address,
         false
       );
