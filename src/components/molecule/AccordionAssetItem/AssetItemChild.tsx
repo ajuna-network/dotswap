@@ -86,7 +86,10 @@ const AssetItemChild = ({
                 {t("assetItem.locked")}
                 <Tooltip message={t("assetItem.lockedTooltip")} />
               </div>
-              <div className="text-base font-semibold">
+              <div
+                className="text-base font-semibold"
+                data-balance={balances && balances.lockedTokenBalance !== 0 ? balances.lockedTokenBalance : 0}
+              >
                 {balances && balances.lockedTokenBalance !== 0
                   ? formatNumberEnUs(balances.lockedTokenBalance) +
                     " " +
@@ -105,7 +108,10 @@ const AssetItemChild = ({
                 {t("assetItem.reserved")}
                 <Tooltip message={t("assetItem.reservedTooltip")} />
               </div>
-              <div className="text-base font-semibold">
+              <div
+                className="text-base font-semibold"
+                data-balance={balances && balances.reservedTokenBalance !== 0 ? balances.reservedTokenBalance : 0}
+              >
                 {balances && balances.reservedTokenBalance !== 0
                   ? formatNumberEnUs(balances.reservedTokenBalance) +
                     " " +
@@ -122,7 +128,10 @@ const AssetItemChild = ({
             <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
               {t("assetItem.available")}
             </div>
-            <div className="text-base font-semibold">
+            <div
+              className="text-base font-semibold"
+              data-balance={balances && balances.freeTokenBalance !== 0 ? balances.freeTokenBalance : 0}
+            >
               {balances
                 ? formatNumberEnUs(balances.freeTokenBalance) +
                   " " +

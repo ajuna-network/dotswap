@@ -19,6 +19,7 @@ import {
   convertToBaseUnit,
   formatDecimalsFromToken,
   formatInputTokenValue,
+  getAssetTokenSpotPrice,
   liquidityProviderFee,
 } from "../../../app/util/helper";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
@@ -1393,6 +1394,43 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     });
   }, [tokenBalances]);
 
+  const [assetTokenASpotPrice, setAssetTokenASpotPrice] = useState<string>("0");
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
+
+  useEffect(() => {
+    if (!tokenBalances || !api) return;
+    if (selectedTokens.tokenA.tokenSymbol === nativeTokenSymbol) {
+      setAssetTokenASpotPrice(tokenBalances?.spotPrice);
+    } else {
+      getAssetTokenSpotPrice(api, selectedTokens.tokenA.tokenId, selectedTokens.tokenA.decimals, tokenBalances).then(
+        (price) => {
+          if (price) setAssetTokenASpotPrice(price);
+        }
+      );
+    }
+  }, [api, tokenBalances, selectedTokens.tokenA.tokenId]);
+
+  useEffect(() => {
+    if (!tokenBalances || !api) return;
+    if (selectedTokens.tokenB.tokenSymbol === nativeTokenSymbol) {
+      setAssetTokenBSpotPrice(tokenBalances?.spotPrice);
+    } else {
+      getAssetTokenSpotPrice(api, selectedTokens.tokenB.tokenId, selectedTokens.tokenB.decimals, tokenBalances).then(
+        (price) => {
+          if (price) setAssetTokenBSpotPrice(price);
+        }
+      );
+    }
+  }, [api, tokenBalances, selectedTokens.tokenB.tokenId]);
+
+  useEffect(() => {
+    if (tokenSelected.tokenSelected === TokenPosition.tokenB && selectedTokenAValue.tokenValue) {
+      tokenAValue(selectedTokenAValue.tokenValue);
+    } else if (tokenSelected.tokenSelected === TokenPosition.tokenA && selectedTokenBValue.tokenValue) {
+      tokenBValue(selectedTokenBValue.tokenValue);
+    }
+  }, [tokenSelected]);
+
   return (
     <div className="flex max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
@@ -1410,8 +1448,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         <TokenAmountInput
           tokenText={selectedTokens.tokenA?.tokenSymbol}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
-          showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined && selectedTokens.tokenA?.tokenId === ""}
-          spotPrice={selectedTokens.tokenA.tokenId !== "" ? "" : tokenBalances?.spotPrice}
+          showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined && selectedTokens.tokenA?.tokenBalance !== ""}
+          spotPrice={selectedTokens.tokenA.tokenId !== "" ? assetTokenASpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenA?.tokenId}
           tokenDecimals={selectedTokens.tokenA?.decimals}
           labelText={t("tokenAmountInput.youPay")}
@@ -1428,8 +1466,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         <TokenAmountInput
           tokenText={selectedTokens.tokenB?.tokenSymbol}
           tokenBalance={selectedTokens.tokenB?.tokenBalance}
-          showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined && selectedTokens.tokenB?.tokenId === ""}
-          spotPrice={selectedTokens.tokenB.tokenId !== "" ? "" : tokenBalances?.spotPrice}
+          showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined && selectedTokens.tokenB?.tokenBalance !== ""}
+          spotPrice={selectedTokens.tokenB.tokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenB?.tokenId}
           tokenDecimals={selectedTokens.tokenB?.decimals}
           labelText={t("tokenAmountInput.youReceive")}
@@ -1587,6 +1625,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           transactionType={TransactionTypes.swap}
           inputValueA={selectedTokenAValue.tokenValue}
           inputValueB={selectedTokenBValue.tokenValue}
+          spotPriceA={assetTokenASpotPrice}
+          spotPriceB={assetTokenBSpotPrice}
           tokenDecimalsA={selectedTokens.tokenA.decimals}
           tokenDecimalsB={selectedTokens.tokenB.decimals}
           tokenValueA={
@@ -1605,16 +1645,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
                   selectedTokens.tokenA.decimals
                 )
           }
-          tokenSymbolA={
-            inputEdited.inputType === InputEditedType.exactIn
-              ? selectedTokens.tokenA.tokenSymbol
-              : selectedTokens.tokenB.tokenSymbol
-          }
-          tokenSymbolB={
-            inputEdited.inputType === InputEditedType.exactIn
-              ? selectedTokens.tokenB.tokenSymbol
-              : selectedTokens.tokenA.tokenSymbol
-          }
+          tokenSymbolA={selectedTokens.tokenA.tokenSymbol}
+          tokenSymbolB={selectedTokens.tokenB.tokenSymbol}
           onClose={() => {
             setReviewModalOpen(false);
           }}

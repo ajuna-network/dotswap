@@ -96,7 +96,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
           {destinationBalance && (
             <div className="flex justify-between">
               <span className="font-inter text-medium capitalize text-gray-300">
-                {t(`crosschainReviewTransactionModal.currentBalance`)}
+                {destinationChainName} {t(`crosschainReviewTransactionModal.currentBalance`)}
               </span>
               <span className="font-inter text-medium text-gray-400">
                 {destinationBalance} {tokenSymbol}
