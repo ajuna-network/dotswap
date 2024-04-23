@@ -1646,18 +1646,14 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           transactionType={TransactionTypes.swap}
           inputValueA={selectedTokenAValue.tokenValue}
           inputValueB={selectedTokenBValue.tokenValue}
+          spotPriceA={assetTokenASpotPrice}
+          spotPriceB={assetTokenBSpotPrice}
           tokenDecimalsA={selectedTokens.tokenA.decimals}
           tokenDecimalsB={selectedTokens.tokenB.decimals}
           tokenValueA={
             inputEdited.inputType === InputEditedType.exactIn
-              ? formatDecimalsFromToken(
-                  formatInputTokenValue(tokenBValueForSwap.tokenValue, selectedTokens.tokenB.decimals),
-                  selectedTokens.tokenB.decimals
-                )
-              : formatDecimalsFromToken(
-                  formatInputTokenValue(tokenAValueForSwap.tokenValue, selectedTokens.tokenA.decimals),
-                  selectedTokens.tokenA.decimals
-                )
+              ? selectedTokenBValue.tokenValue
+              : selectedTokenAValue.tokenValue
           }
           tokenValueB={
             inputEdited.inputType === InputEditedType.exactIn

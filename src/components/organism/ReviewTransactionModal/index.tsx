@@ -3,12 +3,16 @@ import Modal from "../../atom/Modal";
 import Button from "../../atom/Button";
 import { ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/types/enum";
 import TokenIcon from "../../atom/TokenIcon";
+import Decimal from "decimal.js";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 interface SwapSelectTokenModalProps {
   open: boolean;
   title: string;
   inputValueA: string;
   inputValueB: string;
+  spotPriceA?: string;
+  spotPriceB?: string;
   priceImpact?: string;
   swapGasFee?: string;
   tokenValueA?: string;
@@ -31,6 +35,8 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   title,
   inputValueA,
   inputValueB,
+  spotPriceA,
+  spotPriceB,
   // priceImpact,
   swapGasFee,
   tokenValueA,
@@ -47,6 +53,8 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   onClose,
   onConfirmTransaction,
 }) => {
+  const priceA = new Decimal(Number(spotPriceA) || 0).times(new Decimal(Number(inputValueA) || 0));
+  const priceB = new Decimal(Number(spotPriceB) || 0).times(new Decimal(Number(inputValueB) || 0));
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
       <div className="flex w-[360px] flex-col gap-5">
@@ -61,6 +69,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueA}</div>
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
+          {priceA.gt(0) && (
+            <span className="font-inter text-small text-gray-200">${formatNumberEnUs(priceA.toNumber())}</span>
+          )}
         </div>
         <div className="flex flex-col items-start" data-dec={tokenDecimalsB}>
           <span className="font-inter text-small text-gray-200">
@@ -73,6 +84,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueB}</div>
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
+          {priceB.gt(0) && (
+            <span className="font-inter text-small text-gray-200">${formatNumberEnUs(priceB.toNumber())}</span>
+          )}
         </div>
         {transactionType !== TransactionTypes.createPool && (
           <>

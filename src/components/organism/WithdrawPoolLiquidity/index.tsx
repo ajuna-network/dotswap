@@ -644,6 +644,8 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           inputValueB={formattedTokenBValue()}
+          spotPriceA={tokenBalances?.spotPrice}
+          spotPriceB={assetTokenBSpotPrice}
           tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
           tokenDecimalsB={selectedTokenB.decimals}
           tokenValueA={

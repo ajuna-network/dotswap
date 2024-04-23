@@ -655,6 +655,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             priceImpact={priceImpact}
             inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue?.tokenValue : ""}
             inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue?.tokenValue : ""}
+            spotPriceA={selectedTokenA.tokenId !== "" ? "0" : tokenBalances?.spotPrice}
+            spotPriceB={selectedTokenB?.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
             tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
             tokenDecimalsB={selectedTokenB.decimals}
             tokenValueA={
