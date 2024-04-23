@@ -695,11 +695,17 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         }}
       />
       <WarningMessage
-        show={crosschainExactTokenAmount === "0" && selectedTokenValue.tokenValue !== ""}
+        show={selectedTokenValue.tokenValue !== "" && crosschainExactTokenAmount === "0"}
         message={t("crosschainPage.insufficientBalanceWarning")}
       />
       <WarningMessage
-        show={isGreaterThanMax && selectedTokenValue.tokenValue !== "" && selectedTokenValue.tokenValue !== "0"}
+        show={
+          isGreaterThanMax &&
+          selectedTokenValue.tokenValue !== "" &&
+          selectedTokenValue.tokenValue !== "0" &&
+          crosschainExactTokenAmount !== "0" &&
+          maxValue !== "0"
+        }
         message={`${t("crosschainPage.isGreaterThanMaxWarning")} ${maxValue} ${selectedToken.tokenSymbol}`}
       />
     </div>

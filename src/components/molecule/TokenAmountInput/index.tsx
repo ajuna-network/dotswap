@@ -87,9 +87,8 @@ const TokenAmountInput = ({
   const [inputValueUsd, setInputValueUsd] = useState<string>("");
   useEffect(() => {
     if (inputRef.current?.value !== undefined && inputRef.current?.value !== null && spotPrice && spotPrice !== "") {
-      setInputValueUsd(
-        formatNumberEnUs(new Decimal(Number(inputRef.current?.value || 0)).mul(Number(spotPrice || 0)).toNumber())
-      );
+      const inputValue = inputRef.current?.value === "." ? "0" : inputRef.current?.value || "0";
+      setInputValueUsd(formatNumberEnUs(new Decimal(Number(inputValue)).mul(Number(spotPrice || 0)).toNumber()));
     } else {
       setInputValueUsd("");
     }
