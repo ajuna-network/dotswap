@@ -163,9 +163,11 @@ const TokenAmountInput = ({
       </div>
       <div className="flex w-full justify-between">
         {withdrawAmountPercentage ? (
-          <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
+          <span className="hidden text-[13px] tracking-[0.2px] text-black text-opacity-50">
+            ({withdrawAmountPercentage}%)
+          </span>
         ) : null}
-        {inputValueUsd !== "" && !withdrawAmountPercentage ? (
+        {inputValueUsd !== "" ? (
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">${inputValueUsd}</span>
         ) : null}
         <div className="flex flex-1 justify-end pr-1 text-medium text-gray-200">
