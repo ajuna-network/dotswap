@@ -331,7 +331,7 @@ export const getAssetTokenSpotPrice = async (
 };
 
 // function for formatting numbers
-export const formatNumberEnUs = (value: number, fixed?: number) => {
+export const formatNumberEnUs = (value: number, fixed?: number, showDollarSign = false) => {
   let decimals = fixed || 2;
   if (value > 1 && fixed) {
     decimals = 4;
@@ -363,11 +363,18 @@ export const formatNumberEnUs = (value: number, fixed?: number) => {
       formattedValue = formattedValue.slice(0, -1);
     }
   }
+  const approx = "~ ";
+  const dollarSign = "$";
+
+  let showApprox = false;
+
   if (value > 0 && formattedValue === "0.00") {
-    formattedValue = "~ 0.00";
+    showApprox = true;
   } else if (value > 0 && formattedValue === "0") {
-    formattedValue = "~ 0";
+    showApprox = true;
   }
+
+  formattedValue = `${showApprox ? approx : ""}${showDollarSign ? dollarSign : ""}${formattedValue}`;
 
   return formattedValue;
 };
