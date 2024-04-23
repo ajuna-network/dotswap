@@ -596,7 +596,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
                 selectedToken.tokenBalance ? availableBalanceA.toFixed(Number(selectedToken.decimals)).toString() : "0"
               }
               showUSDValue={selectedToken.tokenBalance !== ""}
-              spotPrice={selectedToken.tokenId !== "" ? "" : tokenBalances?.spotPrice}
+              spotPrice={selectedToken.tokenId !== "" ? "0" : tokenBalances?.spotPrice}
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
               labelText={t("crosschainPage.transfer")}
@@ -695,7 +695,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         }}
       />
       <WarningMessage
-        show={selectedTokenValue.tokenValue !== "" && crosschainExactTokenAmount === "0"}
+        show={
+          (selectedTokenValue.tokenValue !== "" && crosschainExactTokenAmount === "0") ||
+          (isGreaterThanMax && maxValue === "0")
+        }
         message={t("crosschainPage.insufficientBalanceWarning")}
       />
       <WarningMessage

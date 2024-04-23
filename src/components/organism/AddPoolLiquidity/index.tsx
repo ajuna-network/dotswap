@@ -519,7 +519,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
     }
   }, [addLiquidityLoading]);
 
-  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("");
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
 
   useEffect(() => {
     if (!tokenBalances || !api) return;
@@ -542,7 +542,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenA?.nativeTokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenA.tokenBalance !== undefined}
+            showUSDValue={selectedTokenA.tokenBalance !== undefined && selectedTokenA.tokenBalance !== ""}
             spotPrice={selectedTokenA.tokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenA.tokenBalance}
             tokenId={selectedTokenA.tokenId}
@@ -557,7 +557,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
-            showUSDValue={selectedTokenB.assetTokenBalance !== undefined}
+            showUSDValue={selectedTokenB.assetTokenBalance !== undefined && selectedTokenB.assetTokenBalance !== ""}
             spotPrice={selectedTokenB?.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenB.assetTokenBalance ? selectedTokenB.assetTokenBalance : "0"}
             tokenId={selectedTokenB.assetTokenId}

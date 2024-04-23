@@ -1406,8 +1406,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     });
   }, [tokenBalances]);
 
-  const [assetTokenASpotPrice, setAssetTokenASpotPrice] = useState<string>("");
-  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("");
+  const [assetTokenASpotPrice, setAssetTokenASpotPrice] = useState<string>("0");
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
 
   useEffect(() => {
     if (!tokenBalances || !api) return;
@@ -1469,7 +1469,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         <TokenAmountInput
           tokenText={selectedTokens.tokenA?.tokenSymbol}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
-          showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined}
+          showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined && selectedTokens.tokenA?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenA.tokenId !== "" ? assetTokenASpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenA?.tokenId}
           tokenDecimals={selectedTokens.tokenA?.decimals}
@@ -1487,7 +1487,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         <TokenAmountInput
           tokenText={selectedTokens.tokenB?.tokenSymbol}
           tokenBalance={selectedTokens.tokenB?.tokenBalance}
-          showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined}
+          showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined && selectedTokens.tokenB?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenB.tokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenB?.tokenId}
           tokenDecimals={selectedTokens.tokenB?.decimals}

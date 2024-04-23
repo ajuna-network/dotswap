@@ -475,7 +475,7 @@ const WithdrawPoolLiquidity = () => {
     }
   }, [withdrawLiquidityLoading]);
 
-  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("");
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
 
   useEffect(() => {
     if (!tokenBalances || !api) return;
@@ -500,7 +500,7 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenA?.nativeTokenBalance !== undefined}
+          showUSDValue={selectedTokenA?.nativeTokenBalance !== undefined && selectedTokenA?.nativeTokenBalance !== ""}
           spotPrice={tokenBalances?.spotPrice}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
@@ -520,7 +520,7 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
-          showUSDValue={selectedTokenB?.assetTokenBalance !== undefined}
+          showUSDValue={selectedTokenB?.assetTokenBalance !== undefined && selectedTokenB?.assetTokenBalance !== ""}
           spotPrice={selectedTokenB.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenValue={formattedTokenBValue()}
           tokenBalance={selectedTokenB?.assetTokenBalance}
