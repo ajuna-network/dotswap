@@ -572,7 +572,7 @@ const WithdrawPoolLiquidity = () => {
               })}
             >
               <div className="flex w-full flex-row text-medium font-normal">
-                <div className="flex w-full items-center justify-between text-dark-500">
+                <div className="flex w-full items-center justify-between">
                   <span>
                     1 {selectedTokenA.nativeTokenSymbol} ={" "}
                     {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
@@ -595,13 +595,13 @@ const WithdrawPoolLiquidity = () => {
                   "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
                 })}
               >
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">{t("poolsPage.priceImpact")}</div>
-                  <span>~ {priceImpact}%</span>
+                  <span className="text-dark-500">~ {priceImpact}%</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenA.nativeTokenSymbol})`}</div>
-                  <span>
+                  <span className="text-dark-500">
                     {formatNumberEnUs(
                       Number(
                         formatDecimalsFromToken(nativeTokenWithSlippage?.tokenValue, selectedTokenA.nativeTokenDecimals)
@@ -612,10 +612,10 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenA.nativeTokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenB.tokenSymbol})`}</div>
 
-                  <span>
+                  <span className="text-dark-500">
                     {formatNumberEnUs(
                       Number(formatDecimalsFromToken(assetTokenWithSlippage.tokenValue, selectedTokenB.decimals)),
                       Number(selectedTokenB.decimals)
@@ -624,11 +624,11 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenB.tokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">{t("poolsPage.transactionCost")}</div>
                   <span className="text-dark-500">{addLiquidityGasFee}</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal text-dark-500">
+                <div className="flex w-full flex-row justify-between text-medium font-normal">
                   <div className="flex">{t("poolsPage.route")}</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
                     <HubIcon /> <span className="text-dark-500">{t("poolsPage.assetHub")}</span>
@@ -646,7 +646,8 @@ const WithdrawPoolLiquidity = () => {
         />
         <ReviewTransactionModal
           open={reviewModalOpen}
-          showAll={true}
+          showAll={false}
+          swapGasFee={addLiquidityGasFee}
           transactionType={TransactionTypes.withdraw}
           title="Review remove liquidity"
           priceImpact={priceImpact}
