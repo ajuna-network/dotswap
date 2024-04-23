@@ -79,6 +79,16 @@ const TokenAmountInput = ({
 
   const formId = `token-amount-${generateRandomString(4)}`;
 
+  const formattedDecimalsFromToken =
+    tokenDecimals && tokenBalance
+      ? formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), Number(tokenDecimals).toString())
+      : "0";
+
+  const formattedTokenBalance =
+    tokenId && formattedDecimalsFromToken
+      ? formatNumberEnUs(Number(formattedDecimalsFromToken) || 0, Number(tokenDecimals)) || 0
+      : (tokenDecimals && formatNumberEnUs(Number(tokenBalance), Number(tokenDecimals))) || 0;
+
   return (
     <div
       ref={wrapperRef}
@@ -150,16 +160,11 @@ const TokenAmountInput = ({
         {withdrawAmountPercentage ? (
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">({withdrawAmountPercentage}%)</span>
         ) : null}
-        <div className="flex w-full justify-end pr-1 text-medium text-gray-200">
-          Balance:{" "}
-          {tokenId && tokenText && tokenDecimals && tokenBalance
-            ? formatNumberEnUs(
-                Number(
-                  formatDecimalsFromToken(Number(tokenBalance?.replace(/[, ]/g, "")), Number(tokenDecimals).toString())
-                ) || 0,
-                Number(tokenDecimals)
-              ) || 0
-            : (tokenDecimals && formatNumberEnUs(Number(tokenBalance), Number(tokenDecimals))) || 0}
+        <div
+          className="flex w-full justify-end pr-1 text-medium text-gray-200"
+          data-balance={formattedDecimalsFromToken ? `${formattedDecimalsFromToken}` : ""}
+        >
+          Balance: {formattedTokenBalance}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
               <span>&nbsp;(${formatNumberEnUs(Number(tokenPriceUSD))})</span>

@@ -118,7 +118,10 @@ const AccordionAssetItem = ({
               <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
                 {t("assetItem.total")}
               </div>
-              <div className="font-titillium-web text-base font-semibold">
+              <div
+                className="font-titillium-web text-base font-semibold"
+                data-balance={totalBalance && totalBalance !== "0" ? totalBalance : 0}
+              >
                 {totalBalance && totalBalance !== "0"
                   ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
                   : "0"}
