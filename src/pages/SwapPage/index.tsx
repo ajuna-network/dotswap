@@ -72,7 +72,7 @@ const SwapPage: FC = () => {
           })}
           onClick={() => navigateToSwap()}
         >
-          Swap
+          {t("button.swap")}
         </button>
         <button
           className={classNames("h-[37px] w-[71px] rounded-3xl", {
@@ -80,7 +80,7 @@ const SwapPage: FC = () => {
           })}
           onClick={() => navigateToPools()}
         >
-          Pools
+          {t("button.pools")}
         </button>
       </div>
       <div
