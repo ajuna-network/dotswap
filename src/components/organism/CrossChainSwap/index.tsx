@@ -442,7 +442,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     if (
       payloadTokenValue !== "0" &&
       payloadTokenValue !== "" &&
-      Number(payloadTokenValue) < availableBalanceA.toNumber() &&
+      //   Number(payloadTokenValue) < availableBalanceA.toNumber() &&
       Number(payloadTokenValue) > tokenBalanceDecimal.toNumber()
     ) {
       setIsGreaterThanMax(true);

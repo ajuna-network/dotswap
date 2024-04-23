@@ -102,7 +102,7 @@ const TokenAmountInput = ({
           displayType={"input"}
           disabled={disabled || !tokenText}
           placeholder={"0"}
-          className="no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-4 font-bold text-gray-300 outline-none placeholder:text-gray-200"
+          className="no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-5 font-bold text-gray-300 outline-none placeholder:text-gray-200"
           onFocus={() => setIsFocused(true)}
           value={tokenValue}
           isAllowed={({ floatValue }) => {

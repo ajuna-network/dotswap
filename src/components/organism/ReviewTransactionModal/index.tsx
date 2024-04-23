@@ -57,7 +57,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.withdraw && "Withdrawal amount"}
             {transactionType === TransactionTypes.createPool && "You pay"}
           </span>
-          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-4 font-bold text-gray-400">
+          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400">
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueA}</div>
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
@@ -69,7 +69,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.withdraw && "Withdrawal amount"}
             {transactionType === TransactionTypes.createPool && "You pay"}
           </span>
-          <span className="flex w-full items-center justify-between gap-6 font-unbounded-variable text-heading-4 font-bold text-gray-400">
+          <span className="flex w-full items-center justify-between gap-6 font-unbounded-variable text-heading-5 font-bold text-gray-400">
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueB}</div>
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
