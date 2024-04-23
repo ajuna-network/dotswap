@@ -877,7 +877,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   // if it is asset token selling and it is drain (from user wallet or pool) we need to substrate min balance
   // if it is native token drain from the pool we need to substrate existential deposit
   const onMaxClick = async () => {
-    if (!selectedTokens.tokenA.tokenSymbol || !selectedTokens.tokenB.tokenSymbol) {
+    if (!selectedTokens.tokenA.tokenSymbol || !selectedTokens.tokenB.tokenSymbol || swapLoading) {
       return;
     }
     setIsMaxValueLessThenMinAmount(false);
@@ -1481,7 +1481,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         <button
           className="absolute top-[190px]"
           onClick={() => {
-            handleSwitchTokens();
+            !swapLoading && handleSwitchTokens();
           }}
         >
           <SwitchArrow className="hover:rotate-180 hover:cursor-pointer" />
