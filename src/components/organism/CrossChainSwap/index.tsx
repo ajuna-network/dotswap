@@ -554,7 +554,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100">
               {t("crosschainPage.from")}
             </div>
-            <div className="text-base font-normal leading-[19.2px] tracking-[.2px]">
+            <div className="text-left text-base font-normal leading-[19.2px] tracking-[.2px]">
               {crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType}
             </div>
           </div>
@@ -564,7 +564,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100">
               {t("crosschainPage.to")}
             </div>
-            <div className="text-base font-normal leading-[19.2px] tracking-[.2px]">
+            <div className="text-right text-base font-normal leading-[19.2px] tracking-[.2px]">
               {crosschainSelectedChain.chainB.chainName + " " + crosschainSelectedChain.chainB.chainType}
             </div>
           </div>
@@ -600,7 +600,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               tokenDecimals={selectedToken?.decimals}
               labelText={t("crosschainPage.transfer")}
               tokenIcon={<TokenIcon tokenSymbol={selectedToken.tokenSymbol} width={"24px"} height={"24px"} />}
-              tokenValue={selectedTokenValue.tokenValue || "0"}
+              tokenValue={selectedTokenValue?.tokenValue}
               onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
               onSetTokenValue={(value) => {
                 handleTokenValueChange(value);

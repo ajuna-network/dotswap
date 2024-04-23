@@ -70,7 +70,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
           {priceA.gt(0) && (
-            <span className="font-inter text-small text-gray-200">${formatNumberEnUs(priceA.toNumber())}</span>
+            <span className="font-inter text-small text-gray-200">
+              {formatNumberEnUs(priceA.toNumber(), undefined, true)}
+            </span>
           )}
         </div>
         <div className="flex flex-col items-start" data-dec={tokenDecimalsB}>
@@ -85,7 +87,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
           {priceB.gt(0) && (
-            <span className="font-inter text-small text-gray-200">${formatNumberEnUs(priceB.toNumber())}</span>
+            <span className="font-inter text-small text-gray-200">
+              {formatNumberEnUs(priceB.toNumber(), undefined, true)}
+            </span>
           )}
         </div>
         {transactionType !== TransactionTypes.createPool && (

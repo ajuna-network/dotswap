@@ -88,7 +88,9 @@ const TokenAmountInput = ({
   useEffect(() => {
     if (inputRef.current?.value !== undefined && inputRef.current?.value !== null && spotPrice && spotPrice !== "") {
       const inputValue = inputRef.current?.value === "." ? "0" : inputRef.current?.value || "0";
-      setInputValueUsd(formatNumberEnUs(new Decimal(Number(inputValue)).mul(Number(spotPrice || 0)).toNumber()));
+      setInputValueUsd(
+        formatNumberEnUs(new Decimal(Number(inputValue)).mul(Number(spotPrice || 0)).toNumber(), undefined, true)
+      );
     } else {
       setInputValueUsd("");
     }
@@ -117,9 +119,9 @@ const TokenAmountInput = ({
           displayType={"input"}
           disabled={disabled || !tokenText}
           placeholder={"0"}
-          className="no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-5 font-bold text-gray-300 outline-none placeholder:text-gray-200"
+          className={`no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-5 font-bold ${!tokenText ? "text-gray-200" : "text-gray-300"} outline-none placeholder:text-gray-200`}
           onFocus={() => setIsFocused(true)}
-          value={tokenValue}
+          value={tokenValue || "0"}
           isAllowed={({ floatValue }) => {
             if (floatValue) {
               const value = floatValue.toString();
@@ -168,7 +170,7 @@ const TokenAmountInput = ({
           </span>
         ) : null}
         {inputValueUsd !== "" ? (
-          <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">${inputValueUsd}</span>
+          <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">{inputValueUsd}</span>
         ) : null}
         <div className="flex flex-1 justify-end pr-1 text-medium text-gray-200">
           Balance: {formatNumberEnUs(Number(formattedTokenBalance), Number(tokenDecimals)) || 0}
