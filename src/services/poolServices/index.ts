@@ -163,7 +163,7 @@ const handleDispatchError = (
           notificationMessage: `${docs.join(" ")}`,
           notificationLink: {
             text: "View in block explorer",
-            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
       },
@@ -181,7 +181,7 @@ const handleDispatchError = (
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
             text: "View in block explorer",
-            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
       },

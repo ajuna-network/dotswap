@@ -141,7 +141,7 @@ const handleDispatchError = (
           notificationMessage: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
           notificationLink: {
             text: "View in block explorer",
-            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
       },
@@ -159,7 +159,7 @@ const handleDispatchError = (
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
             text: "View in block explorer",
-            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+            href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
       },
@@ -238,12 +238,12 @@ const handleSwapTransactionResponse = (
   }
   if (response.status.isInBlock) {
     handleInBlockResponse(response, dispatch);
-  } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
+  } else if (response.status.type === ServiceResponseStatus.Finalized) {
     handleFinalizedResponse(response, api, tokenADecimals, tokenBDecimals, dispatch);
   }
 };
 
-// Main swap functions//
+// Main swap functions
 
 export const performSwapNativeForAsset = async (
   api: ApiPromise,
