@@ -53,7 +53,8 @@
     "update": "Update",
     "continue": "Continue",
     "install": "Install",
-    "disconnectWallet": "Disconnect Wallet"
+    "disconnectWallet": "Disconnect Wallet",
+    "pools": "Pools"
   },
   "toaster": {
     "viewInBlockExplorer": "View in block explorer",
