@@ -18,6 +18,7 @@ import {
   formatDecimalsFromToken,
   formatInputTokenValue,
   truncateDecimalNumber,
+  getAssetTokenSpotPrice,
 } from "../../../app/util/helper";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
 import { LottieMedium } from "../../../assets/loader";
@@ -478,6 +479,15 @@ const WithdrawPoolLiquidity = () => {
     }
   }, [withdrawLiquidityLoading]);
 
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
+
+  useEffect(() => {
+    if (!tokenBalances || !api) return;
+    getAssetTokenSpotPrice(api, selectedTokenB.assetTokenId, selectedTokenB.decimals, tokenBalances).then((price) => {
+      if (price) setAssetTokenBSpotPrice(price);
+    });
+  }, [api, tokenBalances, selectedTokenB.assetTokenId]);
+
   return (
     <div className="flex w-full max-w-[460px] flex-col gap-4">
       <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
@@ -505,7 +515,7 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenA?.nativeTokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenA?.nativeTokenSymbol} width="24" height="24" />}
-          showUSDValue={false}
+          showUSDValue={selectedTokenA?.nativeTokenBalance !== undefined && selectedTokenA?.nativeTokenBalance !== ""}
           spotPrice={tokenBalances?.spotPrice}
           tokenValue={
             selectedTokenNativeValue?.tokenValue
@@ -525,8 +535,8 @@ const WithdrawPoolLiquidity = () => {
           tokenText={selectedTokenB?.tokenSymbol}
           labelText={t("poolsPage.withdrawalAmount")}
           tokenIcon={<TokenIcon tokenSymbol={selectedTokenB?.tokenSymbol} width="24" height="24" />}
-          showUSDValue={false}
-          spotPrice={selectedTokenB.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
+          showUSDValue={selectedTokenB?.assetTokenBalance !== undefined && selectedTokenB?.assetTokenBalance !== ""}
+          spotPrice={selectedTokenB.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenValue={formattedTokenBValue()}
           tokenBalance={selectedTokenB?.assetTokenBalance}
           tokenDecimals={selectedTokenB?.decimals}
@@ -673,6 +683,8 @@ const WithdrawPoolLiquidity = () => {
               : ""
           }
           inputValueB={formattedTokenBValue()}
+          spotPriceA={tokenBalances?.spotPrice}
+          spotPriceB={assetTokenBSpotPrice}
           tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
           tokenDecimalsB={selectedTokenB.decimals}
           tokenValueA={

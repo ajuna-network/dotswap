@@ -442,7 +442,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     if (
       payloadTokenValue !== "0" &&
       payloadTokenValue !== "" &&
-      Number(payloadTokenValue) < availableBalanceA.toNumber() &&
+      //   Number(payloadTokenValue) < availableBalanceA.toNumber() &&
       Number(payloadTokenValue) > tokenBalanceDecimal.toNumber()
     ) {
       setIsGreaterThanMax(true);
@@ -596,7 +596,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
                 selectedToken.tokenBalance ? availableBalanceA.toFixed(Number(selectedToken.decimals)).toString() : "0"
               }
               showUSDValue={selectedToken.tokenBalance !== ""}
-              spotPrice={selectedToken.tokenId !== "" ? "" : tokenBalances?.spotPrice}
+              spotPrice={selectedToken.tokenId !== "" ? "0" : tokenBalances?.spotPrice}
               tokenId={selectedToken?.tokenId}
               tokenDecimals={selectedToken?.decimals}
               labelText={t("crosschainPage.transfer")}
@@ -695,11 +695,20 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         }}
       />
       <WarningMessage
-        show={crosschainExactTokenAmount === "0" && selectedTokenValue.tokenValue !== ""}
+        show={
+          (selectedTokenValue.tokenValue !== "" && crosschainExactTokenAmount === "0") ||
+          (isGreaterThanMax && maxValue === "0")
+        }
         message={t("crosschainPage.insufficientBalanceWarning")}
       />
       <WarningMessage
-        show={isGreaterThanMax && selectedTokenValue.tokenValue !== "" && selectedTokenValue.tokenValue !== "0"}
+        show={
+          isGreaterThanMax &&
+          selectedTokenValue.tokenValue !== "" &&
+          selectedTokenValue.tokenValue !== "0" &&
+          crosschainExactTokenAmount !== "0" &&
+          maxValue !== "0"
+        }
         message={`${t("crosschainPage.isGreaterThanMaxWarning")} ${maxValue} ${selectedToken.tokenSymbol}`}
       />
     </div>

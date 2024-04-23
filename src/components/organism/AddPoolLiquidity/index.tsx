@@ -12,6 +12,7 @@ import {
   convertToBaseUnit,
   formatDecimalsFromToken,
   formatInputTokenValue,
+  getAssetTokenSpotPrice,
 } from "../../../app/util/helper";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
 import { LottieMedium } from "../../../assets/loader";
@@ -522,6 +523,16 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
       }
     }
   }, [addLiquidityLoading]);
+
+  const [assetTokenBSpotPrice, setAssetTokenBSpotPrice] = useState<string>("0");
+
+  useEffect(() => {
+    if (!tokenBalances || !api) return;
+    getAssetTokenSpotPrice(api, selectedTokenB.assetTokenId, selectedTokenB.decimals, tokenBalances).then((price) => {
+      if (price) setAssetTokenBSpotPrice(price);
+    });
+  }, [api, tokenBalances, selectedTokenB.assetTokenId]);
+
   return (
     <div className="flex max-w-[460px] flex-col gap-4">
       {tokenBId?.id && poolExists === false ? (
@@ -550,7 +561,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenA?.nativeTokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenA.nativeTokenSymbol} width="24" height="24" />}
-            showUSDValue={false}
+            showUSDValue={selectedTokenA.tokenBalance !== undefined && selectedTokenA.tokenBalance !== ""}
             spotPrice={selectedTokenA.tokenId !== "" ? "" : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenA.tokenBalance}
             tokenId={selectedTokenA.tokenId}
@@ -565,8 +576,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
           <TokenAmountInput
             tokenText={selectedTokenB?.tokenSymbol}
             tokenIcon={<TokenIcon tokenSymbol={selectedTokenB.tokenSymbol} width="24" height="24" />}
-            showUSDValue={false}
-            spotPrice={selectedTokenB?.assetTokenId !== "" ? "" : tokenBalances?.spotPrice}
+            showUSDValue={selectedTokenB.assetTokenBalance !== undefined && selectedTokenB.assetTokenBalance !== ""}
+            spotPrice={selectedTokenB?.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
             tokenBalance={selectedTokenB.assetTokenBalance ? selectedTokenB.assetTokenBalance : "0"}
             tokenId={selectedTokenB.assetTokenId}
             tokenDecimals={selectedTokenB.decimals}
@@ -693,6 +704,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             priceImpact={priceImpact}
             inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue?.tokenValue : ""}
             inputValueB={selectedTokenAssetValue ? selectedTokenAssetValue?.tokenValue : ""}
+            spotPriceA={selectedTokenA.tokenId !== "" ? "0" : tokenBalances?.spotPrice}
+            spotPriceB={selectedTokenB?.assetTokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
             tokenDecimalsA={selectedTokenA.nativeTokenDecimals}
             tokenDecimalsB={selectedTokenB.decimals}
             tokenValueA={
