@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import Modal from "../../atom/Modal";
 import { LottieMedium } from "../../../assets/loader";
 import ArrowRight from "../../../assets/img/arrow-right.svg?react";
@@ -19,13 +19,22 @@ interface Props {
 
 const NotificationsModal: FC<Props> = ({ id }) => {
   const { state, dispatch } = useAppContext();
-  const [notificationViewed, setNotificationViewed] = useState(false);
 
   const onModalClose = () => {
     dispatch({
       type: ActionType.SET_NOTIFICATION_MODAL_OPEN,
       payload: { id: id, notificationModalOpen: false },
     });
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_VIEWED,
+      payload: { id: id, notificationViewed: true },
+    });
+    if (currentNotification?.notificationType === ToasterType.SUCCESS) {
+      dispatch({
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: id,
+      });
+    }
   };
 
   const { notifications } = state;
@@ -48,20 +57,24 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   };
 
   useEffect(() => {
-    if (!currentNotification?.notificationModalOpen && !notificationViewed) {
+    if (!currentNotification?.notificationModalOpen && !currentNotification?.notificationViewed) {
       const toasterMessage = buildToasterMessage();
+
+      const options = {
+        id: new Date().getTime().toString(),
+      };
 
       switch (currentNotification?.notificationType) {
         case ToasterType.SUCCESS:
-          dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+          dotAcpToast.success(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
           break;
         case ToasterType.PENDING:
-          dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+          dotAcpToast.pending(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
           break;
         case ToasterType.ERROR:
           dotAcpToast.error(
             currentNotification?.notificationMessage ?? "",
-            undefined,
+            options,
             currentNotification?.notificationLink?.href
           );
           break;
@@ -71,7 +84,10 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     }
 
     if (!currentNotification?.notificationModalOpen) {
-      setNotificationViewed(false);
+      dispatch({
+        type: ActionType.SET_NOTIFICATION_VIEWED,
+        payload: { id: id, notificationViewed: false },
+      });
     }
   }, [
     currentNotification?.notificationModalOpen,
@@ -81,9 +97,19 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
   useEffect(() => {
     if (currentNotification?.notificationModalOpen && currentNotification?.notificationType !== ToasterType.PENDING) {
-      setNotificationViewed(true);
+      dispatch({
+        type: ActionType.SET_NOTIFICATION_VIEWED,
+        payload: { id: id, notificationViewed: true },
+      });
     }
-  }, [currentNotification?.notificationModalOpen, currentNotification?.notificationType]);
+    if (currentNotification?.notificationType === ToasterType.SUCCESS && !currentNotification?.notificationViewed) {
+      if (currentNotification?.notificationModalOpen) return;
+      dispatch({
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: id,
+      });
+    }
+  }, [currentNotification?.notificationType]);
 
   const renderNotificationIcon = () => {
     switch (currentNotification?.notificationType) {

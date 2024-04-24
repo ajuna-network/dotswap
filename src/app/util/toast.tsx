@@ -21,7 +21,7 @@ const dotAcpToast: DotAcpToast = {
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      options
+      { ...options, id: options?.id || new Date().getTime().toString() }
     );
   },
   pending: (message, options, blockExplorerLink) => {
@@ -36,7 +36,7 @@ const dotAcpToast: DotAcpToast = {
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      options
+      { ...options, id: options?.id || new Date().getTime().toString() }
     );
   },
   error: (message, options, blockExplorerLink) => {
@@ -51,7 +51,7 @@ const dotAcpToast: DotAcpToast = {
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      options
+      { ...options, id: options?.id || new Date().getTime().toString() }
     );
   },
 };

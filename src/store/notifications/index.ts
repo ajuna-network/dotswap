@@ -25,6 +25,7 @@ export const notificationReducer = (state: NotificationState, action: Notificati
       };
 
     case ActionType.SET_NOTIFICATION_MODAL_OPEN:
+    case ActionType.SET_NOTIFICATION_VIEWED:
     case ActionType.SET_NOTIFICATION_TYPE:
     case ActionType.SET_NOTIFICATION_ACTION:
     case ActionType.SET_NOTIFICATION_TITLE:
