@@ -15,13 +15,13 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.SUCCESS}
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      { ...options, id: options?.id || new Date().getTime().toString() }
+      options
     );
   },
   pending: (message, options, blockExplorerLink) => {
@@ -30,13 +30,13 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.PENDING}
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      { ...options, id: options?.id || new Date().getTime().toString() }
+      options
     );
   },
   error: (message, options, blockExplorerLink) => {
@@ -45,13 +45,13 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.ERROR}
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      { ...options, id: options?.id || new Date().getTime().toString() }
+      options
     );
   },
 };

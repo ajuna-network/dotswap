@@ -20,21 +20,18 @@ interface Props {
 const NotificationsModal: FC<Props> = ({ id }) => {
   const { state, dispatch } = useAppContext();
 
+  const setViewed = (value: boolean) => {
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_VIEWED,
+      payload: { id: id, notificationViewed: value },
+    });
+  };
+
   const onModalClose = () => {
     dispatch({
       type: ActionType.SET_NOTIFICATION_MODAL_OPEN,
       payload: { id: id, notificationModalOpen: false },
     });
-    dispatch({
-      type: ActionType.SET_NOTIFICATION_VIEWED,
-      payload: { id: id, notificationViewed: true },
-    });
-    if (currentNotification?.notificationType === ToasterType.SUCCESS) {
-      dispatch({
-        type: ActionType.REMOVE_NOTIFICATION,
-        payload: id,
-      });
-    }
   };
 
   const { notifications } = state;
@@ -57,59 +54,46 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   };
 
   useEffect(() => {
-    if (!currentNotification?.notificationModalOpen && !currentNotification?.notificationViewed) {
-      const toasterMessage = buildToasterMessage();
-
-      const options = {
-        id: new Date().getTime().toString(),
-      };
-
-      switch (currentNotification?.notificationType) {
-        case ToasterType.SUCCESS:
-          dotAcpToast.success(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
-          break;
-        case ToasterType.PENDING:
-          dotAcpToast.pending(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
-          break;
-        case ToasterType.ERROR:
-          dotAcpToast.error(
-            currentNotification?.notificationMessage ?? "",
-            options,
-            currentNotification?.notificationLink?.href
-          );
-          break;
-        default:
-          break;
-      }
-    }
-
     if (!currentNotification?.notificationModalOpen) {
-      dispatch({
-        type: ActionType.SET_NOTIFICATION_VIEWED,
-        payload: { id: id, notificationViewed: false },
-      });
+      if (!currentNotification?.notificationViewed) {
+        const toasterMessage = buildToasterMessage();
+        setViewed(true);
+
+        switch (currentNotification?.notificationType) {
+          case ToasterType.SUCCESS:
+            dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            break;
+          case ToasterType.PENDING:
+            dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            setViewed(false);
+            break;
+          case ToasterType.ERROR:
+            dotAcpToast.error(
+              currentNotification?.notificationMessage ?? "",
+              undefined,
+              currentNotification?.notificationLink?.href
+            );
+            break;
+          default:
+            break;
+        }
+      } else {
+        setViewed(false);
+      }
+    } else {
+      if (!currentNotification?.notificationViewed) {
+        if (currentNotification?.notificationType !== ToasterType.PENDING) {
+          setViewed(true);
+        }
+      } else {
+        setViewed(false);
+      }
     }
   }, [
     currentNotification?.notificationModalOpen,
     currentNotification?.notificationType,
     currentNotification?.notificationMessage,
   ]);
-
-  useEffect(() => {
-    if (currentNotification?.notificationModalOpen && currentNotification?.notificationType !== ToasterType.PENDING) {
-      dispatch({
-        type: ActionType.SET_NOTIFICATION_VIEWED,
-        payload: { id: id, notificationViewed: true },
-      });
-    }
-    if (currentNotification?.notificationType === ToasterType.SUCCESS && !currentNotification?.notificationViewed) {
-      if (currentNotification?.notificationModalOpen) return;
-      dispatch({
-        type: ActionType.REMOVE_NOTIFICATION,
-        payload: id,
-      });
-    }
-  }, [currentNotification?.notificationType]);
 
   const renderNotificationIcon = () => {
     switch (currentNotification?.notificationType) {
