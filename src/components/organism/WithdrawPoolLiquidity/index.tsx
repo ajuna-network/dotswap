@@ -145,7 +145,7 @@ const WithdrawPoolLiquidity = () => {
   };
 
   const handlePool = async () => {
-    if (api?.isReady) {
+    if (!api?.isReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }

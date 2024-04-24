@@ -143,7 +143,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   const handlePool = async () => {
-    if (api?.isReady) {
+    if (!api?.isReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }

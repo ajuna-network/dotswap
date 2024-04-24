@@ -557,7 +557,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   };
 
   const handleSwap = async () => {
-    if (api?.isReady) {
+    if (!api?.isReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }
