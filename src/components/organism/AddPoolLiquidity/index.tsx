@@ -33,6 +33,7 @@ import { formatNumberEnUs } from "../../../app/util/helper";
 import classNames from "classnames";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
+import dotAcpToast from "../../../app/util/toast";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -142,6 +143,10 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   const handlePool = async () => {
+    if (api?.isReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     if (!tokenBalances) return;
     setReviewModalOpen(false);
     if (waitingForTransaction) {

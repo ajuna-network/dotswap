@@ -39,6 +39,7 @@ import { formatNumberEnUs } from "../../../app/util/helper";
 import classNames from "classnames";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
+import dotAcpToast from "../../../app/util/toast";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -144,6 +145,10 @@ const WithdrawPoolLiquidity = () => {
   };
 
   const handlePool = async () => {
+    if (api?.isReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     setReviewModalOpen(false);
     const lpToken = Math.floor(Number(lpTokensAmountToBurn) * (withdrawAmountPercentage / 100)).toString();
     if (waitingForTransaction) {

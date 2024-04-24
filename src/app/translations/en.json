@@ -226,5 +226,10 @@
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"
+  },
+  "error": {
+    "api": {
+        "notReady": "Please reconnect your wallet."
+    }
   }
 }

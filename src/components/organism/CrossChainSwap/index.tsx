@@ -31,6 +31,7 @@ import {
   executeCrossOut,
 } from "../../../services/crosschain";
 import WarningMessage from "../../atom/WarningMessage";
+import dotAcpToast from "../../../app/util/toast";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -462,6 +463,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleCrosschainExec = async () => {
+    if (!api?.isReady || !relayApi?.isReady) {
+      dotAcpToast.error(t("error.api.notReady"));
+      return;
+    }
     setReviewModalOpen(false);
     if (crosschainExtrinsic) {
       dispatch({
