@@ -51,7 +51,7 @@ import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
 import dotAcpToast from "../../../app/util/toast";
 
 type SwapTokenProps = {
@@ -557,7 +557,8 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   };
 
   const handleSwap = async () => {
-    if (!api?.isReady) {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }

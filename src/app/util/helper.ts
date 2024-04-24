@@ -6,6 +6,7 @@ import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { getAssetTokenFromNativeToken } from "../../services/tokenServices/index.ts";
+import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {
   // Sentry
@@ -377,4 +378,26 @@ export const formatNumberEnUs = (value: number, fixed?: number, showDollarSign =
   formattedValue = `${showApprox ? approx : ""}${showDollarSign ? dollarSign : ""}${formattedValue}`;
 
   return formattedValue;
+};
+
+/*
+ * Function to check if api and/or relayApi are available
+ * @param api
+ * @param relayApi
+ * @returns boolean
+ */
+export const isApiAvailable = async (api?: ApiPromise, relayApi?: ApiPromise): Promise<boolean> => {
+  if (api && relayApi) {
+    const isReady = (await api.isReadyOrError) && (await relayApi.isReadyOrError);
+    return isReady ? true : false;
+  }
+  if (api && api.isConnected) {
+    const isReady = await api.isReadyOrError;
+    return isReady ? true : false;
+  }
+  if (relayApi && relayApi.isConnected) {
+    const isReady = await relayApi.isReadyOrError;
+    return isReady ? true : false;
+  }
+  return false;
 };

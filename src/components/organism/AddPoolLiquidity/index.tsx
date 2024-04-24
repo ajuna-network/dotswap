@@ -29,7 +29,7 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
 import classNames from "classnames";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
@@ -143,7 +143,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   const handlePool = async () => {
-    if (!api?.isReady) {
+    const isApiReady = api && isApiAvailable(api);
+    if (!isApiReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }

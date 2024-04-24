@@ -32,7 +32,7 @@ import TokenAmountInput from "../../molecule/TokenAmountInput";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import { SwapOrPools } from "../../../app/types/enum";
-import { urlTo } from "../../../app/util/helper";
+import { urlTo, isApiAvailable } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
 import { formatNumberEnUs } from "../../../app/util/helper";
@@ -145,7 +145,8 @@ const WithdrawPoolLiquidity = () => {
   };
 
   const handlePool = async () => {
-    if (!api?.isReady) {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
       dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }

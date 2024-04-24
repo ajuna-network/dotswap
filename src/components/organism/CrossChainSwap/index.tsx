@@ -19,6 +19,7 @@ import {
   formatInputTokenValue,
   getCrossInDestinationFee,
   getCrossOutDestinationFee,
+  isApiAvailable,
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
@@ -463,8 +464,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleCrosschainExec = async () => {
-    if (!api?.isReady || !relayApi?.isReady) {
-      dotAcpToast.error(t("error.api.notReady"));
+    const isApiReady = api && relayApi && (await isApiAvailable(api, relayApi));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
       return;
     }
     setReviewModalOpen(false);
