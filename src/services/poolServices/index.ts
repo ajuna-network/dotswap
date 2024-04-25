@@ -195,6 +195,7 @@ const handleDispatchError = (
     });
   }
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+  dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
 };
 
 const handleSuccessfulPool = (
@@ -253,6 +254,7 @@ const handleSuccessfulPool = (
 
   dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+  dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
 };
 
 const handleFinalizedResponse = (
