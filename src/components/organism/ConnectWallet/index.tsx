@@ -123,7 +123,8 @@ const ConnectWallet = () => {
 
   const getWalletsFn = async () => {
     const wallets = getSupportedWallets();
-    setSupportedWallets(wallets);
+    const filteredWallets = wallets.filter((wallet) => wallet.extensionName !== "manta-wallet-js");
+    setSupportedWallets(filteredWallets);
   };
 
   useEffect(() => {

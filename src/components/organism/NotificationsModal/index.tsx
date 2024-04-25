@@ -67,9 +67,13 @@ const NotificationsModal: FC<Props> = ({ id }) => {
         const toasterMessage = buildToasterMessage();
         setViewed(true);
 
+        const options = {
+          duration: Infinity,
+        };
+
         switch (currentNotification?.notificationType) {
           case ToasterType.SUCCESS:
-            dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            dotAcpToast.success(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
             break;
           case ToasterType.PENDING:
             dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
@@ -78,7 +82,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
           case ToasterType.ERROR:
             dotAcpToast.error(
               currentNotification?.notificationMessage ?? "",
-              undefined,
+              options,
               currentNotification?.notificationLink?.href
             );
             break;
