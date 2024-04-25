@@ -9,12 +9,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SWAP_ROUTE } from "../../app/router/routes";
 import { urlTo, isApiAvailable } from "../../app/util/helper";
 import { createPoolCardsArray } from "../../services/poolServices";
+import { useTranslation } from "react-i18next";
 
 const SwapPage: FC = () => {
   const { state, dispatch } = useAppContext();
   const { api, pools, selectedAccount, tokenBalances } = state;
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [swapOrPools, setSwapOrPools] = useState<SwapOrPools>(
     location.state?.pageType === SwapOrPools.pools ? SwapOrPools.pools : SwapOrPools.swap
@@ -48,7 +50,7 @@ const SwapPage: FC = () => {
       const fetchPools = async () => {
         await getAllLiquidityPoolsTokensMetadata(api, dispatch);
       };
-      fetchPools();
+      fetchPools().then();
     }
   }, [api]);
 
@@ -69,7 +71,7 @@ const SwapPage: FC = () => {
           })}
           onClick={() => navigateToSwap()}
         >
-          Swap
+          {t("button.swap")}
         </button>
         <button
           className={classNames("h-[37px] w-[71px] rounded-3xl", {
@@ -77,7 +79,7 @@ const SwapPage: FC = () => {
           })}
           onClick={() => navigateToPools()}
         >
-          Pools
+          {t("button.pools")}
         </button>
       </div>
       <div

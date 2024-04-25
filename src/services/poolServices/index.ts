@@ -711,6 +711,7 @@ export const createPoolCardsArray = async (
     poolCardsArray.sort((a, b) => {
       if (a.lpTokenAsset === null) return 1;
       if (b.lpTokenAsset === null) return -1;
+
       return parseInt(a?.lpTokenAsset?.balance) - parseInt(b?.lpTokenAsset?.balance);
     });
 

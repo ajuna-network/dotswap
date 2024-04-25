@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
-import { getAssetTokenFromNativeToken } from "../../services/tokenServices/index.ts";
+import { getAssetTokenFromNativeToken } from "../../services/tokenServices";
 import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {

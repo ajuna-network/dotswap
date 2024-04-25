@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { t } from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { SWAP_ROUTE } from "../../../app/router/routes";
@@ -54,7 +54,7 @@ type CreatePoolProps = {
   tokenBSelected?: AssetTokenProps;
 };
 
-const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
+const CreatePool: FC<CreatePoolProps> = ({ tokenBSelected }) => {
   const { state, dispatch } = useAppContext();
   const { assethubSubscanUrl } = useGetNetwork();
 
@@ -350,7 +350,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
   }, []);
 
   useEffect(() => {
-    checkAssetTokenMinAmount();
+    checkAssetTokenMinAmount().then();
   }, [selectedTokenAssetValue?.tokenValue]);
 
   useEffect(() => {
@@ -463,7 +463,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
             </Button>
             <ReviewTransactionModal
               open={reviewModalOpen}
-              title="Review create pool"
+              title={t("modal.createPool.review")}
               transactionType={TransactionTypes.createPool}
               inputValueA={selectedTokenNativeValue ? selectedTokenNativeValue.tokenValue : ""}
               tokenValueA={selectedTokenA.nativeTokenSymbol}
@@ -475,7 +475,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
                 setReviewModalOpen(false);
               }}
               onConfirmTransaction={() => {
-                handlePool();
+                handlePool().then();
               }}
             />
             <PoolSelectTokenModal

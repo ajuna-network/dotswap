@@ -1,6 +1,12 @@
+import { FC } from "react";
 import TooltipIcon from "../../../assets/img/tooltip-icon.svg?react";
 import TooltipBottom from "../../../assets/img/tooltip-bottom.svg?react";
-const Tooltip = ({ message }: { message: string }) => {
+
+interface TooltipProps {
+  message: string;
+}
+
+const Tooltip: FC<TooltipProps> = ({ message }) => {
   return (
     <div className="group relative flex items-center justify-center">
       <div className="flex items-center justify-center">

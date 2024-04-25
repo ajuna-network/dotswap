@@ -1,3 +1,4 @@
+import { FC } from "react";
 import WarningIcon from "../../../assets/img/warning-icon.svg?react";
 
 type WarningMessageProps = {
@@ -5,7 +6,7 @@ type WarningMessageProps = {
   show: boolean;
 };
 
-const WarningMessage = ({ message, show }: WarningMessageProps) => {
+const WarningMessage: FC<WarningMessageProps> = ({ message, show }) => {
   const linkify = (text: string) => {
     // Regex pattern to match a more complete and strict URL structure
     const urlRegex = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gi;
@@ -20,6 +21,7 @@ const WarningMessage = ({ message, show }: WarningMessageProps) => {
       )
     );
   };
+
   return show ? (
     <div className="flex gap-5 rounded-2xl bg-yellow-100 p-6 font-inter text-sm font-normal">
       <span className="mt-0.5">

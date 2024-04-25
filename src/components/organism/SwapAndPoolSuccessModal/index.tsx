@@ -5,6 +5,7 @@ import ArrowRight from "../../../assets/img/arrow-right.svg?react";
 import OpenLinkArrow from "../../../assets/img/open-link-arrow.svg?react";
 import { useAppContext } from "../../../state";
 import Modal from "../../atom/Modal";
+import { useTranslation } from "react-i18next";
 
 interface SwapAndPoolSuccessModalProps {
   open: boolean;
@@ -34,6 +35,8 @@ const SwapAndPoolSuccessModal: FC<SwapAndPoolSuccessModalProps> = ({
   const { assethubSubscanUrl, nativeTokenSymbol } = useGetNetwork();
   const { state } = useAppContext();
   const { blockHashFinalized } = state;
+  const { t } = useTranslation();
+
   return (
     <div>
       <Modal isOpen={open} onClose={onClose}>
@@ -59,7 +62,7 @@ const SwapAndPoolSuccessModal: FC<SwapAndPoolSuccessModalProps> = ({
               target="_blank"
               rel="noreferrer"
             >
-              View in block explorer
+              {t("toast.viewInBlockExplorer")}
             </a>
             <OpenLinkArrow />
           </div>

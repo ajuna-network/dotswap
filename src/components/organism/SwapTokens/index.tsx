@@ -1590,11 +1590,11 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Price impact</div>
+                  <div className="flex">{t("swapPage.priceImpact")}</div>
                   <span className="text-dark-500">~ {priceImpact}%</span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Liquidity Fee</div>
+                  <div className="flex">{t("swapPage.liquidityFee")}</div>
                   <span className="text-dark-500">
                     {formatNumberEnUs(
                       Number(
@@ -1613,13 +1613,13 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
                   </span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Transaction Cost</div>
+                  <div className="flex">{t("swapPage.transactionCost")}</div>
                   <span className="text-dark-500">{swapGasFee}</span>
                 </div>
                 <div className="flex w-full flex-row justify-between text-medium font-normal">
-                  <div className="flex">Route</div>
+                  <div className="flex">{t("swapPage.route")}</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
-                    <HubIcon /> <span className="text-dark-500">Asset Hub</span>
+                    <HubIcon /> <span className="text-dark-500">{t("swapPage.assetHub")}</span>
                   </div>
                 </div>
               </div>
@@ -1652,7 +1652,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         />
         <ReviewTransactionModal
           open={reviewModalOpen}
-          title="Review Swap"
+          title={t("modal.swap.reviewSwap")}
           priceImpact={priceImpact}
           swapGasFee={swapGasFee}
           transactionType={TransactionTypes.swap}
@@ -1685,7 +1685,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
           }}
           inputType={inputEdited.inputType}
           onConfirmTransaction={() => {
-            handleSwap();
+            handleSwap().then();
           }}
         />
       </div>

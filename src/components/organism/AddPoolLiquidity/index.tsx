@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { t } from "i18next";
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetNetwork from "../../../app/hooks/useGetNetwork";
 import { SWAP_ROUTE } from "../../../app/router/routes";
@@ -55,7 +55,7 @@ type AddPoolLiquidityProps = {
   tokenBId?: { id: string };
 };
 
-const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
+const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
   const { state, dispatch } = useAppContext();
   const { assethubSubscanUrl } = useGetNetwork();
 
@@ -383,8 +383,8 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
       }
 
       const assetTokenBalance = new Decimal(selectedTokenB.assetTokenBalance?.replace(/[, ]/g, ""));
-      const assetTokenBalnceFormatted = formatDecimalsFromToken(assetTokenBalance, selectedTokenB.decimals);
-      if (selectedAssetTokenNumber.gt(assetTokenBalnceFormatted)) {
+      const assetTokenBalanceFormatted = formatDecimalsFromToken(assetTokenBalance, selectedTokenB.decimals);
+      if (selectedAssetTokenNumber.gt(assetTokenBalanceFormatted)) {
         return { label: t("button.insufficientTokenAmount", { token: selectedTokenB.tokenSymbol }), disabled: true };
       }
 
@@ -454,7 +454,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
   };
 
   useEffect(() => {
-    calculatePriceImpact();
+    calculatePriceImpact().then();
   }, [selectedTokenB.tokenSymbol, selectedTokenAssetValue?.tokenValue, selectedTokenNativeValue?.tokenValue]);
 
   useEffect(() => {
@@ -472,7 +472,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
 
   useEffect(() => {
     if (Number(nativeTokenWithSlippage.tokenValue) > 0 && Number(assetTokenWithSlippage.tokenValue) > 0) {
-      handleAddPoolLiquidityGasFee();
+      handleAddPoolLiquidityGasFee().then();
     }
   }, [nativeTokenWithSlippage.tokenValue, assetTokenWithSlippage.tokenValue]);
 
@@ -649,11 +649,11 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                     "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
                   })}
                 >
-                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal">
                     <div className="flex">{t("poolsPage.priceImpact")}</div>
                     <span className="text-dark-500">~ {priceImpact}%</span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal">
                     <div className="flex">
                       {inputEdited.inputType === InputEditedType.exactIn
                         ? `${t("poolsPage.minimumDeposited")} (${selectedTokenA.nativeTokenSymbol})`
@@ -682,7 +682,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                           selectedTokenB.tokenSymbol}
                     </span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal">
                     <div className="flex">
                       {inputEdited.inputType === InputEditedType.exactIn
                         ? `${t("poolsPage.minimumDeposited")} (${selectedTokenB.tokenSymbol})`
@@ -711,7 +711,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
                           selectedTokenA.nativeTokenSymbol}
                     </span>
                   </div>
-                  <div className="flex w-full flex-row justify-between text-medium font-normal ">
+                  <div className="flex w-full flex-row justify-between text-medium font-normal">
                     <div className="flex">{t("poolsPage.transactionCost")}</div>
                     <span className="text-dark-500">{addLiquidityGasFee}</span>
                   </div>
@@ -763,7 +763,7 @@ const AddPoolLiquidity = ({ tokenBId }: AddPoolLiquidityProps) => {
             }}
             inputType={inputEdited.inputType}
             onConfirmTransaction={() => {
-              handlePool();
+              handlePool().then();
             }}
           />
           <PoolSelectTokenModal

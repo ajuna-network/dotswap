@@ -6,6 +6,8 @@ import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
+import { FC } from "react";
+import { useTranslation } from "react-i18next";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -21,7 +23,7 @@ interface WalletConnectModalProps {
   onBack?: () => void | undefined;
 }
 
-const WalletConnectModal = ({
+const WalletConnectModal: FC<WalletConnectModalProps> = ({
   open,
   title,
   modalStep,
@@ -32,8 +34,9 @@ const WalletConnectModal = ({
   setModalStep,
   handleConnect,
   handleWalletInstall,
-}: WalletConnectModalProps) => {
+}) => {
   const { dispatch } = useAppContext();
+  const { t } = useTranslation();
 
   const handleContinueClick = (accounts: WalletAccount[]) => {
     setModalStep({ step: WalletConnectSteps.stepAddresses });
@@ -61,18 +64,16 @@ const WalletConnectModal = ({
                           handleContinueClick(accounts);
                         }}
                       >
-                        Continue
+                        {t("button.continue")}
                       </Button>
                     ) : (
-                      // render install button if wallet is not installed and listen to the install event to update the state
-
                       <Button
                         className="btn-secondary-white"
                         onClick={() => {
                           handleWalletInstall(wallet);
                         }}
                       >
-                        Install
+                        {t("button.install")}
                       </Button>
                     )}
                   </div>

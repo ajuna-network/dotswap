@@ -1,13 +1,14 @@
 import { FC, ReactElement } from "react";
-import { ToasterType } from "../../../app/types/enum";
+import toast from "react-hot-toast";
 import classNames from "classnames";
+import { ToasterType } from "../../../app/types/enum";
 import { LottieSmall } from "../../../assets/loader";
 import SuccessIcon from "../../../assets/img/toasterSuccessIcon.svg?react";
 import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ErrorIcon from "../../../assets/img/toasterErrorIcon.svg?react";
 import InfoIcon from "../../../assets/img/info-icon.svg?react";
 import CloseButtonIcon from "../../../assets/img/closeButtonIcon.svg?react";
-import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 interface ToasterProps {
   description: string;
@@ -22,6 +23,8 @@ const Toaster: FC<ToasterProps> = ({
   close = () => toast.dismiss(),
   blockExplorerLink,
 }) => {
+  const { t } = useTranslation();
+
   const handleIcon = (type: ToasterType): ReactElement => {
     if (type === ToasterType.SUCCESS) return <SuccessIcon />;
     if (type === ToasterType.PENDING) return <LottieSmall />;
@@ -31,9 +34,9 @@ const Toaster: FC<ToasterProps> = ({
     return <SuccessIcon />;
   };
   const handleToasterHeaderText = (type: ToasterType) => {
-    if (type === ToasterType.SUCCESS) return "Success";
-    if (type === ToasterType.PENDING) return "Pending";
-    if (type === ToasterType.INFO) return "Info";
+    if (type === ToasterType.SUCCESS) return t("toaster.success");
+    if (type === ToasterType.PENDING) return t("toaster.pending");
+    if (type === ToasterType.INFO) return t("toaster.info");
   };
 
   return (
@@ -65,10 +68,10 @@ const Toaster: FC<ToasterProps> = ({
               <a
                 href={blockExplorerLink}
                 target="_blank"
-                rel={"noreferrer"}
+                rel="noreferrer"
                 className="cursor-pointer border-b border-solid border-black pb-0.5 font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90"
               >
-                View in block explorer
+                {t("toaster.viewInBlockExplorer")}
               </a>
               <ArrowOpenLink />
             </div>

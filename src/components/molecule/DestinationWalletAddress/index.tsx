@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { t } from "i18next";
 import { ActionType, ButtonVariants } from "../../../app/types/enum";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, FC } from "react";
 import { useAppContext } from "../../../state";
 import { isWalletAddressValid } from "../../../app/util/helper";
 import AlertIcon from "../../../assets/img/alert-icon.svg?react";
@@ -13,7 +13,7 @@ type DestinationWalletAddressProps = {
   isPopupEdit?: boolean;
 };
 
-const DestinationWalletAddress = ({ chainName, isPopupEdit = true }: DestinationWalletAddressProps) => {
+const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName, isPopupEdit = true }) => {
   const { state, dispatch } = useAppContext();
 
   const { selectedAccount, crosschainDestinationWalletAddress } = state;
@@ -148,7 +148,7 @@ type WalletAddressInputFieldProps = {
   isPopupEdit: boolean;
 };
 
-const WalletAddressInputField = ({
+const WalletAddressInputField: FC<WalletAddressInputFieldProps> = ({
   className,
   disabled,
   inputValue,
@@ -156,7 +156,7 @@ const WalletAddressInputField = ({
   isAddressValid,
   onClose,
   isPopupEdit,
-}: WalletAddressInputFieldProps) => {
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div className="relative w-full">
@@ -185,12 +185,7 @@ const WalletAddressInputField = ({
           <span className="text-alert">{t("destinationWalletAddress.invalidAddress")}</span>
 
           <span>-</span>
-          <button
-            className="font-normal capitalize"
-            onClick={() => {
-              onClose();
-            }}
-          >
+          <button className="font-normal capitalize" onClick={onClose}>
             {t("destinationWalletAddress.resetAddress")}
           </button>
         </div>

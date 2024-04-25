@@ -665,7 +665,7 @@ const WithdrawPoolLiquidity = () => {
           showAll={false}
           swapGasFee={addLiquidityGasFee}
           transactionType={TransactionTypes.withdraw}
-          title="Review remove liquidity"
+          title={t("modal.removeFromPool.reviewRemoveLiquidity")}
           priceImpact={priceImpact}
           inputValueA={
             selectedTokenNativeValue?.tokenValue
@@ -694,7 +694,7 @@ const WithdrawPoolLiquidity = () => {
           }}
           inputType={InputEditedType.exactIn}
           onConfirmTransaction={() => {
-            handlePool();
+            handlePool().then();
           }}
         />
       </div>
