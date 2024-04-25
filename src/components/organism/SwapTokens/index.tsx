@@ -1339,8 +1339,30 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
     }
   }, [selectedTokens.tokenA.tokenSymbol, selectedTokens.tokenB.tokenSymbol]);
 
+  const [urlTokens, setUrlTokens] = useState<{ from: string; to: string }>({ from: "", to: "" });
+
   useEffect(() => {
-    if (!tokenBalances || !Object.keys(tokenBalances).length || assetLoading) return;
+    if (!tokenBalances || !Object.keys(tokenBalances).length || assetLoading) {
+      if (from && from !== "") {
+        setUrlTokens((prev) => {
+          return {
+            ...prev,
+            from: from,
+          };
+        });
+      }
+
+      if (to && to !== "") {
+        setUrlTokens((prev) => {
+          return {
+            ...prev,
+            to: to,
+          };
+        });
+      }
+
+      return;
+    }
 
     const getTokenData = (tokenSymbol: string, tokenPosition: TokenPosition) => {
       const token =
@@ -1479,14 +1501,20 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         </div>
         <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
         <TokenAmountInput
-          tokenText={selectedTokens.tokenA?.tokenSymbol}
+          tokenText={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
           showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined && selectedTokens.tokenA?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenA.tokenId !== "" ? assetTokenASpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenA?.tokenId}
           tokenDecimals={selectedTokens.tokenA?.decimals}
           labelText={t("tokenAmountInput.youPay")}
-          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenA?.tokenSymbol} width={"24px"} height={"24px"} />}
+          tokenIcon={
+            <TokenIcon
+              tokenSymbol={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
+              width={"24px"}
+              height={"24px"}
+            />
+          }
           tokenValue={selectedTokenAValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
           onSetTokenValue={(value) => tokenAValue(value)}
@@ -1497,14 +1525,20 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         />
 
         <TokenAmountInput
-          tokenText={selectedTokens.tokenB?.tokenSymbol}
+          tokenText={selectedTokens.tokenB?.tokenSymbol || urlTokens.to}
           tokenBalance={selectedTokens.tokenB?.tokenBalance}
           showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined && selectedTokens.tokenB?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenB.tokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenB?.tokenId}
           tokenDecimals={selectedTokens.tokenB?.decimals}
           labelText={t("tokenAmountInput.youReceive")}
-          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenB?.tokenSymbol} width={"24px"} height={"24px"} />}
+          tokenIcon={
+            <TokenIcon
+              tokenSymbol={selectedTokens.tokenB?.tokenSymbol || urlTokens.to}
+              width={"24px"}
+              height={"24px"}
+            />
+          }
           tokenValue={selectedTokenBValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenB)}
           onSetTokenValue={(value) => tokenBValue(value)}
