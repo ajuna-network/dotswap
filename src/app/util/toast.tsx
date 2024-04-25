@@ -52,7 +52,7 @@ const dotAcpToast: DotAcpToast = {
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      options
+      { ...options, duration: Infinity }
     );
   },
   info: (message, options, blockExplorerLink) => {
