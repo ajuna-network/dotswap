@@ -6,6 +6,7 @@ import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { getAssetTokenFromNativeToken } from "../../services/tokenServices";
+import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {
   // Sentry
@@ -207,6 +208,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //TODO: returns cors error
 
 // export const getSpotPrice = async (symbol: string) => {
+//     if (!symbol || symbol === "") return;
 //   const getNameFromSymbol = (symbol: string) => {
 //     switch (symbol) {
 //       case "KSM":
@@ -217,7 +219,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //         return "roco-finance";
 //       case "GUPPY":
 //         return "guppy-gang";
-//       case "USDT":
+//       case "USDt":
 //         return "tether";
 //       case "USDC":
 //         return "usd-coin";
@@ -228,6 +230,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //   };
 
 //   const name = getNameFromSymbol(symbol);
+//   if (name === "" || name === "guppy-gang") return;
 
 //   const options = {
 //     method: "GET",
@@ -240,6 +243,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //     options
 //   );
 //   const json = await res.json();
+
 //   return json[name].usd;
 // };
 //
@@ -377,4 +381,26 @@ export const formatNumberEnUs = (value: number, fixed?: number, showDollarSign =
   formattedValue = `${showApprox ? approx : ""}${showDollarSign ? dollarSign : ""}${formattedValue}`;
 
   return formattedValue;
+};
+
+/*
+ * Function to check if api and/or relayApi are available
+ * @param api
+ * @param relayApi
+ * @returns boolean
+ */
+export const isApiAvailable = async (api?: ApiPromise, relayApi?: ApiPromise): Promise<boolean> => {
+  if (api && relayApi) {
+    const isReady = (await api.isReadyOrError) && (await relayApi.isReadyOrError);
+    return isReady ? true : false;
+  }
+  if (api && api.isConnected) {
+    const isReady = await api.isReadyOrError;
+    return isReady ? true : false;
+  }
+  if (relayApi && relayApi.isConnected) {
+    const isReady = await relayApi.isReadyOrError;
+    return isReady ? true : false;
+  }
+  return false;
 };

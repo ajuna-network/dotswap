@@ -32,13 +32,14 @@ import TokenAmountInput from "../../molecule/TokenAmountInput";
 import PoolSelectTokenModal from "../PoolSelectTokenModal";
 import ReviewTransactionModal from "../ReviewTransactionModal";
 import { SwapOrPools } from "../../../app/types/enum";
-import { urlTo } from "../../../app/util/helper";
+import { urlTo, isApiAvailable } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
 import { formatNumberEnUs } from "../../../app/util/helper";
 import classNames from "classnames";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
+import dotAcpToast from "../../../app/util/toast";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -144,6 +145,11 @@ const WithdrawPoolLiquidity = () => {
   };
 
   const handlePool = async () => {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     setReviewModalOpen(false);
     const lpToken = Math.floor(Number(lpTokensAmountToBurn) * (withdrawAmountPercentage / 100)).toString();
     if (waitingForTransaction) {

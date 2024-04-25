@@ -26,7 +26,7 @@ import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 import { LottieMedium } from "../../../assets/loader";
-import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
+import { getPoolReserves } from "../../../services/poolServices";
 import {
   checkSwapAssetForAssetGasFee,
   checkSwapNativeForAssetGasFee,
@@ -51,7 +51,8 @@ import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
+import dotAcpToast from "../../../app/util/toast";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -68,9 +69,11 @@ type TokenSelectedProps = {
 
 type SwapTokensProps = {
   tokenId?: string;
+  from?: string;
+  to?: string;
 };
 
-const SwapTokens = ({ tokenId }: SwapTokensProps) => {
+const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
@@ -159,14 +162,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
 
   const tokenADecimal = new Decimal(selectedTokenAValue.tokenValue || 0);
   const tokenBDecimal = new Decimal(selectedTokenBValue.tokenValue || 0);
-
-  useEffect(() => {
-    const updatePoolsCards = async () => {
-      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
-    };
-
-    updatePoolsCards().then();
-  }, [pools, selectedAccount, tokenBalances]);
 
   const handleSwapGasFee = async (isNativeAssetSwap: boolean) => {
     if (!api) return;
@@ -556,6 +551,11 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   };
 
   const handleSwap = async () => {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     setReviewModalOpen(false);
     waitingForTransaction && clearTimeout(waitingForTransaction);
     setSwapSuccessfulReset(false);
@@ -1324,45 +1324,78 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   ]);
 
   useEffect(() => {
-    if (!tokenId || assetLoading || !tokenBalances) return;
+    if (!window.location.href.includes("swap")) return;
+    const url = new URL(window.location.href);
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
 
+    if (selectedTokens.tokenA.tokenSymbol && selectedTokens.tokenA.tokenSymbol !== from) {
+      url.searchParams.set("from", selectedTokens.tokenA.tokenSymbol);
+      history.replaceState(null, "", url.toString());
+    }
+    if (selectedTokens.tokenB.tokenSymbol && selectedTokens.tokenB.tokenSymbol !== to) {
+      url.searchParams.set("to", selectedTokens.tokenB.tokenSymbol);
+      history.replaceState(null, "", url.toString());
+    }
+  }, [selectedTokens.tokenA.tokenSymbol, selectedTokens.tokenB.tokenSymbol]);
+
+  useEffect(() => {
+    if (!tokenBalances || !Object.keys(tokenBalances).length || assetLoading) return;
+
+    const getTokenData = (tokenSymbol: string, tokenPosition: TokenPosition) => {
+      const token =
+        tokenSymbol === nativeTokenSymbol
+          ? nativeToken
+          : tokenBalances.assets.find((item: any) => item.assetTokenMetadata.symbol === tokenSymbol);
+
+      if (!token) return;
+
+      const tokenData = {
+        tokenSymbol: token.assetTokenMetadata.symbol || "",
+        tokenId: token.tokenId || "",
+        decimals: token.assetTokenMetadata.decimals || "",
+        tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, "") || "",
+      };
+
+      setSelectedTokens((prev) => {
+        return {
+          ...prev,
+          [tokenPosition === TokenPosition.tokenA ? "tokenA" : "tokenB"]: tokenData,
+        };
+      });
+      setTokenSelected({ tokenSelected: tokenPosition });
+    };
+
+    if (from && from !== "") {
+      getTokenData(from, TokenPosition.tokenA);
+    }
+
+    if (to && to !== "") {
+      getTokenData(to, TokenPosition.tokenB);
+    }
+
+    if (!tokenId) return;
     if (tokenId === "0") {
-      // set native token
-      setSelectedTokens((prev) => {
-        return {
-          ...prev,
-          tokenA: {
-            tokenSymbol: tokenBalances.tokenSymbol,
-            tokenId: "",
-            decimals: tokenBalances.tokenDecimals,
-            tokenBalance: tokenBalances.balanceAsset.free.toString(),
-          },
-        };
-      });
+      getTokenData(nativeTokenSymbol, TokenPosition.tokenA);
+    } else {
+      const token = tokenBalances.assets.find((item: any) => item.tokenId === tokenId);
+      if (token) {
+        setSelectedTokens((prev) => {
+          return {
+            ...prev,
+            tokenA: {
+              tokenSymbol: token.assetTokenMetadata.symbol,
+              tokenId: token.tokenId,
+              decimals: token.assetTokenMetadata.decimals,
+              tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, ""),
+            },
+          };
+        });
 
-      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
-
-      return;
+        setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+      }
     }
-    const token = tokenBalances.assets.find((item: any) => item.tokenId === tokenId);
-
-    if (token) {
-      // set selected token
-      setSelectedTokens((prev) => {
-        return {
-          ...prev,
-          tokenA: {
-            tokenSymbol: token.assetTokenMetadata.symbol,
-            tokenId: token.tokenId,
-            decimals: token.assetTokenMetadata.decimals,
-            tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, ""),
-          },
-        };
-      });
-
-      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
-    }
-  }, [tokenId, assetLoading, tokenBalances]);
+  }, [tokenBalances, from, to, tokenId, nativeTokenSymbol, assetLoading]);
 
   useEffect(() => {
     if (!tokenBalances) return;

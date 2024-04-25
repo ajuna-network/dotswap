@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import Modal from "../../atom/Modal";
 import { LottieMedium } from "../../../assets/loader";
 import ArrowRight from "../../../assets/img/arrow-right.svg?react";
@@ -6,6 +6,7 @@ import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ArrowRightLong from "../../../assets/img/arrow-right-long.svg?react";
 import AlertIcon from "../../../assets/img/alert-icon-white.svg?react";
 import SuccessIcon from "../../../assets/img/success-icon.svg?react";
+import InfoIcon from "../../../assets/img/info-icon.svg?react";
 import TokenIcon from "../../atom/TokenIcon";
 import { useAppContext } from "../../../state";
 import { ToasterType } from "../../../app/types/enum";
@@ -19,13 +20,26 @@ interface Props {
 
 const NotificationsModal: FC<Props> = ({ id }) => {
   const { state, dispatch } = useAppContext();
-  const [notificationViewed, setNotificationViewed] = useState(false);
+
+  const setViewed = (value: boolean) => {
+    dispatch({
+      type: ActionType.SET_NOTIFICATION_VIEWED,
+      payload: { id: id, notificationViewed: value },
+    });
+  };
 
   const onModalClose = () => {
     dispatch({
       type: ActionType.SET_NOTIFICATION_MODAL_OPEN,
       payload: { id: id, notificationModalOpen: false },
     });
+
+    if (currentNotification?.notificationType === ToasterType.INFO) {
+      dispatch({
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: id,
+      });
+    }
   };
 
   const { notifications } = state;
@@ -48,42 +62,46 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   };
 
   useEffect(() => {
-    if (!currentNotification?.notificationModalOpen && !notificationViewed) {
-      const toasterMessage = buildToasterMessage();
-
-      switch (currentNotification?.notificationType) {
-        case ToasterType.SUCCESS:
-          dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
-          break;
-        case ToasterType.PENDING:
-          dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
-          break;
-        case ToasterType.ERROR:
-          dotAcpToast.error(
-            currentNotification?.notificationMessage ?? "",
-            undefined,
-            currentNotification?.notificationLink?.href
-          );
-          break;
-        default:
-          break;
-      }
-    }
-
     if (!currentNotification?.notificationModalOpen) {
-      setNotificationViewed(false);
+      if (!currentNotification?.notificationViewed) {
+        const toasterMessage = buildToasterMessage();
+        setViewed(true);
+
+        switch (currentNotification?.notificationType) {
+          case ToasterType.SUCCESS:
+            dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            break;
+          case ToasterType.PENDING:
+            dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            setViewed(false);
+            break;
+          case ToasterType.ERROR:
+            dotAcpToast.error(
+              currentNotification?.notificationMessage ?? "",
+              undefined,
+              currentNotification?.notificationLink?.href
+            );
+            break;
+          default:
+            break;
+        }
+      } else {
+        setViewed(false);
+      }
+    } else {
+      if (!currentNotification?.notificationViewed) {
+        if (currentNotification?.notificationType !== ToasterType.PENDING) {
+          setViewed(true);
+        }
+      } else {
+        setViewed(false);
+      }
     }
   }, [
     currentNotification?.notificationModalOpen,
     currentNotification?.notificationType,
     currentNotification?.notificationMessage,
   ]);
-
-  useEffect(() => {
-    if (currentNotification?.notificationModalOpen && currentNotification?.notificationType !== ToasterType.PENDING) {
-      setNotificationViewed(true);
-    }
-  }, [currentNotification?.notificationModalOpen, currentNotification?.notificationType]);
 
   const renderNotificationIcon = () => {
     switch (currentNotification?.notificationType) {
@@ -97,6 +115,12 @@ const NotificationsModal: FC<Props> = ({ id }) => {
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-400">
             <LottieMedium />
+          </div>
+        );
+      case ToasterType.INFO:
+        return (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300">
+            <InfoIcon className="[&>path]:fill-white" />
           </div>
         );
       case ToasterType.ERROR:

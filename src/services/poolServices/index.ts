@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { formatDecimalsFromToken } from "../../app/util/helper";
+import { formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
@@ -67,11 +67,18 @@ const exactWithdrawnLiquidityFromPool = (
   return { nativeTokenOut, assetTokenOut };
 };
 
-export const getAllPools = async (api: ApiPromise) => {
+export const getAllPools = async (api: ApiPromise, dispatch: Dispatch<PoolAction>) => {
+  const isApiReady = await isApiAvailable(api);
+  if (!isApiReady) {
+    dotAcpToast.error(t("error.api.notReady"));
+    return;
+  }
   try {
     const pools = await api.query.assetConversion.pools.entries();
-
-    return pools.map(([key, value]) => [key.args?.[0].toHuman(), value.toHuman()]);
+    if (!pools) return [];
+    const poolsArray = pools.map(([key, value]) => [key.args?.[0].toHuman(), value.toHuman()]);
+    dispatch({ type: ActionType.SET_POOLS, payload: poolsArray });
+    return poolsArray;
   } catch (error) {
     dotAcpToast.error(`Error getting pools: ${error}`);
   }
@@ -289,9 +296,8 @@ const handlePoolTransactionResponse = async (
     handleInBlockResponse(response, dispatch);
   } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
     handleFinalizedResponse(response, api, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);
-    const allPools = await getAllPools(api);
+    const allPools = await getAllPools(api, dispatch);
     if (allPools) {
-      dispatch({ type: ActionType.SET_POOLS, payload: allPools });
       await createPoolCardsArray(api, dispatch, allPools, account);
     }
   }
@@ -552,10 +558,10 @@ export const checkAddPoolLiquidityGasFee = async (
   });
 };
 
-export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
+export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise, dispatch: Dispatch<PoolAction>) => {
   const poolsTokenData = [];
 
-  const pools = await getAllPools(api);
+  const pools = await getAllPools(api, dispatch);
   if (pools) {
     const poolsAssetTokenIds = pools?.map((pool: any) => {
       if (pool?.[0]?.[1].interior?.X2) {
@@ -582,6 +588,7 @@ export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
     }
   }
 
+  dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenData });
   return poolsTokenData;
 };
 

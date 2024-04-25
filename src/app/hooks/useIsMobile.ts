@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 
 export const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    return true;
-  }
+  const [isResponsive, setIsResponsive] = useState<boolean>(false);
 
   useEffect(() => {
     checkScreenWidth();
@@ -17,8 +14,12 @@ export const useIsMobile = () => {
   }, []);
 
   const checkScreenWidth = () => {
-    setIsMobile(window.innerWidth <= 1024);
+    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? setIsMobile(true) : setIsMobile(false);
+    setIsResponsive(window.innerWidth <= 1024);
   };
 
-  return isMobile;
+  return {
+    isMobile,
+    isResponsive,
+  };
 };

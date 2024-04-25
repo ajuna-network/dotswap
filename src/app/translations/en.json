@@ -60,6 +60,7 @@
     "viewInBlockExplorer": "View in block explorer",
     "success": "Success",
     "pending": "Pending",
+    "info": "Info",
     "errorConnecting": "Error connecting:"
   },
   "modal": {
@@ -252,7 +253,9 @@
   },
   "mobilePage": {
     "title": "Coming soon to mobile! Stay tuned for updates.",
-    "subtitle": "This experience is currently optimized for desktop browsers. For the best experience, please visit us on your computer."
+    "subtitle": "This experience is currently optimized for desktop browsers. For the best experience, please visit us on your computer.",
+    "responsiveTitle": "Responsive Design",
+    "responsiveSubtitle": "This experience is optimized for desktop browsers. For the best experience, please visit us on your computer."
   },
   "offlinePage": {
     "title": "Whoops!",
@@ -261,5 +264,13 @@
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"
+  },
+  "error": {
+    "api": {
+        "notReady": "Please reconnect your wallet."
+    },
+    "wallet": {
+        "notSupported": "Wallet account is not supported"
+    }
   }
 }

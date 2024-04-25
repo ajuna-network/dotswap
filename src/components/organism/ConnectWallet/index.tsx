@@ -1,5 +1,5 @@
 import { ActionType, ButtonVariants, ToasterType, WalletConnectSteps } from "../../../app/types/enum.ts";
-import { reduceAddress } from "../../../app/util/helper";
+import { isApiAvailable, reduceAddress } from "../../../app/util/helper";
 import {
   connectWalletAndFetchBalance,
   getSupportedWallets,
@@ -14,12 +14,22 @@ import SelectAccountModal from "../SelectAccountModal/index.tsx";
 import LocalStorage from "../../../app/util/localStorage.ts";
 import { ModalStepProps } from "../../../app/types";
 import type { Timeout } from "react-number-format/types/types";
-import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
+import { type Wallet, type WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader";
 import { TokenBalanceData } from "../../../app/types";
 import Identicon from "@polkadot/react-identicon";
 import CircleLoader from "../../../assets/img/rotating-circle.svg?react";
+import NotificationsModal from "../NotificationsModal/index.tsx";
+
+interface WalletAccountCustom {
+  address: string;
+  source: string;
+  name?: string;
+  wallet?: Wallet;
+  signer?: unknown;
+  type?: string;
+}
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
@@ -40,7 +50,7 @@ const ConnectWallet = () => {
     setWalletConnectOpen(true);
   };
 
-  const handleConnect = async (account: WalletAccount) => {
+  const handleConnect = async (account: WalletAccountCustom) => {
     if (selectAccountModalOpen) {
       dispatch({ type: ActionType.SET_ASSETS_LIST, payload: [] });
       dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
@@ -49,9 +59,27 @@ const ConnectWallet = () => {
       setSelectAccountModalOpen(false);
     }
     try {
-      setWalletConnectOpen(false);
+      if (account.type === "ethereum") {
+        dotAcpToast.error(t("error.wallet.notSupported"), undefined, null);
+        return;
+      }
       if (!api || !relayApi) return;
-      await connectWalletAndFetchBalance(dispatch, api, relayApi, account);
+      const isApiReady = await isApiAvailable(api, relayApi);
+      if (!isApiReady) {
+        dotAcpToast.error(t("error.api.notReady"), undefined, null);
+        return;
+      }
+      setWalletConnectOpen(false);
+      await connectWalletAndFetchBalance(dispatch, api, relayApi, account).then(
+        () => {
+          dotAcpToast.success("Wallet successfully connected!", {
+            id: "wallet-connected",
+          });
+        },
+        (error) => {
+          dotAcpToast.error(`Error connecting: ${error}`, undefined, null);
+        }
+      );
     } catch (error) {
       dotAcpToast.error(`${t("toaster.errorConnecting")} ${error}`);
     }
@@ -93,10 +121,34 @@ const ConnectWallet = () => {
     };
   }, [walletConnectOpen]);
 
-  useEffect(() => {
+  const getWalletsFn = async () => {
     const wallets = getSupportedWallets();
     setSupportedWallets(wallets);
+  };
+
+  useEffect(() => {
+    getWalletsFn();
   }, []);
+
+  const handleWalletInstall = async (wallet: Wallet) => {
+    setWalletConnectOpen(false);
+
+    dispatch({
+      type: ActionType.ADD_NOTIFICATION,
+      payload: {
+        notificationModalOpen: true,
+        notificationType: ToasterType.INFO,
+        notificationTitle: "Install Wallet",
+        notificationMessage: "Once you have installed the wallet, please refresh the page to connect.",
+        id: "install-wallet-notification",
+        notificationAction: "Install",
+        notificationLink: {
+          text: "Install Wallet",
+          href: wallet?.installUrl,
+        },
+      },
+    });
+  };
 
   return (
     <>
@@ -176,7 +228,10 @@ const ConnectWallet = () => {
         walletAccounts={accounts}
         supportedWallets={supportedWallets}
         handleConnect={handleConnect}
+        handleWalletInstall={handleWalletInstall}
       />
+
+      <NotificationsModal id="install-wallet-notification" />
     </>
   );
 };

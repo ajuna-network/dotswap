@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken, getSpotPrice } from "../../app/util/helper";
+import { formatDecimalsFromToken, getSpotPrice, isApiAvailable } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
@@ -17,6 +17,7 @@ import { whitelist } from "../../whitelist";
 import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defaults";
 import { base64Encode } from "@polkadot/util-crypto";
 import { getSpecTypes } from "@polkadot/types-known";
+import { t } from "i18next";
 
 export const setupPolkadotApi = async (
   rpcUrl: string,
@@ -148,12 +149,7 @@ export const setTokenBalance = async (
       const lpFee = api.consts.assetConversion.lpFee;
       dispatch({ type: ActionType.SET_LP_FEE, payload: lpFee.toHuman() });
 
-      LocalStorage.set("wallet-connected", selectedAccount);
-
-      dotAcpToast.success("Wallet successfully connected!");
-
-      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
+      await getAllLiquidityPoolsTokensMetadata(api, dispatch);
     } catch (error) {
       dotAcpToast.error(`Wallet connection error: ${error}`);
     } finally {
@@ -342,8 +338,8 @@ export const connectWalletAndFetchBalance = async (
   if (!account.wallet?.signer) {
     await wallet?.enable("DOT-ACP");
   }
-  LocalStorage.set("wallet-connected", account);
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
+  LocalStorage.set("wallet-connected", account);
   try {
     await setTokenBalance(dispatch, api, relayApi, account);
   } catch (error) {
@@ -363,7 +359,11 @@ export const connectWalletAndFetchBalance = async (
  */
 
 export const fetchNativeTokenBalances = async (address: string, tokenDecimals: string, api: ApiPromise) => {
-  if (!address && !api) return;
+  const isApiReady = await isApiAvailable(api);
+  if (!isApiReady) {
+    dotAcpToast.error(t("error.api.notReady"), undefined, null);
+    return;
+  }
   try {
     const {
       data: { free: currentBalance, reserved: currentReserved, frozen: currentFrozen },
@@ -390,8 +390,6 @@ export const fetchNativeTokenBalances = async (address: string, tokenDecimals: s
 
 export const fetchChainBalance = async (address: string, tokenBalancesDecimals: string, api: ApiPromise) => {
   try {
-    if (!address) return;
-
     const data = await fetchNativeTokenBalances(address, tokenBalancesDecimals, api);
 
     if (!data) {
