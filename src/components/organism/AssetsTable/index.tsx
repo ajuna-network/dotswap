@@ -232,6 +232,7 @@ const AssetsTable = () => {
 
       <Modal
         isOpen={swapModalOpen}
+        disableOverlayClick={true}
         onClose={() => {
           setSwapModalOpen(!swapModalOpen);
         }}

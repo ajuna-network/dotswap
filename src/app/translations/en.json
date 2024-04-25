@@ -261,6 +261,10 @@
     "title": "Whoops!",
     "subtitle": "No internet connection was found. Check your connection or try again."
   },
+  "tooltip": {
+    "swapPending": "Swap transaction is pending",
+    "crosschainPending": "Crosschain transaction is pending"
+  },
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"

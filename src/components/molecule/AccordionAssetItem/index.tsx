@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, FC } from "react";
 import DownArrow from "../../../assets/img/down-arrow.svg?react";
 import Button from "../../atom/Button";
-import { ButtonVariants } from "../../../app/types/enum";
+import { ButtonVariants, ToasterType } from "../../../app/types/enum";
 import TokenIcon from "../../atom/TokenIcon";
 import CrossChainSwap from "../../organism/CrossChainSwap";
 import Modal from "../../atom/Modal";
@@ -10,6 +10,8 @@ import { AssetListToken } from "../../../app/types";
 import { t } from "i18next";
 import { formatNumberEnUs } from "../../../app/util/helper";
 import Decimal from "decimal.js";
+import { useAppContext } from "../../../state";
+import Tooltip from "../../atom/Tooltip";
 
 type AccordionAssetItemProps = {
   token: AssetListToken;
@@ -30,6 +32,10 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
 }) => {
   const titleElm = useRef<HTMLDivElement>(null);
   const itemsElm = useRef<HTMLDivElement>(null);
+
+  const { state } = useAppContext();
+
+  const { notifications } = state;
 
   const [isOpen, setIsOpen] = useState(defaultOpen || alwaysOpen);
   const [accordionHeight, setAccordionHeight] = useState({ titleElmHeight: 0, itemsElmHeight: 0 });
@@ -87,6 +93,14 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
     }
   };
 
+  const crosschainNotificationPending = notifications.some(
+    (notification) => notification.id === "crosschain" && notification.notificationType === ToasterType.PENDING
+  );
+
+  const swapNotificationPending = notifications.some(
+    (notification) => notification.id === "swap" && notification.notificationType === ToasterType.PENDING
+  );
+
   return (
     <div
       className={`acItem flex w-full flex-col overflow-hidden transition-all duration-300 ease-in-out ${className}`}
@@ -115,7 +129,7 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
             <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
             <span>{token.assetTokenMetadata.symbol}</span>
           </div>
-          <div className="flex w-2/4 items-center justify-start">
+          <div className="flex w-1/2 items-center justify-start">
             <div className="flex flex-col">
               <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
                 {t("assetItem.total")}
@@ -133,8 +147,14 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
           </div>
           <div className="flex w-1/4 flex-row items-center justify-end gap-4 px-6">
             {token.tokenId === "" && (
-              <Button onClick={handleCrosschainModal} variant={ButtonVariants.btnSecondaryGray} className="max-w-max">
+              <Button
+                onClick={handleCrosschainModal}
+                variant={ButtonVariants.btnSecondaryGray}
+                className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
+                disabled={crosschainNotificationPending}
+              >
                 {t("button.crossChain")}
+                {crosschainNotificationPending && <Tooltip message={t("tooltip.crosschainPending")} />}
               </Button>
             )}
             {handleSwapModal && (
@@ -143,9 +163,11 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
                   handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
                 }}
                 variant={ButtonVariants.btnSecondaryGray}
-                className="max-w-max"
+                className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
+                disabled={swapNotificationPending}
               >
                 {t("button.swap")}
+                {swapNotificationPending && <Tooltip message={t("tooltip.swapPending")} />}
               </Button>
             )}
           </div>
@@ -172,7 +194,7 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
         </div>
       )}
       {token.tokenId === "" && (
-        <Modal isOpen={crossChainModalOpen} onClose={handleCrosschainModal}>
+        <Modal isOpen={crossChainModalOpen} onClose={handleCrosschainModal} disableOverlayClick={true}>
           <CrossChainSwap isPopupEdit={false} />
         </Modal>
       )}
