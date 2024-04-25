@@ -185,6 +185,7 @@ const handleDispatchError = (
         id: "swap",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
           notificationLink: {
@@ -203,6 +204,7 @@ const handleDispatchError = (
         id: "swap",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
@@ -348,6 +350,7 @@ export const performSwapNativeForAsset = async (
           id: "swap",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -414,6 +417,7 @@ export const performSwapAssetForAsset = async (
           id: "swap",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },

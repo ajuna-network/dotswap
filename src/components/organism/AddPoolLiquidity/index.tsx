@@ -174,6 +174,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
           notificationModalOpen: true,
           notificationAction: t("modal.notifications.addLiquidity"),
           notificationType: ToasterType.PENDING,
+          notificationPercentage: 15,
           notificationTitle: t("modal.notifications.addLiquidity"),
           notificationMessage: t("modal.notifications.proceed"),
           notificationChainDetails: null,
@@ -212,6 +213,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
             id: "liquidity",
             props: {
               notificationType: ToasterType.ERROR,
+              notificationPercentage: null,
               notificationTitle: t("modal.notifications.error"),
               notificationMessage: `Transaction failed: ${error}`,
               notificationLink: null,

@@ -127,6 +127,7 @@ async function setupCallAndSign(
           id: "crosschain",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: "Error",
             notificationMessage: err.message || "Error executing crosschain",
           },

@@ -654,6 +654,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
           id: "swap",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },

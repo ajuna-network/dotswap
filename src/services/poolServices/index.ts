@@ -166,10 +166,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: `${docs.join(" ")}`,
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -184,10 +185,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -211,10 +213,11 @@ const handleSuccessfulPool = (
       id: "liquidity",
       props: {
         notificationType: ToasterType.SUCCESS,
+        notificationPercentage: 100,
         notificationTitle: t("modal.notifications.success"),
         notificationMessage: null,
         notificationLink: {
-          text: "View in block explorer",
+          text: t("modal.notifications.viewInBlockExplorer"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
         },
       },
@@ -288,6 +291,7 @@ const handlePoolTransactionResponse = async (
         id: "liquidity",
         props: {
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+          notificationPercentage: 15,
         },
       },
     });
@@ -429,9 +433,10 @@ export const addLiquidity = async (
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -489,9 +494,10 @@ export const removeLiquidity = async (
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
