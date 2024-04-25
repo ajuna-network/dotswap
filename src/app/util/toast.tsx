@@ -22,7 +22,7 @@ const dotAcpToast: DotAcpToast = {
           blockExplorerLink={blockExplorerLink}
         />
       ),
-      options
+      { ...options, duration: Infinity }
     );
   },
   pending: (message, options, blockExplorerLink) => {
