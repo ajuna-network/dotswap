@@ -59,7 +59,9 @@ const AccordionAssetItem = ({
         ) || "0";
 
   const usdTotalBalance = formatNumberEnUs(
-    new Decimal(Number(token.spotPrice || 0)).times(Number(totalBalance)).toNumber()
+    new Decimal(Number(token.spotPrice || 0)).times(Number(totalBalance)).toNumber(),
+    undefined,
+    true
   );
 
   const formattedTotalBalance =
@@ -125,7 +127,7 @@ const AccordionAssetItem = ({
                 {totalBalance && totalBalance !== "0"
                   ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
                   : "0"}
-                {token.spotPrice ? " ($" + usdTotalBalance + ")" : ""}
+                {token.spotPrice ? " (" + usdTotalBalance + ")" : ""}
               </div>
             </div>
           </div>
