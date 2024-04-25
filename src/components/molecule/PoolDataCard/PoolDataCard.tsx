@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ADD_LIQUIDITY_TO_EXISTING, REMOVE_LIQUIDITY_FROM_EXISTING } from "../../../app/router/routes";
 import { urlTo, formatNumberEnUs } from "../../../app/util/helper";
 import { useAppContext } from "../../../state";
-import { ReactNode } from "react";
+import { FC, ReactNode } from "react";
 
 type PoolDataCardProps = {
   tokenPair: string;
@@ -20,7 +20,7 @@ type PoolDataCardProps = {
   lpTokenId: string | null;
 };
 
-const PoolDataCard = ({
+const PoolDataCard: FC<PoolDataCardProps> = ({
   tokenPair,
   nativeTokens,
   assetTokens,
@@ -29,7 +29,7 @@ const PoolDataCard = ({
   assetTokenIcon,
   assetTokenId,
   lpTokenId,
-}: PoolDataCardProps) => {
+}) => {
   const navigate = useNavigate();
   const { state } = useAppContext();
   const { tokenBalances, selectedAccount } = state;

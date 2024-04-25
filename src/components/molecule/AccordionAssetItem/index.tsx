@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, FC } from "react";
 import DownArrow from "../../../assets/img/down-arrow.svg?react";
 import Button from "../../atom/Button";
 import { ButtonVariants } from "../../../app/types/enum";
@@ -20,14 +20,14 @@ type AccordionAssetItemProps = {
   handleSwapModal?: (tokenId: string) => void | undefined;
 };
 
-const AccordionAssetItem = ({
+const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
   token,
   className = "border-t border-1 border-purple-100",
   children,
   alwaysOpen = false,
   defaultOpen = false,
   handleSwapModal,
-}: AccordionAssetItemProps) => {
+}) => {
   const titleElm = useRef<HTMLDivElement>(null);
   const itemsElm = useRef<HTMLDivElement>(null);
 
@@ -131,14 +131,8 @@ const AccordionAssetItem = ({
           </div>
           <div className="flex w-1/4 flex-row items-center justify-end gap-4 px-6">
             {token.tokenId === "" && (
-              <Button
-                onClick={() => {
-                  handleCrosschainModal();
-                }}
-                variant={ButtonVariants.btnSecondaryGray}
-                className="max-w-max"
-              >
-                Crosschain
+              <Button onClick={handleCrosschainModal} variant={ButtonVariants.btnSecondaryGray} className="max-w-max">
+                {t("button.crossChain")}
               </Button>
             )}
             {handleSwapModal && (
@@ -149,7 +143,7 @@ const AccordionAssetItem = ({
                 variant={ButtonVariants.btnSecondaryGray}
                 className="max-w-max"
               >
-                Swap
+                {t("button.swap")}
               </Button>
             )}
           </div>
@@ -158,9 +152,7 @@ const AccordionAssetItem = ({
           {!alwaysOpen && children && (
             <button
               className={`flex items-center justify-center transition-all duration-300 ease-in-out ${isOpen ? "rotate-180 transform opacity-100" : "opacity-40"}`}
-              onClick={() => {
-                toggleAccordionAssetItem();
-              }}
+              onClick={toggleAccordionAssetItem}
             >
               <DownArrow />
             </button>
@@ -178,12 +170,7 @@ const AccordionAssetItem = ({
         </div>
       )}
       {token.tokenId === "" && (
-        <Modal
-          isOpen={crossChainModalOpen}
-          onClose={() => {
-            handleCrosschainModal();
-          }}
-        >
+        <Modal isOpen={crossChainModalOpen} onClose={handleCrosschainModal}>
           <CrossChainSwap isPopupEdit={false} />
         </Modal>
       )}

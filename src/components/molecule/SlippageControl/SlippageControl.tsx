@@ -2,11 +2,11 @@ import { t } from "i18next";
 import classNames from "classnames";
 import { NumericFormat } from "react-number-format";
 import { useAppContext } from "../../../state";
-import { ReactNode, useRef, useState } from "react";
+import { FC, ReactNode, useRef, useState } from "react";
 import CustomSlippageIcon from "../../../assets/img/custom-slippage-icon.svg?react";
 import useClickOutside from "../../../app/hooks/useClickOutside";
 
-interface Props {
+interface SlippageControlProps {
   slippageValue: number;
   setSlippageValue: (value: number) => void;
   slippageAuto: boolean;
@@ -16,7 +16,7 @@ interface Props {
   customIcon?: ReactNode;
 }
 
-const SlippageControl = ({
+const SlippageControl: FC<SlippageControlProps> = ({
   slippageValue,
   setSlippageValue,
   slippageAuto,
@@ -24,7 +24,7 @@ const SlippageControl = ({
   loadingState,
   poolExists = false,
   customIcon,
-}: Props) => {
+}) => {
   const { state } = useAppContext();
   const { selectedAccount } = state;
   const inputRef = useRef<HTMLInputElement | null>(null);

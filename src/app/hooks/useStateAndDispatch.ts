@@ -16,10 +16,10 @@ import { setupPolkadotApi } from "../../services/polkadotWalletServices";
 import dotAcpToast from "../util/toast";
 import { SwapAction } from "../../store/swap/interface";
 import { CrosschainAction } from "../../store/crosschain/interface";
-import { notificationReducer } from "../../store/notifications";
+import { notificationReducer } from "../../store";
 import { NotificationAction } from "../../store/notifications/interface";
 import useGetNetwork from "./useGetNetwork";
-import { ActionType } from "../../app/types/enum";
+import { ActionType } from "../types/enum.ts";
 
 const useStateAndDispatch = () => {
   const [walletState, dispatchWallet] = useReducer(walletReducer, initialWalletState);
@@ -55,7 +55,7 @@ const useStateAndDispatch = () => {
       }
     };
 
-    callApiSetup();
+    callApiSetup().then();
   }, []);
 
   return { state, dispatch };

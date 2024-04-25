@@ -11,7 +11,7 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { calculateMaxAmountForCrossIn, calculateMaxAmountForCrossOut } from "../../app/util/helper";
 
-// Relay chain -> parachain
+// Relay chain -> Parachain
 export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
   const extrinsic = await Builder(api).to("AssetHubKusama").amount(amount).address(destinationAddress).build();
   return extrinsic;

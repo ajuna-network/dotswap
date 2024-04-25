@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NumericFormat } from "react-number-format";
 
 interface AmountPercentageProps {
@@ -9,6 +10,8 @@ interface AmountPercentageProps {
 
 const AmountPercentage: FC<AmountPercentageProps> = ({ maxValue, onChange, disabled }) => {
   const [value, setValue] = useState<number>(100);
+
+  const { t } = useTranslation();
 
   const handleClick = (value: number) => {
     setValue(value);
@@ -64,7 +67,7 @@ const AmountPercentage: FC<AmountPercentageProps> = ({ maxValue, onChange, disab
           onClick={() => handleClick(maxValue)}
           disabled={disabled}
         >
-          Max
+          {t("button.max")}
         </button>
       </div>
     </div>

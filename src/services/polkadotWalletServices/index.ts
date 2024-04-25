@@ -4,6 +4,7 @@ import { formatBalance, isNumber } from "@polkadot/util";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import { getWalletBySource, getWallets } from "@talismn/connect-wallets";
 import { Dispatch } from "react";
+import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
 import { formatDecimalsFromToken, getSpotPrice } from "../../app/util/helper";
@@ -11,7 +12,6 @@ import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
-import { CrosschainAction } from "../../store/crosschain/interface";
 import { getAllLiquidityPoolsTokensMetadata } from "../poolServices";
 import { whitelist } from "../../whitelist";
 import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defaults";
@@ -122,11 +122,10 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
 export const assetTokenData = async (id: string, api: ApiPromise) => {
   const assetTokenMetadata = await api.query.assets.metadata(id);
 
-  const resultObject = {
+  return {
     tokenId: id,
     assetTokenMetadata: assetTokenMetadata.toHuman(),
   };
-  return resultObject;
 };
 
 export const getSupportedWallets = () => {
@@ -197,7 +196,7 @@ export const setTokenBalanceUpdate = async (
     }
   }
 
-  const updatedTokensInfo = {
+  return {
     ...oldWalletBalance,
     balanceAsset: {
       ...oldWalletBalance.balanceAsset,
@@ -206,8 +205,6 @@ export const setTokenBalanceUpdate = async (
     assets: assetsUpdated,
     existentialDeposit: existentialDeposit.toHuman(),
   };
-
-  return updatedTokensInfo;
 };
 
 export const setTokenBalanceAfterAssetsSwapUpdate = async (
@@ -256,7 +253,7 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
     }
   }
 
-  const updatedTokensInfo = {
+  return {
     ...oldWalletBalance,
     balanceAsset: {
       ...oldWalletBalance.balanceAsset,
@@ -264,8 +261,6 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
     },
     assets: assetsUpdated,
   };
-
-  return updatedTokensInfo;
 };
 
 export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) => {
@@ -359,6 +354,7 @@ export const connectWalletAndFetchBalance = async (
 /**
  * Fetches the balance of a given address on a provided api instance.
  *
+ * @param tokenDecimals
  * @param api - The ApiPromise instance used to query blockchain data.
  * @param address - The address to fetch the balance for.
  *
@@ -389,7 +385,7 @@ export const fetchNativeTokenBalances = async (address: string, tokenDecimals: s
  *
  * @param address - The address to fetch the balance for.
  * @param tokenBalancesDecimals - The number of decimals for token balances.
- * @param setSelectedChain - A function to update the state with the fetched chain and balance information.
+ * @param api
  */
 
 export const fetchChainBalance = async (address: string, tokenBalancesDecimals: string, api: ApiPromise) => {

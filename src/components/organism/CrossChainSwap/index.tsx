@@ -78,7 +78,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       tokenBalance: "",
     });
 
-    handleTokenValueChange("");
+    handleTokenValueChange("").then();
   }, [api]);
 
   const fetchData = async () => {
@@ -129,7 +129,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const handleChainSwitch = () => {
     if (crosschainExactTokenAmount === "0") {
-      handleTokenValueChange("");
+      handleTokenValueChange("").then();
     }
     dispatch({
       type: ActionType.SET_CROSSCHAIN_SELECTED_CHAIN,
@@ -179,7 +179,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   useEffect(() => {
     if (!api || !relayApi) return;
-    createExtrinsic();
+    createExtrinsic().then();
   }, [
     crosschainExactTokenAmount,
     selectedToken.tokenBalance,
@@ -195,7 +195,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   useEffect(() => {
-    setOriginChainFee();
+    setOriginChainFee().then();
   }, [crosschainExtrinsic]);
 
   const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free || 0)).minus(
@@ -266,7 +266,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const fillTokenPairsAndOpenModal = (tokenInputSelected: TokenSelection) => {
-    if (tokenInputSelected === "tokenA") getTokenA();
+    if (tokenInputSelected === "tokenA") getTokenA().then();
     setTokenSelectionModal(tokenInputSelected);
   };
 
@@ -453,7 +453,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleMaxClick = () => {
-    handleTokenValueChange(availableBalanceA.toString(), true);
+    handleTokenValueChange(availableBalanceA.toString(), true).then();
   };
 
   const handleCrosschain = () => {
@@ -603,14 +603,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               tokenValue={selectedTokenValue?.tokenValue}
               onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
               onSetTokenValue={(value) => {
-                handleTokenValueChange(value);
+                handleTokenValueChange(value).then();
               }}
               disabled={!selectedAccount || crosschainLoading || !tokenBalances?.assets}
               selectDisabled={true}
               assetLoading={assetLoading}
-              onMaxClick={() => {
-                handleMaxClick();
-              }}
+              onMaxClick={handleMaxClick}
               maxVisible={true}
             />
           </div>
@@ -690,7 +688,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           setReviewModalOpen(false);
         }}
         onConfirmTransaction={() => {
-          handleCrosschainExec();
+          handleCrosschainExec().then();
         }}
       />
       <WarningMessage
