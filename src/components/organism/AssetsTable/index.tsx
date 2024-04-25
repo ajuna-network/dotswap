@@ -134,7 +134,7 @@ const AssetsTable = () => {
 
   useEffect(() => {
     if (!tokenBalances || !selectedAccount.address) return;
-    setTokens();
+    setTokens().then();
   }, [tokenBalances, selectedAccount.address]);
 
   const handleSwapModal = (tokenId: string) => {

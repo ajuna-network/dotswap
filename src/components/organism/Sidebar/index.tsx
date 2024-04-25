@@ -75,9 +75,15 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="flex w-full justify-between px-8">
-        <GitIcon />
-        <XIcon />
-        <TelegramIcon />
+        <a href={import.meta.env.VITE_GIT_URL} target="_blank" rel="noreferrer">
+          <GitIcon />
+        </a>
+        <a href={import.meta.env.VITE_TWITTER_URL} target="_blank" rel="noreferrer">
+          <XIcon />
+        </a>
+        <a href={import.meta.env.VITE_TELEGRAM_URL} target="_blank" rel="noreferrer">
+          <TelegramIcon />
+        </a>
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { formatDecimalsFromToken } from "../../../app/util/helper";
 import { useAppContext } from "../../../state";
 import CheckIcon from "../../../assets/img/selected-token-check.svg?react";
 import Modal from "../../atom/Modal";
+import { useTranslation } from "react-i18next";
 
 type TokenProps = {
   tokenSymbol: string;
@@ -25,6 +26,7 @@ interface PoolSelectTokenModalProps {
 const PoolSelectTokenModal: FC<PoolSelectTokenModalProps> = ({ open, title, selected, onClose, onSelect }) => {
   const { state, dispatch } = useAppContext();
   const { tokenBalances } = state;
+  const { t } = useTranslation();
 
   const handlePoolAssetTokeData = (id: string, assetSymbol: string, decimals: string, assetTokenBalance: string) => {
     const assetTokenData = {
@@ -44,7 +46,10 @@ const PoolSelectTokenModal: FC<PoolSelectTokenModalProps> = ({ open, title, sele
         <div className="max-h-[504px] overflow-y-auto">
           {tokenBalances?.assets && tokenBalances?.assets.length > 0 ? (
             tokenBalances?.assets?.map((item: any, index: number) => (
-              <div key={index} className="group flex min-w-[498px] flex-col hover:rounded-md hover:bg-purple-800">
+              <div
+                key={index + item.tokenId}
+                className="group flex min-w-[498px] flex-col hover:rounded-md hover:bg-purple-800"
+              >
                 <button
                   className={classNames("flex items-center gap-3 px-4 py-3", {
                     "rounded-md bg-purple-200 hover:bg-purple-800": item.tokenId === selected?.assetTokenId,
@@ -87,7 +92,7 @@ const PoolSelectTokenModal: FC<PoolSelectTokenModalProps> = ({ open, title, sele
             ))
           ) : (
             <div className="min-w-[498px] pr-6">
-              <div className="flex items-center justify-center gap-3 px-4 py-3">No Asset found in wallet</div>
+              <div className="flex items-center justify-center gap-3 px-4 py-3">{t("wallet.noAssetFound")}</div>
             </div>
           )}
         </div>

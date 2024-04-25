@@ -5,6 +5,7 @@ import { ButtonVariants, InputEditedType, TransactionTypes } from "../../../app/
 import TokenIcon from "../../atom/TokenIcon";
 import Decimal from "decimal.js";
 import { formatNumberEnUs } from "../../../app/util/helper";
+import { useTranslation } from "react-i18next";
 
 interface SwapSelectTokenModalProps {
   open: boolean;
@@ -53,6 +54,8 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
   onClose,
   onConfirmTransaction,
 }) => {
+  const { t } = useTranslation();
+
   const priceA = new Decimal(Number(spotPriceA) || 0).times(new Decimal(Number(inputValueA) || 0));
   const priceB = new Decimal(Number(spotPriceB) || 0).times(new Decimal(Number(inputValueB) || 0));
   return (
@@ -61,9 +64,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
         <div className="flex flex-col items-start" data-dec={tokenDecimalsA}>
           <span className="font-inter text-small text-gray-200">
             {transactionType === TransactionTypes.add && ""}
-            {transactionType === TransactionTypes.swap && "You pay"}
-            {transactionType === TransactionTypes.withdraw && "Withdrawal amount"}
-            {transactionType === TransactionTypes.createPool && "You pay"}
+            {transactionType === TransactionTypes.swap && t("modal.reviewTransaction.youPay")}
+            {transactionType === TransactionTypes.withdraw && t("modal.reviewTransaction.withdrawAmount")}
+            {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
           <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400">
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueA}</div>
@@ -78,9 +81,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
         <div className="flex flex-col items-start" data-dec={tokenDecimalsB}>
           <span className="font-inter text-small text-gray-200">
             {transactionType === TransactionTypes.add && ""}
-            {transactionType === TransactionTypes.swap && "You receive"}
-            {transactionType === TransactionTypes.withdraw && "Withdrawal amount"}
-            {transactionType === TransactionTypes.createPool && "You pay"}
+            {transactionType === TransactionTypes.swap && t("modal.reviewTransaction.youReceive")}
+            {transactionType === TransactionTypes.withdraw && t("modal.reviewTransaction.withdrawAmount")}
+            {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
           <span className="flex w-full items-center justify-between gap-6 font-unbounded-variable text-heading-5 font-bold text-gray-400">
             <div className="no-scrollbar flex overflow-y-scroll">{inputValueB}</div>
@@ -103,25 +106,33 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
               {showAll ? (
                 <>
                   <div className="flex justify-between">
-                    <span className="font-inter text-medium text-gray-300">Expected output</span>
+                    <span className="font-inter text-medium text-gray-300">
+                      {t("modal.reviewTransaction.expectedOutput")}
+                    </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueA} {tokenSymbolA}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-inter text-medium text-gray-300">Minimum output</span>
+                    <span className="font-inter text-medium text-gray-300">
+                      {t("modal.reviewTransaction.minimumOutput")}
+                    </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueB} {tokenSymbolA}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-inter text-medium text-gray-300">Expected output</span>
+                    <span className="font-inter text-medium text-gray-300">
+                      {t("modal.reviewTransaction.expectedOutput")}
+                    </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueASecond} {tokenSymbolB}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-inter text-medium text-gray-300">Minimum output</span>
+                    <span className="font-inter text-medium text-gray-300">
+                      {t("modal.reviewTransaction.minimumOutput")}
+                    </span>
                     <span className="font-inter text-medium text-gray-400">
                       {tokenValueBSecond} {tokenSymbolB}
                     </span>
@@ -140,7 +151,9 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                   {transactionType !== TransactionTypes.add && transactionType !== TransactionTypes.withdraw && (
                     <div className="flex justify-between">
                       <span className="font-inter text-medium text-gray-300">
-                        {inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
+                        {inputType === InputEditedType.exactIn
+                          ? t("modal.reviewTransaction.minimumReceived")
+                          : t("modal.reviewTransaction.maximumPaid")}
                       </span>
                       <span className="font-inter text-medium text-gray-400">
                         {tokenValueB} {tokenSymbolB}
@@ -149,7 +162,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                   )}
 
                   <div className="flex justify-between text-medium font-normal text-gray-300">
-                    <div className="flex">Transaction Cost</div>
+                    <div className="flex">{t("modal.reviewTransaction.transactionCost")}</div>
                     <span className="font-inter text-medium text-gray-400">{swapGasFee}</span>
                   </div>
                 </>
@@ -159,13 +172,13 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
         )}
         <div className="flex">
           <Button onClick={onClose} variant={ButtonVariants.btnCloseModal}>
-            Close
+            {t("button.close")}
           </Button>
           <Button onClick={onConfirmTransaction} variant={ButtonVariants.btnPrimaryPinkSm}>
-            Confirm {transactionType === TransactionTypes.add && "Deposit"}
-            {transactionType === TransactionTypes.swap && "Swap"}
-            {transactionType === TransactionTypes.createPool && "Deposit"}
-            {transactionType === TransactionTypes.withdraw && "Withdraw"}
+            {t("button.confirm")} {transactionType === TransactionTypes.add && t("button.deposit")}
+            {transactionType === TransactionTypes.swap && t("button.swap")}
+            {transactionType === TransactionTypes.createPool && t("button.deposit")}
+            {transactionType === TransactionTypes.withdraw && t("button.withdraw")}
           </Button>
         </div>
       </div>

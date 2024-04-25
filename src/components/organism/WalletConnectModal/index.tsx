@@ -6,6 +6,8 @@ import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
+import { FC } from "react";
+import { useTranslation } from "react-i18next";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -20,7 +22,7 @@ interface WalletConnectModalProps {
   onBack?: () => void | undefined;
 }
 
-const WalletConnectModal = ({
+const WalletConnectModal: FC<WalletConnectModalProps> = ({
   open,
   title,
   modalStep,
@@ -30,8 +32,9 @@ const WalletConnectModal = ({
   onBack,
   setModalStep,
   handleConnect,
-}: WalletConnectModalProps) => {
+}) => {
   const { dispatch } = useAppContext();
+  const { t } = useTranslation();
 
   const handleContinueClick = (accounts: WalletAccount[]) => {
     setModalStep({ step: WalletConnectSteps.stepAddresses });
@@ -59,11 +62,11 @@ const WalletConnectModal = ({
                           handleContinueClick(accounts);
                         }}
                       >
-                        Continue
+                        {t("button.continue")}
                       </Button>
                     ) : (
                       <a href={wallet?.installUrl} target="blank">
-                        Install
+                        {t("button.install")}
                       </a>
                     )}
                   </div>

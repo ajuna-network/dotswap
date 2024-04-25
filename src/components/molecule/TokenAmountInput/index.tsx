@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { t } from "i18next";
-import { ReactNode, useRef, useState, useEffect } from "react";
+import { ReactNode, useRef, useState, useEffect, FC } from "react";
 import { NumericFormat } from "react-number-format";
 import useClickOutside from "../../../app/hooks/useClickOutside";
 import { ButtonVariants } from "../../../app/types/enum";
@@ -31,7 +31,7 @@ type TokenAmountInputProps = {
   maxVisible?: boolean;
 };
 
-const TokenAmountInput = ({
+const TokenAmountInput: FC<TokenAmountInputProps> = ({
   tokenIcon,
   tokenText,
   tokenBalance,
@@ -49,7 +49,7 @@ const TokenAmountInput = ({
   onClick,
   onMaxClick,
   maxVisible,
-}: TokenAmountInputProps) => {
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLInputElement>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -127,10 +127,7 @@ const TokenAmountInput = ({
               const value = floatValue.toString();
               const [, decimalPart] = value.split(".");
               const decimalCount = decimalPart?.length || 0;
-              if (decimalCount > Number(tokenDecimals)) {
-                return false;
-              }
-              return true;
+              return decimalCount <= Number(tokenDecimals);
             } else {
               return true;
             }
@@ -190,10 +187,10 @@ const TokenAmountInput = ({
             import.meta.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP &&
             import.meta.env.VITE_ENABLE_EXPERIMENTAL_MAX_TOKENS_SWAP == "true" && (
               <button
-                className="inline-flex h-5 w-11 flex-col items-start justify-start gap-2 px-1.5 text-pink"
+                className="inline-flex h-5 w-11 flex-col items-start justify-start gap-2 px-1.5 uppercase text-pink"
                 onClick={onMaxClick}
               >
-                MAX
+                {t("button.max")}
               </button>
             )}
         </div>

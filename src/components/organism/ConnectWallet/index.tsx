@@ -5,19 +5,19 @@ import {
   getSupportedWallets,
   handleDisconnect,
 } from "../../../services/polkadotWalletServices";
-import { useAppContext } from "../../../state/index.tsx";
+import { useAppContext } from "../../../state";
 import Button from "../../atom/Button/index.tsx";
 import { t } from "i18next";
 import { useEffect, useState } from "react";
 import WalletConnectModal from "../WalletConnectModal/index.tsx";
 import SelectAccountModal from "../SelectAccountModal/index.tsx";
 import LocalStorage from "../../../app/util/localStorage.ts";
-import { ModalStepProps } from "../../../app/types/index.ts";
+import { ModalStepProps } from "../../../app/types";
 import type { Timeout } from "react-number-format/types/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import dotAcpToast from "../../../app/util/toast.tsx";
-import { LottieSmall } from "../../../assets/loader/index.tsx";
-import { TokenBalanceData } from "../../../app/types/index.ts";
+import { LottieSmall } from "../../../assets/loader";
+import { TokenBalanceData } from "../../../app/types";
 import Identicon from "@polkadot/react-identicon";
 import CircleLoader from "../../../assets/img/rotating-circle.svg?react";
 
@@ -53,7 +53,7 @@ const ConnectWallet = () => {
       if (!api || !relayApi) return;
       await connectWalletAndFetchBalance(dispatch, api, relayApi, account);
     } catch (error) {
-      dotAcpToast.error(`Error connecting: ${error}`);
+      dotAcpToast.error(`${t("toaster.errorConnecting")} ${error}`);
     }
   };
 
@@ -109,8 +109,9 @@ const ConnectWallet = () => {
             <CircleLoader className="animate-spin" />
             <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 [&>path]:fill-yellow-100 ">
               <div className="font-inter text-medium font-normal normal-case leading-normal text-dark-300">
-                {pendingNotifications.length} {pendingNotifications.length > 1 ? "transactions are" : "transaction is"}{" "}
-                pending
+                {pendingNotifications.length}{" "}
+                {pendingNotifications.length > 1 ? t("wallet.pendingMultiple") : t("wallet.pendingSingle")}{" "}
+                {t("wallet.pending")}
               </div>
             </div>
           </div>
@@ -165,7 +166,7 @@ const ConnectWallet = () => {
       />
 
       <WalletConnectModal
-        title="Connect a Wallet"
+        title={t("modal.connectWallet")}
         open={walletConnectOpen}
         onClose={() => setWalletConnectOpen(false)}
         onBack={modalStep.step === WalletConnectSteps.stepAddresses ? onBack : undefined}
