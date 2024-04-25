@@ -152,62 +152,9 @@ export const isWalletAddressValid = (address: string) => {
  * @returns USD value of the token
  */
 
-// export const getSpotPrice = async (tokenSymbol: string) => {
-//   if (!tokenSymbol || tokenSymbol === "") return;
+export const getSpotPrice = async (tokenSymbol: string) => {
+  if (!tokenSymbol || tokenSymbol === "") return;
 
-//   const getNameFromSymbol = (symbol: string) => {
-//     switch (symbol) {
-//       case "KSM":
-//         return "kusama";
-//       case "DOT":
-//         return "polkadot";
-//       case "ROC":
-//         return "roco-finance";
-//       case "GUPPY":
-//         return "guppy-gang";
-//       case "USDt":
-//         return "tether";
-//       case "USDC":
-//         return "usd-coin";
-
-//       default:
-//         return "";
-//     }
-//   };
-
-//   const tokenId = getNameFromSymbol(tokenSymbol);
-
-//   if (tokenId === "" || tokenSymbol === "GUPPY") return;
-
-//   //Nikola: YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=
-//   //Robert: bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=
-
-//   const options = {
-//     method: "GET",
-//     headers: {
-//       accept: "application/json",
-//       "X-API-KEY": "bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=",
-//     },
-//   };
-//   const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
-//     .then((response) => response.json())
-//     .then((response) => {
-//       return JSON.stringify(response.price, null, 2);
-//     })
-//     .catch((err) => console.error(err));
-
-//   return price;
-// };
-
-/**
- * Fetches the spot price of a token from Coingecko API
- * @param symbol pass the token symbol to get the spot price in USD
- * @returns USD value of the token
- */
-
-//TODO: returns cors error
-
-export const getSpotPrice = async (symbol: string) => {
   const getNameFromSymbol = (symbol: string) => {
     switch (symbol) {
       case "KSM":
@@ -228,23 +175,77 @@ export const getSpotPrice = async (symbol: string) => {
     }
   };
 
-  let name = getNameFromSymbol(symbol);
-  name = name === "" ? "kusama" : name;
+  const tokenId = getNameFromSymbol(tokenSymbol);
+
+  if (tokenId === "" || tokenSymbol === "GUPPY") return;
+
+  //Nikola: YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=
+  //Robert: bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=
 
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
+      "X-API-KEY": "bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=",
     },
   };
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd&precision=2`,
-    options
-  );
-  const json = await res.json();
+  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
+    .then((response) => response.json())
+    .then((response) => {
+      return JSON.stringify(response.price, null, 2);
+    })
+    .catch((err) => console.error(err));
 
-  return json[name].usd;
+  return price;
 };
+
+/**
+ * Fetches the spot price of a token from Coingecko API
+ * @param symbol pass the token symbol to get the spot price in USD
+ * @returns USD value of the token
+ */
+
+//TODO: returns cors error
+
+// export const getSpotPrice = async (symbol: string) => {
+//     if (!symbol || symbol === "") return;
+//   const getNameFromSymbol = (symbol: string) => {
+//     switch (symbol) {
+//       case "KSM":
+//         return "kusama";
+//       case "DOT":
+//         return "polkadot";
+//       case "ROC":
+//         return "roco-finance";
+//       case "GUPPY":
+//         return "guppy-gang";
+//       case "USDt":
+//         return "tether";
+//       case "USDC":
+//         return "usd-coin";
+
+//       default:
+//         return "";
+//     }
+//   };
+
+//   const name = getNameFromSymbol(symbol);
+//   if (name === "" || name === "guppy-gang") return;
+
+//   const options = {
+//     method: "GET",
+//     headers: {
+//       accept: "application/json",
+//     },
+//   };
+//   const res = await fetch(
+//     `https://api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd&precision=2`,
+//     options
+//   );
+//   const json = await res.json();
+
+//   return json[name].usd;
+// };
 //
 // fees for AssetHubKusama -> Kusama Relay Chain
 // source chain fee: 0.000087322311 KSM
