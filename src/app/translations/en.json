@@ -60,6 +60,7 @@
     "viewInBlockExplorer": "View in block explorer",
     "success": "Success",
     "pending": "Pending",
+    "info": "Info",
     "errorConnecting": "Error connecting:"
   },
   "modal": {
