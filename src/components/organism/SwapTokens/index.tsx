@@ -570,6 +570,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
       payload: {
         id: "swap",
         notificationModalOpen: true,
+        notificationPercentage: 0,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
         notificationTitle: "Swap",

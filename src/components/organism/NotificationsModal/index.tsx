@@ -5,7 +5,7 @@ import ArrowRight from "../../../assets/img/arrow-right.svg?react";
 import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ArrowRightLong from "../../../assets/img/arrow-right-long.svg?react";
 import AlertIcon from "../../../assets/img/alert-icon-white.svg?react";
-import SuccessIcon from "../../../assets/img/success-icon.svg?react";
+import SuccessIcon from "../../../assets/img/success-icon-new.svg?react";
 import InfoIcon from "../../../assets/img/info-icon.svg?react";
 import TokenIcon from "../../atom/TokenIcon";
 import { useAppContext } from "../../../state";
@@ -222,11 +222,54 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     );
   };
 
+  const renderText = () => {
+    if (!currentNotification?.notificationPercentage) return null;
+
+    const percentage = currentNotification.notificationPercentage;
+    const radius = 40;
+    const strokeWidth = 6;
+    const normalizedPercentage = Math.min(Math.max(percentage, 0), 100);
+    const circumference = 2 * Math.PI * radius;
+    const dashOffset = circumference * (1 - normalizedPercentage / 100);
+
+    return (
+      <div className="relative flex items-center gap-2 bg-white">
+        <svg className="h-16 w-16" viewBox="0 0 100 100">
+          <circle
+            className="progress-ring__circle"
+            stroke="#EBEBEF"
+            strokeWidth="6"
+            fill="transparent"
+            r={dashOffset === 0 ? radius - strokeWidth / 2 : radius}
+            cx={50}
+            cy={50}
+          />
+          <circle
+            className="progress-ring__circle"
+            stroke="#00ACFF"
+            strokeWidth="6"
+            strokeDasharray={circumference}
+            strokeDashoffset={dashOffset}
+            fill="transparent"
+            r={dashOffset === 0 ? radius - strokeWidth / 2 : radius}
+            cx={50}
+            cy={50}
+            transform="rotate(-90 50 50)"
+          />
+          <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fontSize="16"></text>
+        </svg>
+        <div className="absolute inset-0 z-10 flex h-full w-full items-center justify-center text-medium">
+          {percentage}%
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
       <div className="min-w-modal max-w-full">
         <div className="flex flex-col items-center gap-3 py-10">
-          {renderNotificationIcon()}
+          {currentNotification?.notificationType !== ToasterType.SUCCESS ? renderText() : renderNotificationIcon()}
           {renderNotificationTitle()}
           {renderTransactionDetails()}
           {renderChainDetails()}
