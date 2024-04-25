@@ -8,7 +8,7 @@ import { formatDecimalsFromToken } from "../../app/util/helper";
 import { SwapAction } from "../../store/swap/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { NotificationAction } from "../../store/notifications/interface";
-import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
+import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../polkadotWalletServices";
 import { TokenBalanceData } from "../../app/types";
 
 const { parents } = useGetNetwork();

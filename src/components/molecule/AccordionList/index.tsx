@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, FC } from "react";
 import DownArrow from "../../../assets/img/down-arrow.svg?react";
+import classNames from "classnames";
 
 type AccordionListProps = {
   title?: React.ReactNode;
@@ -10,14 +11,14 @@ type AccordionListProps = {
   nested?: boolean;
 };
 
-const AccordionList = ({
+const AccordionList: FC<AccordionListProps> = ({
   title,
   className = "rounded-2xl",
   children,
   alwaysOpen = false,
   defaultOpen = false,
   nested = false,
-}: AccordionListProps) => {
+}) => {
   const accordionElm = useRef<HTMLDivElement>(null);
   const titleElm = useRef<HTMLDivElement>(null);
   const itemsElm = useRef<HTMLDivElement>(null);
@@ -85,7 +86,10 @@ const AccordionList = ({
             <div className="font-unbounded-variable text-heading-6 font-normal">{title}</div>
             {!alwaysOpen && children && (
               <div
-                className={`flex items-center justify-center transition-all duration-300 ease-in-out ${isOpen ? "rotate-180 transform opacity-100" : "opacity-40"}`}
+                className={classNames("flex items-center justify-center transition-all duration-300 ease-in-out", {
+                  "rotate-180 transform opacity-100": isOpen,
+                  "opacity-40": !isOpen,
+                })}
               >
                 <DownArrow />
               </div>
@@ -95,7 +99,10 @@ const AccordionList = ({
         {children && (
           <div
             ref={itemsElm}
-            className={`flex w-full flex-col overflow-hidden transition-all duration-300 ease-in-out ${!nested ? "px-8 pb-8" : "px-0"} `}
+            className={classNames("flex w-full flex-col overflow-hidden transition-all duration-300 ease-in-out ", {
+              "px-8 pb-8": !nested,
+              "px-0": nested,
+            })}
             data-height={accordionHeight.itemsElmHeight}
             style={{ height: isOpen || !title ? "100%" : 0 }}
           >

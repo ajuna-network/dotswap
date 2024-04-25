@@ -2,13 +2,14 @@ import Modal from "../../atom/Modal";
 import LogoutIcon from "../../../assets/img/logout-icon.svg?react";
 import type { WalletAccount } from "@talismn/connect-wallets";
 import { useAppContext } from "../../../state/index.tsx";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { getWalletBySource } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { reduceAddress } from "../../../app/util/helper";
 import InfoMessage from "../../atom/InfoMessage/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { t } from "i18next";
+import classNames from "classnames";
 
 interface SelectAccountModalProps {
   open: boolean;
@@ -19,7 +20,7 @@ interface SelectAccountModalProps {
   handleDisconnect: () => void;
 }
 
-const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconnect }: SelectAccountModalProps) => {
+const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose, handleConnect, handleDisconnect }) => {
   const { state, dispatch } = useAppContext();
   const { selectedAccount, accounts } = state;
 
@@ -34,7 +35,7 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
           payload: accounts || [],
         });
       };
-      fetchAccounts();
+      fetchAccounts().then();
     }
   }, [accounts, selectedAccount]);
 
@@ -61,16 +62,19 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
             <div key={index} className="flex flex-col rounded-lg">
               <div className="flex items-center gap-3">
                 <button
-                  className={`flex flex-1 items-center gap-2 rounded-lg bg-purple-50 p-4 py-3 ${
-                    selectedAccount?.address === account?.address ? "cursor-default" : ""
-                  }`}
+                  className={classNames("flex flex-1 items-center gap-2 rounded-lg bg-purple-50 p-4 py-3", {
+                    "cursor-default": selectedAccount?.address === account?.address,
+                  })}
                   onClick={(e) => handleAccountClick(account, e)}
                 >
                   <Identicon
                     value={account?.address}
                     size={32}
                     theme="polkadot"
-                    className={selectedAccount?.address === account?.address ? "!cursor-default" : "!cursor-pointer"}
+                    className={classNames({
+                      "!cursor-default": selectedAccount?.address === account?.address,
+                      "!cursor-pointer": selectedAccount?.address !== account?.address,
+                    })}
                   />
                   <div className="flex w-full flex-col items-start justify-center">
                     <div className="text-base font-medium leading-none text-gray-300">{account?.name}</div>
@@ -82,7 +86,7 @@ const SelectAccountModal = ({ open, title, onClose, handleConnect, handleDisconn
                   <button
                     className="h-14 w-14 rounded-lg bg-purple-50 p-4"
                     onClick={handleDisconnect}
-                    title={"Disconnect Wallet"}
+                    title={t("button.disconnectWallet")}
                   >
                     <div className="flex items-center justify-center">
                       <LogoutIcon />

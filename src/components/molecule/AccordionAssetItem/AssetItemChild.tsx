@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import DotToken from "../../../assets/img/dot-token.svg?react";
 import AssetHubToken from "../../../assets/img/asset-hub.svg?react";
 import { useAppContext } from "../../../state";
@@ -14,12 +14,12 @@ type AssetItemChildProps = {
   className?: string;
 };
 
-const AssetItemChild = ({
+const AssetItemChild: FC<AssetItemChildProps> = ({
   isRelayChain = false,
   tokenSymbol,
   tokenSpotPrice,
   className = "bg-purple-100 rounded-[10px]",
-}: AssetItemChildProps) => {
+}) => {
   const { state } = useAppContext();
 
   const { selectedAccount, api, tokenBalances, crosschainSelectedChain } = state;

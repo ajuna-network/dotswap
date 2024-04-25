@@ -1,4 +1,6 @@
-const SupportPage = () => {
+import { FC } from "react";
+
+const SupportPage: FC = () => {
   return <div></div>;
 };
 

@@ -5,6 +5,7 @@ import { formatDecimalsFromToken, formatNumberEnUs } from "../../../app/util/hel
 import TokenIcon from "../../atom/TokenIcon";
 import CheckIcon from "../../../assets/img/selected-token-check.svg?react";
 import Modal from "../../atom/Modal";
+import { useTranslation } from "react-i18next";
 
 interface SelectTokenPayload {
   id: string;
@@ -31,6 +32,8 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
   onClose,
   onSelect,
 }) => {
+  const { t } = useTranslation();
+
   const handleSelectToken = (payload: SelectTokenPayload) => {
     const assetTokenData: TokenProps = {
       tokenSymbol: payload.assetSymbol,
@@ -38,6 +41,7 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
       decimals: payload.decimals,
       tokenBalance: payload.assetTokenBalance,
     };
+
     onSelect(assetTokenData);
     onClose();
   };
@@ -112,7 +116,7 @@ const SwapSelectTokenModal: FC<SwapSelectTokenModalProps> = ({
           </>
         ) : (
           <div className="min-w-[498px] pr-6">
-            <div className="flex items-center justify-center gap-3 px-4 py-3">No Asset found in wallet</div>
+            <div className="flex items-center justify-center gap-3 px-4 py-3">{t("wallet.noAssetFound")}</div>
           </div>
         )}
       </div>
