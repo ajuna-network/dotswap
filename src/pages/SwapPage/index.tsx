@@ -1,13 +1,13 @@
 import { FC, useEffect, useState } from "react";
 import SwapTokens from "../../components/organism/SwapTokens";
-import { ActionType, SwapOrPools } from "../../app/types/enum";
+import { SwapOrPools } from "../../app/types/enum";
 import PoolsPage from "../PoolsPage";
 import classNames from "classnames";
-import { getAllLiquidityPoolsTokensMetadata, getAllPools } from "../../services/poolServices";
+import { getAllLiquidityPoolsTokensMetadata } from "../../services/poolServices";
 import { useAppContext } from "../../state";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SWAP_ROUTE } from "../../app/router/routes";
-import { urlTo } from "../../app/util/helper";
+import { urlTo, isApiAvailable } from "../../app/util/helper";
 import { createPoolCardsArray } from "../../services/poolServices";
 
 const SwapPage: FC = () => {
@@ -35,23 +35,18 @@ const SwapPage: FC = () => {
   };
 
   useEffect(() => {
+    if (!api || !pools) return;
     const updatePoolsCards = async () => {
-      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
+      const isApiReady = await isApiAvailable(api);
+      if (isApiReady && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
     };
-
-    updatePoolsCards().then();
+    updatePoolsCards();
   }, [pools, selectedAccount, tokenBalances]);
 
   useEffect(() => {
     if (api) {
       const fetchPools = async () => {
-        const pools = await getAllPools(api);
-        const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-
-        if (pools) {
-          dispatch({ type: ActionType.SET_POOLS, payload: pools });
-          dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
-        }
+        await getAllLiquidityPoolsTokensMetadata(api, dispatch);
       };
       fetchPools();
     }
@@ -59,7 +54,9 @@ const SwapPage: FC = () => {
 
   const renderSwapOrPools = () => {
     if (swapOrPools === SwapOrPools.swap) {
-      return <SwapTokens />;
+      const from = new URLSearchParams(location.search).get("from") || "";
+      const to = new URLSearchParams(location.search).get("to") || "";
+      return <SwapTokens from={from} to={to} />;
     }
     return <PoolsPage />;
   };

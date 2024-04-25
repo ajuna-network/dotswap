@@ -15,6 +15,7 @@ interface WalletConnectModalProps {
   walletAccounts: WalletAccount[];
   setModalStep: (step: ModalStepProps) => void;
   handleConnect: (account: WalletAccount) => void;
+  handleWalletInstall: (wallet: Wallet) => void;
   onClose: () => void;
   setWalletConnectOpen: (isOpen: boolean) => void;
   onBack?: () => void | undefined;
@@ -30,6 +31,7 @@ const WalletConnectModal = ({
   onBack,
   setModalStep,
   handleConnect,
+  handleWalletInstall,
 }: WalletConnectModalProps) => {
   const { dispatch } = useAppContext();
 
@@ -62,9 +64,16 @@ const WalletConnectModal = ({
                         Continue
                       </Button>
                     ) : (
-                      <a href={wallet?.installUrl} target="blank">
+                      // render install button if wallet is not installed and listen to the install event to update the state
+
+                      <Button
+                        className="btn-secondary-white"
+                        onClick={() => {
+                          handleWalletInstall(wallet);
+                        }}
+                      >
                         Install
-                      </a>
+                      </Button>
                     )}
                   </div>
                 </div>

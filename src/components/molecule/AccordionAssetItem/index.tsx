@@ -93,7 +93,7 @@ const AccordionAssetItem = ({
       }
       style={{
         height: isOpen
-          ? accordionHeight.itemsElmHeight + accordionHeight.titleElmHeight
+          ? accordionHeight.itemsElmHeight + accordionHeight.titleElmHeight + 32
           : accordionHeight.titleElmHeight,
       }}
     >

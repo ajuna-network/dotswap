@@ -149,4 +149,5 @@ export enum ToasterType {
   SUCCESS = "success",
   ERROR = "error",
   PENDING = "pending",
+  INFO = "info",
 }

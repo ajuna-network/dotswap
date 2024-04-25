@@ -6,6 +6,7 @@ interface DotAcpToast {
   success: (message: string, options?: ToastOptions, blockExplorerLink?: string) => void;
   error: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
   pending: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
+  info: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
 }
 
 const dotAcpToast: DotAcpToast = {
@@ -48,6 +49,21 @@ const dotAcpToast: DotAcpToast = {
             toast.dismiss(t.id);
           }}
           type={ToasterType.ERROR}
+          blockExplorerLink={blockExplorerLink}
+        />
+      ),
+      options
+    );
+  },
+  info: (message, options, blockExplorerLink) => {
+    toast.custom(
+      (t) => (
+        <Toaster
+          description={message}
+          close={() => {
+            toast.dismiss(t.id);
+          }}
+          type={ToasterType.INFO}
           blockExplorerLink={blockExplorerLink}
         />
       ),

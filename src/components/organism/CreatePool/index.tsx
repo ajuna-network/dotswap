@@ -164,8 +164,7 @@ const CreatePool = ({ tokenBSelected }: CreatePoolProps) => {
         tokenBalances
       );
       dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: walletAssets });
-      const poolsTokenMetadata = await getAllLiquidityPoolsTokensMetadata(api);
-      dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenMetadata });
+      await getAllLiquidityPoolsTokensMetadata(api, dispatch);
     }
   };
 

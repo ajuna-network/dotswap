@@ -5,6 +5,7 @@ import { LottieSmall } from "../../../assets/loader";
 import SuccessIcon from "../../../assets/img/toasterSuccessIcon.svg?react";
 import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ErrorIcon from "../../../assets/img/toasterErrorIcon.svg?react";
+import InfoIcon from "../../../assets/img/info-icon.svg?react";
 import CloseButtonIcon from "../../../assets/img/closeButtonIcon.svg?react";
 import toast from "react-hot-toast";
 
@@ -25,12 +26,14 @@ const Toaster: FC<ToasterProps> = ({
     if (type === ToasterType.SUCCESS) return <SuccessIcon />;
     if (type === ToasterType.PENDING) return <LottieSmall />;
     if (type === ToasterType.ERROR) return <ErrorIcon />;
+    if (type === ToasterType.INFO) return <InfoIcon className="[&>path]:fill-white" />;
 
     return <SuccessIcon />;
   };
   const handleToasterHeaderText = (type: ToasterType) => {
     if (type === ToasterType.SUCCESS) return "Success";
     if (type === ToasterType.PENDING) return "Pending";
+    if (type === ToasterType.INFO) return "Info";
   };
 
   return (
@@ -41,6 +44,7 @@ const Toaster: FC<ToasterProps> = ({
           "border-success bg-green-100": type === ToasterType.SUCCESS,
           "border-blue-400 bg-blue-200": type === ToasterType.PENDING,
           "border-red-400 bg-red-200": type === ToasterType.ERROR,
+          "border-yellow-300 bg-yellow-200": type === ToasterType.INFO,
         }
       )}
     >
@@ -51,6 +55,7 @@ const Toaster: FC<ToasterProps> = ({
             "text-green-900": type === ToasterType.SUCCESS,
             "text-blue-900": type === ToasterType.PENDING,
             "text-red-900": type === ToasterType.ERROR,
+            "text-yellow-700": type === ToasterType.INFO,
           })}
         >
           <div className="font-medium">{handleToasterHeaderText(type)}</div>

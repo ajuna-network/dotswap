@@ -6,6 +6,7 @@ import ArrowOpenLink from "../../../assets/img/open-link-arrow.svg?react";
 import ArrowRightLong from "../../../assets/img/arrow-right-long.svg?react";
 import AlertIcon from "../../../assets/img/alert-icon-white.svg?react";
 import SuccessIcon from "../../../assets/img/success-icon.svg?react";
+import InfoIcon from "../../../assets/img/info-icon.svg?react";
 import TokenIcon from "../../atom/TokenIcon";
 import { useAppContext } from "../../../state";
 import { ToasterType } from "../../../app/types/enum";
@@ -32,6 +33,13 @@ const NotificationsModal: FC<Props> = ({ id }) => {
       type: ActionType.SET_NOTIFICATION_MODAL_OPEN,
       payload: { id: id, notificationModalOpen: false },
     });
+
+    if (currentNotification?.notificationType === ToasterType.INFO) {
+      dispatch({
+        type: ActionType.REMOVE_NOTIFICATION,
+        payload: id,
+      });
+    }
   };
 
   const { notifications } = state;
@@ -107,6 +115,12 @@ const NotificationsModal: FC<Props> = ({ id }) => {
         return (
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-400">
             <LottieMedium />
+          </div>
+        );
+      case ToasterType.INFO:
+        return (
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300">
+            <InfoIcon className="[&>path]:fill-white" />
           </div>
         );
       case ToasterType.ERROR:

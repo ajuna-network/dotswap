@@ -30,7 +30,7 @@ const AssetsTable = () => {
   const walletConnected = LocalStorage.get("wallet-connected");
 
   const [swapModalOpen, setSwapModalOpen] = useState(false);
-  const [tokenId, setTokenId] = useState("");
+  const [swapTokenId, setSwapTokenId] = useState("");
 
   const updateSpotPrice = async (tokens: AssetListToken[]) => {
     const newTokens = await Promise.all(
@@ -138,7 +138,8 @@ const AssetsTable = () => {
   }, [tokenBalances, selectedAccount.address]);
 
   const handleSwapModal = (tokenId: string) => {
-    setTokenId(tokenId);
+    if (!tokenId) return;
+    setSwapTokenId(tokenId);
     setSwapModalOpen(!swapModalOpen);
   };
 
@@ -235,7 +236,7 @@ const AssetsTable = () => {
           setSwapModalOpen(!swapModalOpen);
         }}
       >
-        <SwapTokens tokenId={tokenId} />
+        <SwapTokens tokenId={swapTokenId} />
       </Modal>
     </div>
   );
