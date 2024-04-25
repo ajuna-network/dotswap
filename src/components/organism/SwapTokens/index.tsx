@@ -573,7 +573,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         notificationPercentage: 0,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
-        notificationTitle: "Swap",
+        notificationTitle: "Warming up DOTSwap just for you",
         notificationMessage: "Proceed in your wallet",
         notificationChainDetails: null,
         notificationTransactionDetails: {
