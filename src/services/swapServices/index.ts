@@ -155,7 +155,6 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       payload: {
         id: "swap",
         props: {
-          notificationViewed: true,
           notificationTitle: title,
           notificationMessage: notification,
           notificationPercentage: percentage,

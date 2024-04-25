@@ -111,6 +111,7 @@ async function setupCallAndSign(
           id: "crosschain",
           props: {
             notificationType: ToasterType.PENDING,
+            notificationPercentage: 30,
             notificationTitle: "Pending",
             notificationMessage: "Transaction is processing. You can close this modal anytime.",
           },
@@ -140,9 +141,29 @@ async function sendTransaction(
   dispatch: Dispatch<CrosschainAction | NotificationAction>,
   subScanURL: string
 ) {
+  let percentage = 50;
+  const interval = setInterval(() => {
+    dispatch({
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "crosschain",
+        props: {
+          notificationType: ToasterType.PENDING,
+          notificationPercentage: percentage,
+          notificationTitle: "Pending",
+          notificationMessage: "Transaction is processing. You can close this modal anytime.",
+        },
+      },
+    });
+    percentage += Math.floor(Math.random() * 5) + 5;
+    if (percentage >= 80) {
+      clearInterval(interval);
+    }
+  }, 4000);
   return new Promise((resolve, reject) => {
     extrinsic.send(({ status, dispatchError, txHash }) => {
       if (status.isFinalized) {
+        clearInterval(interval);
         if (dispatchError) {
           if (dispatchError.isModule) {
             const { docs, name, section } = api.registry.findMetaError(dispatchError.asModule);
@@ -157,6 +178,7 @@ async function sendTransaction(
               id: "crosschain",
               props: {
                 notificationType: ToasterType.SUCCESS,
+                notificationPercentage: 100,
                 notificationTitle: "Success",
                 notificationMessage: null,
                 notificationLink: {
