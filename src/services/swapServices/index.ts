@@ -49,7 +49,7 @@ const exactSwapAmounts = (
   return swapExecutedEvent;
 };
 
-// Local helper functions for swap //
+// Local helper functions for swap
 
 const prepareNativeMultiLocationArguments = (api: ApiPromise, assetTokenId: string | null, reverse: boolean) => {
   const firstArg = api
