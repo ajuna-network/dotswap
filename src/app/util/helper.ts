@@ -284,7 +284,7 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 // free balance - origin chain fee - destination chain fee - existential deposit
 export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
   const xcmInstructionsBuffer = new Decimal("0.0015298333");
-  const existentialDeposit = new Decimal("1.0000000000");
+  const existentialDeposit = new Decimal("0");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossInDestinationFee());

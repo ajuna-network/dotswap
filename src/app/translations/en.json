@@ -1,6 +1,6 @@
 {
   "seo": {
-    "dotAcp": "DOT ACP",
+    "dotAcp": "DOTswap",
     "og": {
       "title": "OG Title",
       "description": "OG description",
@@ -14,17 +14,17 @@
       "image": "https://example.com/twitter-image.jpg"
     },
     "global": {
-      "title": "DOT ACP App",
-      "description": "DOT ACP App description",
+      "title": "DOTswap",
+      "description": "DOTswap App description",
       "keywords": "keyword1, keyword2, keyword3"
     },
     "pools": {
       "title": "Pools",
-      "description": "DOT ACP Pools Page description"
+      "description": "DOTswap Pools Page description"
     },
     "swap": {
       "title": "Swap",
-      "description": "DOT ACP Swap Details Page description"
+      "description": "DOTswap Swap Details Page description"
     }
   },
   "button": {

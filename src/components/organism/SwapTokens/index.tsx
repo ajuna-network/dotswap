@@ -118,7 +118,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
     tokenValue: "0",
   });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(1);
   const [walletHasEnoughNativeToken, setWalletHasEnoughNativeToken] = useState<boolean>(false);
   const [availablePoolTokenA, setAvailablePoolTokenA] = useState<TokenProps[]>([]);
   const [availablePoolTokenB, setAvailablePoolTokenB] = useState<TokenProps[]>([]);
@@ -522,15 +522,20 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
   ]);
 
   const getSwapTokenA = async () => {
-    if (api) {
-      const tokens = tokenBalances?.assets?.filter((item: any) => whitelist.includes(item.tokenId)) || [];
-
-      const assetTokens = [nativeToken]
-        .concat(tokens)
-        ?.filter((item: any) => item.tokenId !== selectedTokens.tokenB?.tokenId);
-
-      setAvailablePoolTokenA(assetTokens as any);
+    const poolLiquidTokens: any = [nativeToken]
+      .concat(poolsTokenMetadata as any)
+      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenB?.tokenId && whitelist.includes(item.tokenId));
+    if (tokenBalances !== null) {
+      for (const item of poolLiquidTokens) {
+        for (const walletAsset of tokenBalances.assets) {
+          if (item.tokenId === walletAsset.tokenId) {
+            item.tokenAsset.balance = walletAsset.tokenAsset.balance;
+          }
+        }
+      }
+      setAvailablePoolTokenA(poolLiquidTokens);
     }
+    return poolLiquidTokens;
   };
 
   const getSwapTokenB = () => {
