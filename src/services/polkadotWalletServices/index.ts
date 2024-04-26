@@ -417,6 +417,6 @@ export const fetchChainBalance = async (address: string, tokenBalancesDecimals: 
     }
   } catch (error) {
     console.error("Error fetching relay balance:", error);
-    return null; // Return null or handle the error appropriately
+    return null; // Return null or handle the error appropriately//
   }
 };
