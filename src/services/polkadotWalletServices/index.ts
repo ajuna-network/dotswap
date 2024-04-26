@@ -48,7 +48,7 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       return null;
     }
 
-    // Process assets
+    // Process assets //
     const myAssetTokenData = await Promise.all(
       allAssets.map(async ([assetId, assetDetails]) => {
         const cleanedTokenId = assetId.toHuman()?.toString()?.replace(/[, ]/g, "");
