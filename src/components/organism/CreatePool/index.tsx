@@ -92,7 +92,7 @@ const CreatePool: FC<CreatePoolProps> = ({ tokenBSelected }) => {
   const [nativeTokenWithSlippage, setNativeTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [assetTokenWithSlippage, setAssetTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(1);
   const [poolExists, setPoolExists] = useState<boolean>(false);
   const [assetTokenMinValueExceeded, setAssetTokenMinValueExceeded] = useState<boolean>(false);
   const [assetTokenMinValue, setAssetTokenMinValue] = useState<string>("");

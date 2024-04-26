@@ -94,7 +94,7 @@ const WithdrawPoolLiquidity = () => {
   const [nativeTokenWithSlippage, setNativeTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [assetTokenWithSlippage, setAssetTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(1);
   const [lpTokensAmountToBurn, setLpTokensAmountToBurn] = useState<string>("");
   const [minimumTokenAmountExceeded, setMinimumTokenAmountExceeded] = useState<boolean>(false);
   const [withdrawAmountPercentage, setWithdrawAmountPercentage] = useState<number>(100);
