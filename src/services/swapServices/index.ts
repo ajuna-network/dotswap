@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { formatDecimalsFromToken } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken } from "../../app/util/helper";
 import { SwapAction } from "../../store/swap/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { NotificationAction } from "../../store/notifications/interface";
@@ -12,10 +12,6 @@ import { setTokenBalanceAfterAssetsSwapUpdate, setTokenBalanceUpdate } from "../
 import { TokenBalanceData } from "../../app/types";
 
 const { parents } = useGetNetwork();
-
-const checkIfExactError = (errorValue: string) => {
-  return errorValue === t("swapPage.palletSlippageError");
-};
 
 export const convertMicroDOTToDOT = (microDOT: string) => {
   const microDOTValue = parseFloat(microDOT.replace(" µDOT", ""));
@@ -190,7 +186,7 @@ const handleDispatchError = (
           notificationType: ToasterType.ERROR,
           notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
-          notificationMessage: checkIfExactError(docs.join(" ")) ? t("swapPage.slippageError") : `${docs.join(" ")}`,
+          notificationMessage: errorMessageHandler(docs.join(" ")),
           notificationLink: {
             text: "View in block explorer",
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,

@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
@@ -219,7 +219,7 @@ const handleDispatchError = (
           notificationType: ToasterType.ERROR,
           notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
-          notificationMessage: `${docs.join(" ")}`,
+          notificationMessage: errorMessageHandler(docs.join(" ")),
           notificationLink: {
             text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
