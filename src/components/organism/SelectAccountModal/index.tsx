@@ -28,7 +28,7 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
     if (accounts.length === 0 && selectedAccount?.wallet) {
       const fetchAccounts = async () => {
         const wallet = await getWalletBySource(selectedAccount?.wallet?.extensionName);
-        await wallet?.enable("DOT-ACP");
+        await wallet?.enable("DOTswap");
         const accounts = await wallet?.getAccounts();
         dispatch({
           type: ActionType.SET_ACCOUNTS,
