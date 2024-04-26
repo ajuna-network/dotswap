@@ -238,7 +238,9 @@ const handleDispatchError = (
           notificationType: ToasterType.ERROR,
           notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
-          notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+          notificationMessage: response.dispatchError?.toString()
+            ? errorMessageHandler(response.dispatchError.toString())
+            : t("modal.notifications.genericError"),
           notificationLink: {
             text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
@@ -484,6 +486,7 @@ export const addLiquidity = async (
       }
     })
     .catch((error: any) => {
+      const errorMessage = errorMessageHandler(error);
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
@@ -492,7 +495,7 @@ export const addLiquidity = async (
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
-            notificationMessage: `Transaction failed: ${error}`,
+            notificationMessage: `Transaction failed: ${errorMessage}`,
           },
         },
       });
@@ -547,6 +550,7 @@ export const removeLiquidity = async (
       }
     })
     .catch((error: any) => {
+      const errorMessage = errorMessageHandler(error);
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
@@ -555,7 +559,7 @@ export const removeLiquidity = async (
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
-            notificationMessage: `Transaction failed: ${error}`,
+            notificationMessage: `Transaction failed: ${errorMessage}`,
           },
         },
       });
