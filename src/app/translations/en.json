@@ -201,7 +201,7 @@
   "dashboardPage": {
     "dashboard": "Dashboard",
     "myTotalAssets": "My Total Assets",
-    "totalAssetsTooltip": "Total balance is calculated based on USD price of KSM, GUPPY, USDT.",
+    "totalAssetsTooltip": "Total balance is calculated based on USD price of DOT, DED, USDt, USDC, PINK.",
     "price": "Price",
     "tokenPriceTooltip": "Latest price fetched from CoinStats.",
     "loadingAssets": "Loading...",

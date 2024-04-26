@@ -14,7 +14,7 @@ import AssetTokenIcon from "../../assets/img/test-token.svg";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
-import { convertMicroKSMToKSM } from "../swapServices";
+import { convertMicroDOTToDOT } from "../swapServices";
 import { NotificationAction } from "../../store/notifications/interface";
 import { TokenBalanceData } from "../../app/types/index";
 import { setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
@@ -458,11 +458,11 @@ export const addLiquidity = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
 
   const wallet = getWalletBySource(account.wallet?.extensionName);
@@ -575,15 +575,15 @@ export const checkCreatePoolGasFee = async (
   const result = api.tx.assetConversion.createPool(firstArg, secondArg);
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_POOL_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 
@@ -609,14 +609,14 @@ export const checkAddPoolLiquidityGasFee = async (
     account.address
   );
   const { partialFee } = await result.paymentInfo(account.address);
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 
@@ -676,14 +676,14 @@ export const checkWithdrawPoolLiquidityGasFee = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 

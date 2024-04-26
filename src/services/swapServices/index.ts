@@ -17,11 +17,11 @@ const checkIfExactError = (errorValue: string) => {
   return errorValue === t("swapPage.palletSlippageError");
 };
 
-export const convertMicroKSMToKSM = (microKSM: string) => {
-  const microKSMValue = parseFloat(microKSM.replace(" µKSM", ""));
+export const convertMicroDOTToDOT = (microDOT: string) => {
+  const microDOTValue = parseFloat(microDOT.replace(" µDOT", ""));
   const conversionFactor = 1e-6;
-  const ksmValue = microKSMValue * conversionFactor;
-  return `${ksmValue.toFixed(9)} KSM`;
+  const dotValue = microDOTValue * conversionFactor;
+  return `${dotValue.toFixed(9)} DOT`;
 };
 
 const { assethubSubscanUrl, nativeTokenSymbol } = useGetNetwork();
@@ -462,15 +462,15 @@ export const checkSwapNativeForAssetGasFee = async (
       );
 
   const { partialFee } = await result.paymentInfo(account.address);
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 
@@ -501,14 +501,14 @@ export const checkSwapAssetForAssetGasFee = async (
       );
 
   const { partialFee } = await result.paymentInfo(account.address);
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_SWAP_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
