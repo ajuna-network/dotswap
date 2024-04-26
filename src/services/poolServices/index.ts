@@ -137,20 +137,71 @@ const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) =>
   return { firstArg, secondArg };
 };
 
+const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  if (response.isInBlock || response.isFinalized) {
+    return;
+  }
+  dispatch({
+    type: ActionType.UPDATE_NOTIFICATION,
+    payload: {
+      id: "liquidity",
+      props: {
+        notificationType: ToasterType.PENDING,
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+        notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+        notificationPercentage: 30,
+      },
+    },
+  });
+};
+
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
   dispatch({
     type: ActionType.UPDATE_NOTIFICATION,
     payload: {
       id: "liquidity",
       props: {
-        notificationMessage: null,
+        notificationType: ToasterType.PENDING,
+        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+        notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
+        notificationPercentage: 50,
         notificationLink: {
-          text: "Transaction included in block",
+          text: t("modal.notifications.includedInBlock"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
         },
       },
     },
   });
+
+  let percentage = 60;
+  const interval = setInterval(() => {
+    const notification =
+      percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
+    const title =
+      percentage <= 70
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        : t("modal.notifications.transactionIsProcessingTitleAbove70");
+    dispatch({
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationType: ToasterType.PENDING,
+          notificationTitle: title,
+          notificationMessage: notification,
+          notificationPercentage: percentage,
+          notificationLink: {
+            text: t("modal.notifications.viewInBlockExplorer"),
+            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+          },
+        },
+      },
+    });
+    percentage += Math.floor(Math.random() * 5) + 1;
+    if (percentage >= 94) {
+      clearInterval(interval);
+    }
+  }, 900);
 };
 
 const handleDispatchError = (
@@ -166,10 +217,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: `${docs.join(" ")}`,
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -184,10 +236,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -211,10 +264,11 @@ const handleSuccessfulPool = (
       id: "liquidity",
       props: {
         notificationType: ToasterType.SUCCESS,
-        notificationTitle: t("modal.notifications.success"),
+        notificationPercentage: 100,
+        notificationTitle: t("modal.notifications.poolsSuccess"),
         notificationMessage: null,
         notificationLink: {
-          text: "View in block explorer",
+          text: t("modal.notifications.viewInBlockExplorer"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
         },
       },
@@ -287,12 +341,16 @@ const handlePoolTransactionResponse = async (
       payload: {
         id: "liquidity",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+          notificationPercentage: 10,
         },
       },
     });
   }
-  if (response.status.isInBlock) {
+  if (response.status.isBroadcast) {
+    handleInBroadcast(response, dispatch);
+  } else if (response.status.isInBlock) {
     handleInBlockResponse(response, dispatch);
   } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
     handleFinalizedResponse(response, api, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);
@@ -429,9 +487,10 @@ export const addLiquidity = async (
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -452,7 +511,8 @@ export const removeLiquidity = async (
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
   tokenBalances: TokenBalanceData,
-  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  navigateToPools: () => void
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -483,15 +543,17 @@ export const removeLiquidity = async (
       if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
         const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
         balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+        navigateToPools();
       }
     })
     .catch((error: any) => {
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },

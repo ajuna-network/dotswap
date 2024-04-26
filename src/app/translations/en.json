@@ -74,13 +74,29 @@
     "added": "added",
     "notifications": {
       "success": "Success",
+      "swapSuccess": "Success! YEAH BABY, YEAH!",
+      "crosschainSuccess": "Success! YEAH BABY, YEAH!",
+      "poolsSuccess": "Success! YEAH BABY, YEAH!",
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
+      "transactionInitiatedTitle": "Warming up DOTSwap just for you",
       "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates.",
+      "transactionBroadcastedTitle": "Warming up DOTSwap just for you",
+      "transactionBroadcastedNotification": "Transaction broadcasted. Waiting for confirmation.",
+      "transactionIncludedInBlockTitle": "DOTSwap rocking and rolling",
+      "transactionIncludedInBlockNotification": "Transaction included in block. Waiting for confirmation.",
+      "transactionIsProcessingTitle": "DOTSwap accepted your swap!",
+      "transactionIsProcessingTitleBelow70": "DOTSwap getting you the best deal",
+      "transactionIsProcessingTitleAbove70": "Almost done... just finalizing the last things.",
+      "transactionIsProcessingNotification": "Transaction is processing. You can close this window anytime.",
+      "isProcessingBelow70": "Almost there! Your transaction is being processed.",
+      "isProcessingAbove70": "Your transaction is almost complete. Hang tight!",
       "addLiquidity": "Adding Liquidity",
       "removeLiquidity": "Removing Liquidity",
-      "proceed": "Proceed in your wallet"
+      "proceed": "Proceed in your wallet",
+      "viewInBlockExplorer": "View in block explorer",
+      "includedInBlock": "Transaction included in block"
     },
     "swap": {
       "swapped": "Swapped",
@@ -261,16 +277,20 @@
     "title": "Whoops!",
     "subtitle": "No internet connection was found. Check your connection or try again."
   },
+  "tooltip": {
+    "swapPending": "Swap transaction is pending",
+    "crosschainPending": "Crosschain transaction is pending"
+  },
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"
   },
   "error": {
     "api": {
-        "notReady": "Please reconnect your wallet."
+      "notReady": "Please reconnect your wallet."
     },
     "wallet": {
-        "notSupported": "Wallet account is not supported"
+      "notSupported": "Wallet account is not supported"
     }
   }
 }

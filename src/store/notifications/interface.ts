@@ -8,6 +8,7 @@ export interface SingleNotification {
   id: string;
   notificationModalOpen: boolean;
   notificationViewed?: boolean | null;
+  notificationPercentage?: number | null;
   notificationAction?: string | null;
   notificationType: ToasterType | null;
   notificationTitle?: string | null;
@@ -42,6 +43,7 @@ export type NotificationAction =
   | { type: ActionType.UPDATE_NOTIFICATION; payload: { id: string; props: Partial<SingleNotification> } }
   | { type: ActionType.REMOVE_NOTIFICATION; payload: string }
   | { type: ActionType.SET_NOTIFICATION_VIEWED; payload: { id: string; notificationViewed: boolean } }
+  | { type: ActionType.SET_NOTIFICATION_PERCENTAGE; payload: { id: string; notificationPercentage: number } }
   | { type: ActionType.SET_NOTIFICATION_MODAL_OPEN; payload: { id: string; notificationModalOpen: boolean } }
   | { type: ActionType.SET_NOTIFICATION_TYPE; payload: { id: string; toasterType: ToasterType } }
   | { type: ActionType.SET_NOTIFICATION_TITLE; payload: { id: string; title: string | null } }

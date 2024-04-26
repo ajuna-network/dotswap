@@ -27,11 +27,13 @@ const UpdateMetadataModal = ({ account }: { account: WalletAccount | undefined }
       const assetHubUpdateAvailable = await checkWalletMetadata(api!, account);
       const relayChainUpdateAvailable = await checkWalletMetadata(relayApi!, account);
       if (assetHubUpdateAvailable || relayChainUpdateAvailable) {
-        setMetadataModalOpen({
-          modalOpen: true,
-          assetHubUpdateAvailable,
-          relayChainUpdateAvailable,
-        });
+        setTimeout(() => {
+          setMetadataModalOpen({
+            modalOpen: true,
+            assetHubUpdateAvailable,
+            relayChainUpdateAvailable,
+          });
+        }, 10000);
       }
     };
     updatesCheck().then();

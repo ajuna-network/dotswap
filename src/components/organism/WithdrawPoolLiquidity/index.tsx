@@ -167,6 +167,7 @@ const WithdrawPoolLiquidity = () => {
         notificationModalOpen: true,
         notificationAction: t("modal.notifications.removeLiquidity"),
         notificationType: ToasterType.PENDING,
+        notificationPercentage: 10,
         notificationTitle: t("modal.notifications.removeLiquidity"),
         notificationMessage: t("modal.notifications.proceed"),
         notificationChainDetails: null,
@@ -201,7 +202,8 @@ const WithdrawPoolLiquidity = () => {
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
           tokenBalances,
-          dispatch
+          dispatch,
+          navigateToPools
         );
       }
     } catch (error) {
@@ -211,6 +213,7 @@ const WithdrawPoolLiquidity = () => {
           id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
             notificationLink: null,

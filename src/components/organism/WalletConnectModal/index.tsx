@@ -59,9 +59,14 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                       <Button
                         className="btn-secondary-white"
                         onClick={async () => {
-                          await wallet?.enable("DOT-ACP");
-                          const accounts: WalletAccount[] = await wallet?.getAccounts();
-                          handleContinueClick(accounts);
+                          try {
+                            await wallet?.enable("DOT-ACP");
+                            await wallet?.getAccounts().then((accounts) => {
+                              handleContinueClick(accounts);
+                            });
+                          } catch (error) {
+                            console.error(error);
+                          }
                         }}
                       >
                         {t("button.continue")}

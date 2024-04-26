@@ -10,6 +10,7 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { calculateMaxAmountForCrossIn, calculateMaxAmountForCrossOut } from "../../app/util/helper";
+import { t } from "i18next";
 
 // Relay chain -> Parachain
 export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
@@ -111,6 +112,7 @@ async function setupCallAndSign(
           id: "crosschain",
           props: {
             notificationType: ToasterType.PENDING,
+            notificationPercentage: 10,
             notificationTitle: "Pending",
             notificationMessage: "Transaction is processing. You can close this modal anytime.",
           },
@@ -126,6 +128,7 @@ async function setupCallAndSign(
           id: "crosschain",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: "Error",
             notificationMessage: err.message || "Error executing crosschain",
           },
@@ -141,8 +144,76 @@ async function sendTransaction(
   subScanURL: string
 ) {
   return new Promise((resolve, reject) => {
+    let percentage = 60;
+    let interval: NodeJS.Timeout;
     extrinsic.send(({ status, dispatchError, txHash }) => {
-      if (status.isFinalized) {
+      if (status.isReady) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 15,
+              notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+              notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+            },
+          },
+        });
+      } else if (status.isBroadcast) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 30,
+              notificationTitle: t("modal.notifications.transactionBroadcastedTitle"),
+              notificationMessage: t("modal.notifications.transactionBroadcastedNotification"),
+            },
+          },
+        });
+      } else if (status.isInBlock) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 45,
+              notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+              notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
+              notificationLink: {
+                text: t("modal.notifications.viewInBlockExplorer"),
+                href: `${subScanURL}/extrinsic/${txHash.toString()}`,
+              },
+            },
+          },
+        });
+        interval = setInterval(() => {
+          dispatch({
+            type: ActionType.UPDATE_NOTIFICATION,
+            payload: {
+              id: "crosschain",
+              props: {
+                notificationType: ToasterType.PENDING,
+                notificationPercentage: percentage,
+                notificationTitle: t("modal.notifications.transactionIsProcessingTitleBelow70"),
+                notificationMessage: t("modal.notifications.isProcessingAbove70"),
+                notificationLink: {
+                  text: t("modal.notifications.viewInBlockExplorer"),
+                  href: `${subScanURL}/extrinsic/${txHash.toString()}`,
+                },
+              },
+            },
+          });
+          percentage += Math.floor(Math.random() * 5) + 1;
+          if (percentage >= 94) {
+            clearInterval(interval);
+          }
+        }, 900);
+      } else if (status.isFinalized) {
+        clearInterval(interval);
         if (dispatchError) {
           if (dispatchError.isModule) {
             const { docs, name, section } = api.registry.findMetaError(dispatchError.asModule);
@@ -157,10 +228,11 @@ async function sendTransaction(
               id: "crosschain",
               props: {
                 notificationType: ToasterType.SUCCESS,
-                notificationTitle: "Success",
+                notificationPercentage: 100,
+                notificationTitle: t("modal.notifications.crosschainSuccess"),
                 notificationMessage: null,
                 notificationLink: {
-                  text: "View in block explorer",
+                  text: t("modal.notifications.viewInBlockExplorer"),
                   href: `${subScanURL}/extrinsic/${txHash.toString()}`,
                 },
               },
