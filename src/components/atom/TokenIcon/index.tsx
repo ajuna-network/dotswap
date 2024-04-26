@@ -28,6 +28,11 @@ const TokenIcon = ({ tokenSymbol, width = "36px", height = "36px" }: IconProps) 
       return <TetherIcon width={width} height={height} />;
     case "USDC":
       return <UsdCoinIcon width={width} height={height} />;
+    case "DED":
+      return <GuppyIcon width={width} height={height} />;
+    case "PINK":
+      return <GuppyIcon width={width} height={height} />;
+    // comment for Sourabh to add a new case for icon for DOTA token here
     default:
       return <DefaultIcon width={width} height={height} />;
   }
