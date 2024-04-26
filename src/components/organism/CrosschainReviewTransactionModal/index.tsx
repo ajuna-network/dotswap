@@ -6,9 +6,11 @@ import { ButtonVariants, CrosschainTransactionTypes } from "../../../app/types/e
 import ArrowRightIcon from "../../../assets/img/arrow-right-long.svg?react";
 import { useAppContext } from "../../../state";
 import Decimal from "decimal.js";
+import { formatNumberEnUs } from "../../../app/util/helper";
 
 interface CrosschainReviewTransactionModalProps {
   tokenSymbol: string;
+  tokenDecimals: string;
   open: boolean;
   nativeChainName: string;
   destinationChainName: string;
@@ -20,6 +22,7 @@ interface CrosschainReviewTransactionModalProps {
 
 const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps> = ({
   tokenSymbol,
+  tokenDecimals,
   open,
   nativeChainName,
   destinationChainName,
@@ -86,7 +89,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
         <div className="flex flex-col items-end text-medium">
           <div className="font-inter uppercase">{t(`crosschainReviewTransactionModal.transfer`)}</div>
           <span className="font-semibold">
-            {crosschainExactTokenAmount} {tokenSymbol}
+            {formatNumberEnUs(Number(crosschainExactTokenAmount), Number(tokenDecimals))} {tokenSymbol}
           </span>
         </div>
       </div>
@@ -99,7 +102,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
                 {destinationChainName} {t(`crosschainReviewTransactionModal.currentBalance`)}
               </span>
               <span className="font-inter text-medium text-gray-400">
-                {destinationBalance} {tokenSymbol}
+                {formatNumberEnUs(Number(destinationBalance), Number(tokenDecimals))} {tokenSymbol}
               </span>
             </div>
           )}
@@ -108,7 +111,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {t(`crosschainReviewTransactionModal.transferringAmount`)}
             </span>
             <span className="font-inter text-medium text-gray-400">
-              {crosschainExactTokenAmount} {tokenSymbol}
+              {formatNumberEnUs(Number(crosschainExactTokenAmount), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between">
@@ -116,7 +119,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {t(`crosschainReviewTransactionModal.originChainFee`)}
             </span>
             <span className="font-inter text-medium text-gray-400">
-              ~ {originChainFee} {tokenSymbol}
+              ~ {formatNumberEnUs(Number(originChainFee), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between">
@@ -124,7 +127,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
               {t(`crosschainReviewTransactionModal.destinationChainFee`)}
             </span>
             <span className="font-inter text-medium text-gray-400">
-              ~ {destinationChainFee} {tokenSymbol}
+              ~ {formatNumberEnUs(Number(destinationChainFee), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
           {destinationBalance && (
@@ -135,7 +138,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
                   {destinationChainName} {t(`crosschainReviewTransactionModal.newBalance`)}
                 </span>
                 <span className="font-inter text-medium text-gray-400">
-                  ~ {destinationBalanceAfter} {tokenSymbol}
+                  ~ {formatNumberEnUs(Number(destinationBalanceAfter), Number(tokenDecimals))} {tokenSymbol}
                 </span>
               </div>
             </>

@@ -17,6 +17,7 @@ import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModa
 import {
   formatDecimalsFromToken,
   formatInputTokenValue,
+  formatNumberEnUs,
   getCrossInDestinationFee,
   getCrossOutDestinationFee,
   isApiAvailable,
@@ -645,13 +646,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.originChainFee")}</div>
               <span className="text-gray-400">
-                ~ {originChainFee} {selectedToken.tokenSymbol}
+                ~ {formatNumberEnUs(Number(originChainFee), Number(selectedToken.decimals))} {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.destinationChainFee")}</div>
               <span className="text-gray-400">
-                ~ {destinationChainFee} {selectedToken.tokenSymbol}
+                ~ {formatNumberEnUs(Number(destinationChainFee), Number(selectedToken.decimals))}{" "}
+                {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium tracking-[.2px]">
@@ -679,6 +681,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       <CrosschainReviewTransactionModal
         open={reviewModalOpen}
         tokenSymbol={selectedToken.tokenSymbol}
+        tokenDecimals={selectedToken.decimals}
         nativeChainName={crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType}
         destinationChainName={crosschainSelectedChain.chainB.chainType}
         destinationBalance={
