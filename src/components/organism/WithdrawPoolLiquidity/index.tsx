@@ -202,10 +202,9 @@ const WithdrawPoolLiquidity = () => {
           selectedTokenA.nativeTokenDecimals,
           selectedTokenB.decimals,
           tokenBalances,
-          dispatch
-        ).then(() => {
-          navigateToPools();
-        });
+          dispatch,
+          navigateToPools
+        );
       }
     } catch (error) {
       dispatch({

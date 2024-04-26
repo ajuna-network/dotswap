@@ -117,6 +117,7 @@ const handleIsBroadcastResponse = (response: SubmittableResult, dispatch: Dispat
     payload: {
       id: "swap",
       props: {
+        notificationType: ToasterType.PENDING,
         notificationTitle: t("modal.notifications.transactionBroadcastedTitle"),
         notificationMessage: t("modal.notifications.transactionBroadcastedNotification"),
         notificationPercentage: 25,
@@ -131,6 +132,7 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
     payload: {
       id: "swap",
       props: {
+        notificationType: ToasterType.PENDING,
         notificationMessage: t("modal.notifications.transactionIsProcessingNotification"),
         notificationTitle: t("modal.notifications.transactionIsProcessingTitle"),
         notificationPercentage: 40,
@@ -155,6 +157,7 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       payload: {
         id: "swap",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationTitle: title,
           notificationMessage: notification,
           notificationPercentage: percentage,
@@ -165,11 +168,11 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
         },
       },
     });
-    percentage += Math.floor(Math.random() * 5) + 5;
-    if (percentage >= 77) {
+    percentage += Math.floor(Math.random() * 5) + 1;
+    if (percentage >= 94) {
       clearInterval(interval);
     }
-  }, 5000);
+  }, 900);
 };
 
 const handleDispatchError = (
@@ -282,6 +285,7 @@ const handleSwapTransactionResponse = (
       payload: {
         id: "swap",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
           notificationPercentage: 10,
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),

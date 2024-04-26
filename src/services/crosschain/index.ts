@@ -160,9 +160,7 @@ async function sendTransaction(
             },
           },
         });
-      }
-
-      if (status.isBroadcast) {
+      } else if (status.isBroadcast) {
         dispatch({
           type: ActionType.UPDATE_NOTIFICATION,
           payload: {
@@ -175,8 +173,7 @@ async function sendTransaction(
             },
           },
         });
-      }
-      if (status.isInBlock) {
+      } else if (status.isInBlock) {
         dispatch({
           type: ActionType.UPDATE_NOTIFICATION,
           payload: {
@@ -193,7 +190,6 @@ async function sendTransaction(
             },
           },
         });
-
         interval = setInterval(() => {
           dispatch({
             type: ActionType.UPDATE_NOTIFICATION,
@@ -211,14 +207,12 @@ async function sendTransaction(
               },
             },
           });
-          percentage += Math.floor(Math.random() * 5) + 5;
-          if (percentage >= 85) {
+          percentage += Math.floor(Math.random() * 5) + 1;
+          if (percentage >= 94) {
             clearInterval(interval);
           }
-        }, 4000);
-      }
-
-      if (status.isFinalized) {
+        }, 900);
+      } else if (status.isFinalized) {
         clearInterval(interval);
         if (dispatchError) {
           if (dispatchError.isModule) {

@@ -135,6 +135,10 @@ const ConnectWallet = () => {
     setWalletConnectOpen(false);
 
     dispatch({
+      type: ActionType.REMOVE_NOTIFICATION,
+      payload: "info",
+    });
+    dispatch({
       type: ActionType.ADD_NOTIFICATION,
       payload: {
         notificationModalOpen: true,

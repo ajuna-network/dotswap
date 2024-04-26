@@ -146,6 +146,7 @@ const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<Notif
     payload: {
       id: "liquidity",
       props: {
+        notificationType: ToasterType.PENDING,
         notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
         notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
         notificationPercentage: 30,
@@ -160,6 +161,7 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
     payload: {
       id: "liquidity",
       props: {
+        notificationType: ToasterType.PENDING,
         notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
         notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
         notificationPercentage: 50,
@@ -184,6 +186,7 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       payload: {
         id: "liquidity",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationTitle: title,
           notificationMessage: notification,
           notificationPercentage: percentage,
@@ -194,11 +197,11 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
         },
       },
     });
-    percentage += Math.floor(Math.random() * 5) + 5;
-    if (percentage >= 80) {
+    percentage += Math.floor(Math.random() * 5) + 1;
+    if (percentage >= 94) {
       clearInterval(interval);
     }
-  }, 4000);
+  }, 900);
 };
 
 const handleDispatchError = (
@@ -338,6 +341,7 @@ const handlePoolTransactionResponse = async (
       payload: {
         id: "liquidity",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
           notificationPercentage: 10,
         },
@@ -507,7 +511,8 @@ export const removeLiquidity = async (
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
   tokenBalances: TokenBalanceData,
-  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  navigateToPools: () => void
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -538,6 +543,7 @@ export const removeLiquidity = async (
       if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
         const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
         balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+        navigateToPools();
       }
     })
     .catch((error: any) => {

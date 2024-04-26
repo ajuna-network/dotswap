@@ -13,6 +13,7 @@ import { ToasterType } from "../../../app/types/enum";
 import dotAcpToast from "../../../app/util/toast";
 import { ActionType } from "../../../app/types/enum";
 import { formatNumberEnUs } from "../../../app/util/helper";
+import { toast } from "react-hot-toast";
 
 interface Props {
   id: string;
@@ -62,6 +63,15 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   };
 
   useEffect(() => {
+    if (currentNotification?.notificationModalOpen) {
+      if (currentNotification?.notificationType !== ToasterType.PENDING) {
+        setViewed(true);
+      } else {
+        setViewed(false);
+      }
+      return;
+    }
+
     if (!currentNotification?.notificationModalOpen) {
       if (!currentNotification?.notificationViewed) {
         const toasterMessage = buildToasterMessage();
@@ -73,10 +83,11 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
         switch (currentNotification?.notificationType) {
           case ToasterType.SUCCESS:
-            dotAcpToast.success(toasterMessage ?? "", options, currentNotification?.notificationLink?.href);
+            toast.dismiss(id);
+            dotAcpToast.success(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
             break;
           case ToasterType.PENDING:
-            dotAcpToast.pending(toasterMessage ?? "", undefined, currentNotification?.notificationLink?.href);
+            dotAcpToast.pending(toasterMessage ?? "", { id: id }, currentNotification?.notificationLink?.href);
             setViewed(false);
             break;
           case ToasterType.ERROR:
@@ -89,16 +100,6 @@ const NotificationsModal: FC<Props> = ({ id }) => {
           default:
             break;
         }
-      } else {
-        setViewed(false);
-      }
-    } else {
-      if (!currentNotification?.notificationViewed) {
-        if (currentNotification?.notificationType !== ToasterType.PENDING) {
-          setViewed(true);
-        }
-      } else {
-        setViewed(false);
       }
     }
   }, [
@@ -222,7 +223,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     );
   };
 
-  const renderText = () => {
+  const renderPercentageSpinner = () => {
     if (!currentNotification?.notificationPercentage) return null;
 
     const percentage = currentNotification.notificationPercentage;
@@ -269,7 +270,9 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
       <div className="min-w-modal max-w-full">
         <div className="flex flex-col items-center gap-3 py-10">
-          {currentNotification?.notificationType !== ToasterType.SUCCESS ? renderText() : renderNotificationIcon()}
+          {currentNotification?.notificationType === ToasterType.PENDING
+            ? renderPercentageSpinner()
+            : renderNotificationIcon()}
           {renderNotificationTitle()}
           {renderTransactionDetails()}
           {renderChainDetails()}
