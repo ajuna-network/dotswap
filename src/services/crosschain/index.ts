@@ -10,6 +10,7 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { calculateMaxAmountForCrossIn, calculateMaxAmountForCrossOut } from "../../app/util/helper";
+import { t } from "i18next";
 
 // Relay chain -> Parachain
 export const createCrossOutExtrinsic = async (api: ApiPromise, amount: string, destinationAddress: string) => {
@@ -111,7 +112,7 @@ async function setupCallAndSign(
           id: "crosschain",
           props: {
             notificationType: ToasterType.PENDING,
-            notificationPercentage: 30,
+            notificationPercentage: 10,
             notificationTitle: "Pending",
             notificationMessage: "Transaction is processing. You can close this modal anytime.",
           },
@@ -142,27 +143,81 @@ async function sendTransaction(
   dispatch: Dispatch<CrosschainAction | NotificationAction>,
   subScanURL: string
 ) {
-  let percentage = 50;
-  const interval = setInterval(() => {
-    dispatch({
-      type: ActionType.UPDATE_NOTIFICATION,
-      payload: {
-        id: "crosschain",
-        props: {
-          notificationType: ToasterType.PENDING,
-          notificationPercentage: percentage,
-          notificationTitle: "Pending",
-          notificationMessage: "Transaction is processing. You can close this modal anytime.",
-        },
-      },
-    });
-    percentage += Math.floor(Math.random() * 5) + 5;
-    if (percentage >= 80) {
-      clearInterval(interval);
-    }
-  }, 4000);
   return new Promise((resolve, reject) => {
+    let percentage = 60;
+    let interval: NodeJS.Timeout;
     extrinsic.send(({ status, dispatchError, txHash }) => {
+      if (status.isReady) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 15,
+              notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+              notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+            },
+          },
+        });
+      }
+
+      if (status.isBroadcast) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 30,
+              notificationTitle: t("modal.notifications.transactionBroadcastedTitle"),
+              notificationMessage: t("modal.notifications.transactionBroadcastedNotification"),
+            },
+          },
+        });
+      }
+      if (status.isInBlock) {
+        dispatch({
+          type: ActionType.UPDATE_NOTIFICATION,
+          payload: {
+            id: "crosschain",
+            props: {
+              notificationType: ToasterType.PENDING,
+              notificationPercentage: 45,
+              notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+              notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
+              notificationLink: {
+                text: t("modal.notifications.viewInBlockExplorer"),
+                href: `${subScanURL}/extrinsic/${txHash.toString()}`,
+              },
+            },
+          },
+        });
+
+        interval = setInterval(() => {
+          dispatch({
+            type: ActionType.UPDATE_NOTIFICATION,
+            payload: {
+              id: "crosschain",
+              props: {
+                notificationType: ToasterType.PENDING,
+                notificationPercentage: percentage,
+                notificationTitle: t("modal.notifications.transactionIsProcessingTitleBelow70"),
+                notificationMessage: t("modal.notifications.isProcessingAbove70"),
+                notificationLink: {
+                  text: t("modal.notifications.viewInBlockExplorer"),
+                  href: `${subScanURL}/extrinsic/${txHash.toString()}`,
+                },
+              },
+            },
+          });
+          percentage += Math.floor(Math.random() * 5) + 5;
+          if (percentage >= 85) {
+            clearInterval(interval);
+          }
+        }, 4000);
+      }
+
       if (status.isFinalized) {
         clearInterval(interval);
         if (dispatchError) {
@@ -180,10 +235,10 @@ async function sendTransaction(
               props: {
                 notificationType: ToasterType.SUCCESS,
                 notificationPercentage: 100,
-                notificationTitle: "Success",
+                notificationTitle: t("modal.notifications.crosschainSuccess"),
                 notificationMessage: null,
                 notificationLink: {
-                  text: "View in block explorer",
+                  text: t("modal.notifications.viewInBlockExplorer"),
                   href: `${subScanURL}/extrinsic/${txHash.toString()}`,
                 },
               },

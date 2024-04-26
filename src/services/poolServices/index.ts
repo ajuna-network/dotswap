@@ -137,20 +137,68 @@ const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) =>
   return { firstArg, secondArg };
 };
 
+const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  if (response.isInBlock || response.isFinalized) {
+    return;
+  }
+  dispatch({
+    type: ActionType.UPDATE_NOTIFICATION,
+    payload: {
+      id: "liquidity",
+      props: {
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+        notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+        notificationPercentage: 30,
+      },
+    },
+  });
+};
+
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
   dispatch({
     type: ActionType.UPDATE_NOTIFICATION,
     payload: {
       id: "liquidity",
       props: {
-        notificationMessage: null,
+        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+        notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
+        notificationPercentage: 50,
         notificationLink: {
-          text: "Transaction included in block",
+          text: t("modal.notifications.includedInBlock"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
         },
       },
     },
   });
+
+  let percentage = 60;
+  const interval = setInterval(() => {
+    const notification =
+      percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
+    const title =
+      percentage <= 70
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        : t("modal.notifications.transactionIsProcessingTitleAbove70");
+    dispatch({
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationTitle: title,
+          notificationMessage: notification,
+          notificationPercentage: percentage,
+          notificationLink: {
+            text: t("modal.notifications.viewInBlockExplorer"),
+            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+          },
+        },
+      },
+    });
+    percentage += Math.floor(Math.random() * 5) + 5;
+    if (percentage >= 80) {
+      clearInterval(interval);
+    }
+  }, 4000);
 };
 
 const handleDispatchError = (
@@ -214,7 +262,7 @@ const handleSuccessfulPool = (
       props: {
         notificationType: ToasterType.SUCCESS,
         notificationPercentage: 100,
-        notificationTitle: t("modal.notifications.success"),
+        notificationTitle: t("modal.notifications.poolsSuccess"),
         notificationMessage: null,
         notificationLink: {
           text: t("modal.notifications.viewInBlockExplorer"),
@@ -291,12 +339,14 @@ const handlePoolTransactionResponse = async (
         id: "liquidity",
         props: {
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
-          notificationPercentage: 15,
+          notificationPercentage: 10,
         },
       },
     });
   }
-  if (response.status.isInBlock) {
+  if (response.status.isBroadcast) {
+    handleInBroadcast(response, dispatch);
+  } else if (response.status.isInBlock) {
     handleInBlockResponse(response, dispatch);
   } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
     handleFinalizedResponse(response, api, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);

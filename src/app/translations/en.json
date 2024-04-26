@@ -75,6 +75,8 @@
     "notifications": {
       "success": "Success",
       "swapSuccess": "Success! YEAH BABY, YEAH!",
+      "crosschainSuccess": "Success! YEAH BABY, YEAH!",
+      "poolsSuccess": "Success! YEAH BABY, YEAH!",
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
