@@ -100,7 +100,7 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
     <div
       ref={wrapperRef}
       className={classNames(
-        "relative flex flex-col items-center justify-start gap-2 rounded-lg border bg-purple-100 px-4 py-6",
+        "relative flex flex-col items-center justify-start rounded-lg border bg-purple-100 px-4 py-6 dark:mb-5 dark:rounded-[2px] dark:outline dark:outline-8 dark:outline-black",
         {
           "border-pink": isFocused,
           "border-transparent": !isFocused,
@@ -108,7 +108,10 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
       )}
     >
       <div className="flex w-full">
-        <label htmlFor={formId} className="absolute top-4 text-small font-normal text-gray-200">
+        <label
+          htmlFor={formId}
+          className="absolute top-4 text-small font-normal text-gray-200 dark:font-open-sans dark:font-black dark:uppercase dark:text-black"
+        >
           {labelText}
         </label>
         <NumericFormat
@@ -169,8 +172,8 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
         {inputValueUsd !== "" ? (
           <span className="text-[13px] tracking-[0.2px] text-black text-opacity-50">{inputValueUsd}</span>
         ) : null}
-        <div className="flex flex-1 justify-end pr-1 text-medium text-gray-200">
-          Balance: {formatNumberEnUs(Number(formattedTokenBalance), Number(tokenDecimals)) || 0}
+        <div className="flex flex-1 justify-end pr-1 text-medium text-gray-200 dark:font-extrabold">
+          {t("swapPage.balance")} {formatNumberEnUs(Number(formattedTokenBalance), Number(tokenDecimals)) || 0}
           {showUSDValue ? (
             tokenPriceUSD && spotPriceLoaded ? (
               <span>&nbsp;(${formatNumberEnUs(Number(tokenPriceUSD))})</span>

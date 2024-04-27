@@ -60,7 +60,7 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
   };
 
   return (
-    <div className="col-span-1 flex h-full flex-col justify-between gap-8 rounded-2xl bg-gradient-to-b from-white from-[55%] to-purple-50 to-[45%] p-6">
+    <div className="col-span-1 flex h-full flex-col justify-between gap-8 rounded-2xl bg-gradient-to-b from-white from-[55%] to-purple-50 to-[45%] p-6 dark:gap-3 dark:rounded-[2px] dark:border-[6px] dark:border-black dark:bg-[#FFFFFFCC] dark:bg-none">
       <div className="flex gap-2">
         <div className="relative flex basis-2/5 flex-col font-unbounded-variable">
           <div className="relative flex">

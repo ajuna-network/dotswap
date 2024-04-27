@@ -114,7 +114,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     if (!currentNotification?.notificationTitle) return null;
 
     return (
-      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em]">
+      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em] dark:font-omnes-bold dark:text-heading-4">
         {currentNotification?.notificationTitle}
       </div>
     );
@@ -197,7 +197,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   return (
     <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
       <div className="min-w-modal max-w-full">
-        <div className="flex flex-col items-center gap-3 py-10">
+        <div className="flex flex-col items-center gap-3 py-10 dark:font-open-sans">
           {renderNotificationIcon()}
           {renderNotificationTitle()}
           {renderTransactionDetails()}

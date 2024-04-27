@@ -44,7 +44,8 @@ const SlippageControl: FC<SlippageControlProps> = ({
         {customIcon || <CustomSlippageIcon />}
       </button>
       {showSlippage && (
-        <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300">
+        //   dark:outline dark:outline-8 dark:outline-black
+        <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300 font-open-sans">
           <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6">
             <div className="flex w-full justify-between text-medium font-normal text-gray-200">
               <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>

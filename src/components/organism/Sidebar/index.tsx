@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { NavLink, useLocation } from "react-router-dom";
 import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, SUPPORT_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
 import DotSwapLogo from "../../../assets/img/dot-swap-logo.svg?react";
+import DedSwapLogo from "../../../assets/img/ded-bird-logo.png";
 import CrossChainIcon from "../../../assets/img/cross-chain-icon.svg?react";
 import DashboardIcon from "../../../assets/img/dashboard-icon.svg?react";
 import SwapIcon from "../../../assets/img/swap-icon.svg?react";
@@ -15,18 +16,21 @@ const Sidebar = () => {
 
   return (
     <div className="shrink-1 sticky top-8 flex max-h-[calc(100vh-64px)] w-full max-w-[194px] flex-col gap-6">
-      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 ">
-        <div className="mb-12 pl-4">
+      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dark:bg-black">
+        <div className="mb-12 pl-4 dark:hidden">
           <DotSwapLogo />
         </div>
-        <div className="flex h-full w-full flex-col justify-between text-dark-300">
+        <div className="hidden w-full justify-center dark:flex">
+          <img src={DedSwapLogo} alt="Dedswap Logo" className="w-24" />
+        </div>
+        <div className="flex h-full w-full flex-col justify-between text-dark-300 dark:text-white">
           <div>
             <NavLink
               to={DASHBOARD_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
                     location.pathname.includes(DASHBOARD_ROUTE),
                 }
               )}
@@ -37,9 +41,10 @@ const Sidebar = () => {
             <NavLink
               to={SWAP_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SWAP_ROUTE),
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
+                    location.pathname.includes(SWAP_ROUTE),
                 }
               )}
             >
@@ -49,9 +54,9 @@ const Sidebar = () => {
             <NavLink
               to={CROSS_CHAIN_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
                     location.pathname.includes(CROSS_CHAIN_ROUTE),
                 }
               )}
@@ -63,7 +68,7 @@ const Sidebar = () => {
           <NavLink
             to={SUPPORT_ROUTE}
             className={classNames(
-              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
               {
                 "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SUPPORT_ROUTE),
               }
