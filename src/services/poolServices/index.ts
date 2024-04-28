@@ -7,14 +7,14 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { formatDecimalsFromToken } from "../../app/util/helper";
+import { formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
 import { PoolAction } from "../../store/pools/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
-import { convertMicroKSMToKSM } from "../swapServices";
+import { convertMicroDOTToDOT } from "../swapServices";
 import { NotificationAction } from "../../store/notifications/interface";
 import { TokenBalanceData } from "../../app/types/index";
 import { setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
@@ -67,11 +67,18 @@ const exactWithdrawnLiquidityFromPool = (
   return { nativeTokenOut, assetTokenOut };
 };
 
-export const getAllPools = async (api: ApiPromise) => {
+export const getAllPools = async (api: ApiPromise, dispatch: Dispatch<PoolAction>) => {
+  const isApiReady = await isApiAvailable(api);
+  if (!isApiReady) {
+    dotAcpToast.error(t("error.api.notReady"));
+    return;
+  }
   try {
     const pools = await api.query.assetConversion.pools.entries();
-
-    return pools.map(([key, value]) => [key.args?.[0].toHuman(), value.toHuman()]);
+    if (!pools) return [];
+    const poolsArray = pools.map(([key, value]) => [key.args?.[0].toHuman(), value.toHuman()]);
+    dispatch({ type: ActionType.SET_POOLS, payload: poolsArray });
+    return poolsArray;
   } catch (error) {
     dotAcpToast.error(`Error getting pools: ${error}`);
   }
@@ -130,20 +137,71 @@ const prepareMultiLocationArguments = (api: ApiPromise, assetTokenId: string) =>
   return { firstArg, secondArg };
 };
 
+const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
+  if (response.isInBlock || response.isFinalized) {
+    return;
+  }
+  dispatch({
+    type: ActionType.UPDATE_NOTIFICATION,
+    payload: {
+      id: "liquidity",
+      props: {
+        notificationType: ToasterType.PENDING,
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+        notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+        notificationPercentage: 30,
+      },
+    },
+  });
+};
+
 const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<NotificationAction>) => {
   dispatch({
     type: ActionType.UPDATE_NOTIFICATION,
     payload: {
       id: "liquidity",
       props: {
-        notificationMessage: null,
+        notificationType: ToasterType.PENDING,
+        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+        notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
+        notificationPercentage: 50,
         notificationLink: {
-          text: "Transaction included in block",
+          text: t("modal.notifications.includedInBlock"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
         },
       },
     },
   });
+
+  let percentage = 60;
+  const interval = setInterval(() => {
+    const notification =
+      percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
+    const title =
+      percentage <= 70
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        : t("modal.notifications.transactionIsProcessingTitleAbove70");
+    dispatch({
+      type: ActionType.UPDATE_NOTIFICATION,
+      payload: {
+        id: "liquidity",
+        props: {
+          notificationType: ToasterType.PENDING,
+          notificationTitle: title,
+          notificationMessage: notification,
+          notificationPercentage: percentage,
+          notificationLink: {
+            text: t("modal.notifications.viewInBlockExplorer"),
+            href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asInBlock.toString()}`,
+          },
+        },
+      },
+    });
+    percentage += Math.floor(Math.random() * 5) + 1;
+    if (percentage >= 94) {
+      clearInterval(interval);
+    }
+  }, 900);
 };
 
 const handleDispatchError = (
@@ -159,10 +217,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: `${docs.join(" ")}`,
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -177,10 +236,11 @@ const handleDispatchError = (
         id: "liquidity",
         props: {
           notificationType: ToasterType.ERROR,
+          notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
           notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
           notificationLink: {
-            text: "View in block explorer",
+            text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
           },
         },
@@ -188,6 +248,7 @@ const handleDispatchError = (
     });
   }
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+  dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
 };
 
 const handleSuccessfulPool = (
@@ -203,10 +264,11 @@ const handleSuccessfulPool = (
       id: "liquidity",
       props: {
         notificationType: ToasterType.SUCCESS,
-        notificationTitle: t("modal.notifications.success"),
+        notificationPercentage: 100,
+        notificationTitle: t("modal.notifications.poolsSuccess"),
         notificationMessage: null,
         notificationLink: {
-          text: "View in block explorer",
+          text: t("modal.notifications.viewInBlockExplorer"),
           href: `${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${response.status.asFinalized.toString()}`,
         },
       },
@@ -246,6 +308,7 @@ const handleSuccessfulPool = (
 
   dispatch({ type: ActionType.SET_BLOCK_HASH_FINALIZED, payload: response.status.asFinalized.toString() });
   dispatch({ type: ActionType.SET_ADD_LIQUIDITY_LOADING, payload: false });
+  dispatch({ type: ActionType.SET_WITHDRAW_LIQUIDITY_LOADING, payload: false });
 };
 
 const handleFinalizedResponse = (
@@ -278,18 +341,21 @@ const handlePoolTransactionResponse = async (
       payload: {
         id: "liquidity",
         props: {
+          notificationType: ToasterType.PENDING,
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
+          notificationPercentage: 10,
         },
       },
     });
   }
-  if (response.status.isInBlock) {
+  if (response.status.isBroadcast) {
+    handleInBroadcast(response, dispatch);
+  } else if (response.status.isInBlock) {
     handleInBlockResponse(response, dispatch);
   } else if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
     handleFinalizedResponse(response, api, nativeTokenDecimals, assetTokenDecimals, dispatch, poolType);
-    const allPools = await getAllPools(api);
+    const allPools = await getAllPools(api, dispatch);
     if (allPools) {
-      dispatch({ type: ActionType.SET_POOLS, payload: allPools });
       await createPoolCardsArray(api, dispatch, allPools, account);
     }
   }
@@ -392,11 +458,11 @@ export const addLiquidity = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
 
   const wallet = getWalletBySource(account.wallet?.extensionName);
@@ -421,9 +487,10 @@ export const addLiquidity = async (
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -444,7 +511,8 @@ export const removeLiquidity = async (
   nativeTokenDecimals: string,
   assetTokenDecimals: string,
   tokenBalances: TokenBalanceData,
-  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>
+  dispatch: Dispatch<PoolAction | WalletAction | NotificationAction>,
+  navigateToPools: () => void
 ) => {
   const { firstArg, secondArg } = prepareMultiLocationArguments(api, assetTokenId);
 
@@ -475,15 +543,17 @@ export const removeLiquidity = async (
       if (response.status.type === ServiceResponseStatus.Finalized && response.status.isFinalized) {
         const balances = await setTokenBalanceUpdate(api, account.address, assetTokenId, tokenBalances);
         balances && dispatch({ type: ActionType.SET_TOKEN_BALANCES, payload: balances });
+        navigateToPools();
       }
     })
     .catch((error: any) => {
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
-          id: "swap",
+          id: "liquidity",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -505,15 +575,15 @@ export const checkCreatePoolGasFee = async (
   const result = api.tx.assetConversion.createPool(firstArg, secondArg);
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
 
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_POOL_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 
@@ -539,21 +609,21 @@ export const checkAddPoolLiquidityGasFee = async (
     account.address
   );
   const { partialFee } = await result.paymentInfo(account.address);
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 
-export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
+export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise, dispatch: Dispatch<PoolAction>) => {
   const poolsTokenData = [];
 
-  const pools = await getAllPools(api);
+  const pools = await getAllPools(api, dispatch);
   if (pools) {
     const poolsAssetTokenIds = pools?.map((pool: any) => {
       if (pool?.[0]?.[1].interior?.X2) {
@@ -580,6 +650,7 @@ export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise) => {
     }
   }
 
+  dispatch({ type: ActionType.SET_POOLS_TOKEN_METADATA, payload: poolsTokenData });
   return poolsTokenData;
 };
 
@@ -605,14 +676,14 @@ export const checkWithdrawPoolLiquidityGasFee = async (
 
   const { partialFee } = await result.paymentInfo(account.address);
 
-  const ksmFeeString = convertMicroKSMToKSM(partialFee.toHuman());
+  const dotFeeString = convertMicroDOTToDOT(partialFee.toHuman());
   dispatch({
     type: ActionType.SET_TRANSFER_GAS_FEES_MESSAGE,
-    payload: `transaction will have a weight of ${ksmFeeString} fees`,
+    payload: `transaction will have a weight of ${dotFeeString} fees`,
   });
   dispatch({
     type: ActionType.SET_ADD_LIQUIDITY_GAS_FEE,
-    payload: ksmFeeString,
+    payload: dotFeeString,
   });
 };
 

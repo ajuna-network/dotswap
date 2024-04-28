@@ -70,6 +70,8 @@ export enum ActionType {
   UPDATE_NOTIFICATION = "UPDATE_NOTIFICATION",
   REMOVE_NOTIFICATION = "REMOVE_NOTIFICATION",
   SET_NOTIFICATION_MODAL_OPEN = "SET_NOTIFICATION_MODAL_OPEN",
+  SET_NOTIFICATION_VIEWED = "SET_NOTIFICATION_VIEWED",
+  SET_NOTIFICATION_PERCENTAGE = "SET_NOTIFICATION_PERCENTAGE",
   SET_NOTIFICATION_TYPE = "SET_NOTIFICATION_TYPE",
   SET_NOTIFICATION_ACTION = "SET_NOTIFICATION_ACTION",
   SET_NOTIFICATION_TITLE = "SET_NOTIFICATION_TITLE",
@@ -121,6 +123,7 @@ export enum NetworkKeys {
   Westend = "westend",
   Rococo = "rococo",
   Kusama = "kusama",
+  Polkadot = "polkadot",
 }
 
 export enum WalletConnectSteps {
@@ -148,4 +151,5 @@ export enum ToasterType {
   SUCCESS = "success",
   ERROR = "error",
   PENDING = "pending",
+  INFO = "info",
 }

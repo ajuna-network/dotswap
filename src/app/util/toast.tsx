@@ -6,6 +6,7 @@ interface DotAcpToast {
   success: (message: string, options?: ToastOptions, blockExplorerLink?: string) => void;
   error: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
   pending: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
+  info: (message: string, options?: ToastOptions, blockExplorerLink?: string | null) => void;
 }
 
 const dotAcpToast: DotAcpToast = {
@@ -15,7 +16,7 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.SUCCESS}
           blockExplorerLink={blockExplorerLink}
@@ -30,7 +31,7 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.PENDING}
           blockExplorerLink={blockExplorerLink}
@@ -45,9 +46,24 @@ const dotAcpToast: DotAcpToast = {
         <Toaster
           description={message}
           close={() => {
-            toast.remove(t.id);
+            toast.dismiss(t.id);
           }}
           type={ToasterType.ERROR}
+          blockExplorerLink={blockExplorerLink}
+        />
+      ),
+      options
+    );
+  },
+  info: (message, options, blockExplorerLink) => {
+    toast.custom(
+      (t) => (
+        <Toaster
+          description={message}
+          close={() => {
+            toast.dismiss(t.id);
+          }}
+          type={ToasterType.INFO}
           blockExplorerLink={blockExplorerLink}
         />
       ),

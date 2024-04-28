@@ -9,19 +9,19 @@ export const initialCrosschainState: CrosschainState = {
   crosschainExactTokenAmount: "",
   crosschainSelectedChain: {
     chainA: {
-      chainName: "Kusama",
+      chainName: "Polkadot",
       chainType: "Relay Chain",
     },
     chainB: {
-      chainName: "Kusama",
+      chainName: "Polkadot",
       chainType: "Asset Hub",
     },
   },
   crosschainDestinationWalletAddress: "",
   crosschainExtrinsic: null,
   messageQueueProcessedFee: {
-    crossIn: "0.000007890210",
-    crossOut: "0.000007890210",
+    crossIn: "0.0007890210",
+    crossOut: "0.003593",
   },
 };
 

@@ -1,6 +1,6 @@
 {
   "seo": {
-    "dotAcp": "DOT ACP",
+    "dotAcp": "DOTswap",
     "og": {
       "title": "OG Title",
       "description": "OG description",
@@ -14,17 +14,17 @@
       "image": "https://example.com/twitter-image.jpg"
     },
     "global": {
-      "title": "DOT ACP App",
-      "description": "DOT ACP App description",
+      "title": "DOTswap",
+      "description": "DOTswap App description",
       "keywords": "keyword1, keyword2, keyword3"
     },
     "pools": {
       "title": "Pools",
-      "description": "DOT ACP Pools Page description"
+      "description": "DOTswap Pools Page description"
     },
     "swap": {
       "title": "Swap",
-      "description": "DOT ACP Swap Details Page description"
+      "description": "DOTswap Swap Details Page description"
     }
   },
   "button": {
@@ -60,6 +60,7 @@
     "viewInBlockExplorer": "View in block explorer",
     "success": "Success",
     "pending": "Pending",
+    "info": "Info",
     "errorConnecting": "Error connecting:"
   },
   "modal": {
@@ -73,13 +74,29 @@
     "added": "added",
     "notifications": {
       "success": "Success",
+      "swapSuccess": "Success! YEAH BABY, YEAH!",
+      "crosschainSuccess": "Success! YEAH BABY, YEAH!",
+      "poolsSuccess": "Success! YEAH BABY, YEAH!",
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
+      "transactionInitiatedTitle": "Warming up DOTSwap just for you",
       "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates.",
+      "transactionBroadcastedTitle": "Warming up DOTSwap just for you",
+      "transactionBroadcastedNotification": "Transaction broadcasted. Waiting for confirmation.",
+      "transactionIncludedInBlockTitle": "DOTSwap rocking and rolling",
+      "transactionIncludedInBlockNotification": "Transaction included in block. Waiting for confirmation.",
+      "transactionIsProcessingTitle": "DOTSwap accepted your swap!",
+      "transactionIsProcessingTitleBelow70": "DOTSwap getting you the best deal",
+      "transactionIsProcessingTitleAbove70": "Almost done... just finalizing the last things.",
+      "transactionIsProcessingNotification": "Transaction is processing. You can close this window anytime.",
+      "isProcessingBelow70": "Almost there! Your transaction is being processed.",
+      "isProcessingAbove70": "Your transaction is almost complete. Hang tight!",
       "addLiquidity": "Adding Liquidity",
       "removeLiquidity": "Removing Liquidity",
-      "proceed": "Proceed in your wallet"
+      "proceed": "Proceed in your wallet",
+      "viewInBlockExplorer": "View in block explorer",
+      "includedInBlock": "Transaction included in block"
     },
     "swap": {
       "swapped": "Swapped",
@@ -184,7 +201,7 @@
   "dashboardPage": {
     "dashboard": "Dashboard",
     "myTotalAssets": "My Total Assets",
-    "totalAssetsTooltip": "Total balance is calculated based on USD price of KSM, GUPPY, USDT.",
+    "totalAssetsTooltip": "Total balance is calculated based on USD price of DOT, DED, USDt, USDC, PINK.",
     "price": "Price",
     "tokenPriceTooltip": "Latest price fetched from CoinStats.",
     "loadingAssets": "Loading...",
@@ -253,14 +270,28 @@
   },
   "mobilePage": {
     "title": "Coming soon to mobile! Stay tuned for updates.",
-    "subtitle": "This experience is currently optimized for desktop browsers. For the best experience, please visit us on your computer."
+    "subtitle": "This experience is currently optimized for desktop browsers. For the best experience, please visit us on your computer.",
+    "responsiveTitle": "Responsive Design",
+    "responsiveSubtitle": "This experience is optimized for desktop browsers. For the best experience, please visit us on your computer."
   },
   "offlinePage": {
     "title": "Whoops!",
     "subtitle": "No internet connection was found. Check your connection or try again."
   },
+  "tooltip": {
+    "swapPending": "Swap transaction is pending",
+    "crosschainPending": "Crosschain transaction is pending"
+  },
   "footer": {
     "poweredBy": "Powered by",
     "company": "MVP Workshop"
+  },
+  "error": {
+    "api": {
+      "notReady": "Please reconnect your wallet."
+    },
+    "wallet": {
+      "notSupported": "Wallet account is not supported"
+    }
   }
 }

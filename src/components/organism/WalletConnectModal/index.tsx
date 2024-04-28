@@ -17,6 +17,7 @@ interface WalletConnectModalProps {
   walletAccounts: WalletAccount[];
   setModalStep: (step: ModalStepProps) => void;
   handleConnect: (account: WalletAccount) => void;
+  handleWalletInstall: (wallet: Wallet) => void;
   onClose: () => void;
   setWalletConnectOpen: (isOpen: boolean) => void;
   onBack?: () => void | undefined;
@@ -32,6 +33,7 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
   onBack,
   setModalStep,
   handleConnect,
+  handleWalletInstall,
 }) => {
   const { dispatch } = useAppContext();
   const { t } = useTranslation();
@@ -57,17 +59,27 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                       <Button
                         className="btn-secondary-white"
                         onClick={async () => {
-                          await wallet?.enable("DOT-ACP");
-                          const accounts: WalletAccount[] = await wallet?.getAccounts();
-                          handleContinueClick(accounts);
+                          try {
+                            await wallet?.enable("DOTswap");
+                            await wallet?.getAccounts().then((accounts) => {
+                              handleContinueClick(accounts);
+                            });
+                          } catch (error) {
+                            console.error(error);
+                          }
                         }}
                       >
                         {t("button.continue")}
                       </Button>
                     ) : (
-                      <a href={wallet?.installUrl} target="blank">
+                      <Button
+                        className="btn-secondary-white"
+                        onClick={() => {
+                          handleWalletInstall(wallet);
+                        }}
+                      >
                         {t("button.install")}
-                      </a>
+                      </Button>
                     )}
                   </div>
                 </div>

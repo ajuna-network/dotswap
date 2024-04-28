@@ -27,7 +27,7 @@ import SwitchArrowRounded from "../../../assets/img/switch-arrow-rounded.svg?rea
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 import { LottieMedium } from "../../../assets/loader";
-import { createPoolCardsArray, getPoolReserves } from "../../../services/poolServices";
+import { getPoolReserves } from "../../../services/poolServices";
 import {
   checkSwapAssetForAssetGasFee,
   checkSwapNativeForAssetGasFee,
@@ -52,7 +52,8 @@ import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
+import dotAcpToast from "../../../app/util/toast";
 
 type SwapTokenProps = {
   tokenA: TokenProps;
@@ -69,9 +70,11 @@ type TokenSelectedProps = {
 
 type SwapTokensProps = {
   tokenId?: string;
+  from?: string;
+  to?: string;
 };
 
-const SwapTokens = ({ tokenId }: SwapTokensProps) => {
+const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
   const { state, dispatch } = useAppContext();
   const { nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
@@ -116,7 +119,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
     tokenValue: "0",
   });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(1);
   const [walletHasEnoughNativeToken, setWalletHasEnoughNativeToken] = useState<boolean>(false);
   const [availablePoolTokenA, setAvailablePoolTokenA] = useState<TokenProps[]>([]);
   const [availablePoolTokenB, setAvailablePoolTokenB] = useState<TokenProps[]>([]);
@@ -160,14 +163,6 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
 
   const tokenADecimal = new Decimal(selectedTokenAValue.tokenValue || 0);
   const tokenBDecimal = new Decimal(selectedTokenBValue.tokenValue || 0);
-
-  useEffect(() => {
-    const updatePoolsCards = async () => {
-      if (api && pools.length) await createPoolCardsArray(api, dispatch, pools, selectedAccount);
-    };
-
-    updatePoolsCards().then();
-  }, [pools, selectedAccount, tokenBalances]);
 
   const handleSwapGasFee = async (isNativeAssetSwap: boolean) => {
     if (!api) return;
@@ -528,15 +523,20 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   ]);
 
   const getSwapTokenA = async () => {
-    if (api) {
-      const tokens = tokenBalances?.assets?.filter((item: any) => whitelist.includes(item.tokenId)) || [];
-
-      const assetTokens = [nativeToken]
-        .concat(tokens)
-        ?.filter((item: any) => item.tokenId !== selectedTokens.tokenB?.tokenId);
-
-      setAvailablePoolTokenA(assetTokens as any);
+    const poolLiquidTokens: any = [nativeToken]
+      .concat(poolsTokenMetadata as any)
+      ?.filter((item: any) => item.tokenId !== selectedTokens.tokenB?.tokenId && whitelist.includes(item.tokenId));
+    if (tokenBalances !== null) {
+      for (const item of poolLiquidTokens) {
+        for (const walletAsset of tokenBalances.assets) {
+          if (item.tokenId === walletAsset.tokenId) {
+            item.tokenAsset.balance = walletAsset.tokenAsset.balance;
+          }
+        }
+      }
+      setAvailablePoolTokenA(poolLiquidTokens);
     }
+    return poolLiquidTokens;
   };
 
   const getSwapTokenB = () => {
@@ -557,6 +557,11 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   };
 
   const handleSwap = async () => {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     setReviewModalOpen(false);
     waitingForTransaction && clearTimeout(waitingForTransaction);
     setSwapSuccessfulReset(false);
@@ -571,9 +576,10 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
       payload: {
         id: "swap",
         notificationModalOpen: true,
+        notificationPercentage: 0,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
-        notificationTitle: "Swap",
+        notificationTitle: "Warming up DOTSwap just for you",
         notificationMessage: "Proceed in your wallet",
         notificationChainDetails: null,
         notificationTransactionDetails: {
@@ -654,6 +660,7 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
           id: "swap",
           props: {
             notificationType: ToasterType.ERROR,
+            notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
             notificationMessage: `Transaction failed: ${error}`,
           },
@@ -1325,45 +1332,100 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
   ]);
 
   useEffect(() => {
-    if (!tokenId || assetLoading || !tokenBalances) return;
+    if (!window.location.href.includes("swap")) return;
+    const url = new URL(window.location.href);
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
 
-    if (tokenId === "0") {
-      // set native token
-      setSelectedTokens((prev) => {
-        return {
-          ...prev,
-          tokenA: {
-            tokenSymbol: tokenBalances.tokenSymbol,
-            tokenId: "",
-            decimals: tokenBalances.tokenDecimals,
-            tokenBalance: tokenBalances.balanceAsset.free.toString(),
-          },
-        };
-      });
+    if (selectedTokens.tokenA.tokenSymbol && selectedTokens.tokenA.tokenSymbol !== from) {
+      url.searchParams.set("from", selectedTokens.tokenA.tokenSymbol);
+      history.replaceState(null, "", url.toString());
+    }
+    if (selectedTokens.tokenB.tokenSymbol && selectedTokens.tokenB.tokenSymbol !== to) {
+      url.searchParams.set("to", selectedTokens.tokenB.tokenSymbol);
+      history.replaceState(null, "", url.toString());
+    }
+  }, [selectedTokens.tokenA.tokenSymbol, selectedTokens.tokenB.tokenSymbol]);
 
-      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+  const [urlTokens, setUrlTokens] = useState<{ from: string; to: string }>({ from: "", to: "" });
+
+  useEffect(() => {
+    if (!tokenBalances || !Object.keys(tokenBalances).length || assetLoading) {
+      if (from && from !== "") {
+        setUrlTokens((prev) => {
+          return {
+            ...prev,
+            from: from,
+          };
+        });
+      }
+
+      if (to && to !== "") {
+        setUrlTokens((prev) => {
+          return {
+            ...prev,
+            to: to,
+          };
+        });
+      }
 
       return;
     }
-    const token = tokenBalances.assets.find((item: any) => item.tokenId === tokenId);
 
-    if (token) {
-      // set selected token
+    const getTokenData = (tokenSymbol: string, tokenPosition: TokenPosition) => {
+      const token =
+        tokenSymbol === nativeTokenSymbol
+          ? nativeToken
+          : tokenBalances.assets.find((item: any) => item.assetTokenMetadata.symbol === tokenSymbol);
+
+      if (!token) return;
+
+      const tokenData = {
+        tokenSymbol: token.assetTokenMetadata.symbol || "",
+        tokenId: token.tokenId || "",
+        decimals: token.assetTokenMetadata.decimals || "",
+        tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, "") || "",
+      };
+
       setSelectedTokens((prev) => {
         return {
           ...prev,
-          tokenA: {
-            tokenSymbol: token.assetTokenMetadata.symbol,
-            tokenId: token.tokenId,
-            decimals: token.assetTokenMetadata.decimals,
-            tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, ""),
-          },
+          [tokenPosition === TokenPosition.tokenA ? "tokenA" : "tokenB"]: tokenData,
         };
       });
+      setTokenSelected({ tokenSelected: tokenPosition });
+    };
 
-      setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+    if (from && from !== "") {
+      getTokenData(from, TokenPosition.tokenA);
     }
-  }, [tokenId, assetLoading, tokenBalances]);
+
+    if (to && to !== "") {
+      getTokenData(to, TokenPosition.tokenB);
+    }
+
+    if (!tokenId) return;
+    if (tokenId === "0") {
+      getTokenData(nativeTokenSymbol, TokenPosition.tokenA);
+    } else {
+      const token = tokenBalances.assets.find((item: any) => item.tokenId === tokenId);
+      if (token) {
+        setSelectedTokens((prev) => {
+          return {
+            ...prev,
+            tokenA: {
+              tokenSymbol: token.assetTokenMetadata.symbol,
+              tokenId: token.tokenId,
+              decimals: token.assetTokenMetadata.decimals,
+              tokenBalance: token.tokenAsset.balance?.replace(/[, ]/g, ""),
+            },
+          };
+        });
+
+        setTokenSelected({ tokenSelected: TokenPosition.tokenA });
+      }
+    }
+  }, [tokenBalances, from, to, tokenId, nativeTokenSymbol, assetLoading]);
 
   useEffect(() => {
     if (!tokenBalances) return;
@@ -1453,14 +1515,20 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         </div>
         <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50 dark:hidden" />
         <TokenAmountInput
-          tokenText={selectedTokens.tokenA?.tokenSymbol}
+          tokenText={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
           showUSDValue={selectedTokens.tokenA?.tokenBalance !== undefined && selectedTokens.tokenA?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenA.tokenId !== "" ? assetTokenASpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenA?.tokenId}
           tokenDecimals={selectedTokens.tokenA?.decimals}
           labelText={t("tokenAmountInput.youPay")}
-          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenA?.tokenSymbol} width={"24px"} height={"24px"} />}
+          tokenIcon={
+            <TokenIcon
+              tokenSymbol={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
+              width={"24px"}
+              height={"24px"}
+            />
+          }
           tokenValue={selectedTokenAValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenA)}
           onSetTokenValue={(value) => tokenAValue(value)}
@@ -1471,14 +1539,20 @@ const SwapTokens = ({ tokenId }: SwapTokensProps) => {
         />
 
         <TokenAmountInput
-          tokenText={selectedTokens.tokenB?.tokenSymbol}
+          tokenText={selectedTokens.tokenB?.tokenSymbol || urlTokens.to}
           tokenBalance={selectedTokens.tokenB?.tokenBalance}
           showUSDValue={selectedTokens.tokenB?.tokenBalance !== undefined && selectedTokens.tokenB?.tokenBalance !== ""}
           spotPrice={selectedTokens.tokenB.tokenId !== "" ? assetTokenBSpotPrice : tokenBalances?.spotPrice}
           tokenId={selectedTokens.tokenB?.tokenId}
           tokenDecimals={selectedTokens.tokenB?.decimals}
           labelText={t("tokenAmountInput.youReceive")}
-          tokenIcon={<TokenIcon tokenSymbol={selectedTokens.tokenB?.tokenSymbol} width={"24px"} height={"24px"} />}
+          tokenIcon={
+            <TokenIcon
+              tokenSymbol={selectedTokens.tokenB?.tokenSymbol || urlTokens.to}
+              width={"24px"}
+              height={"24px"}
+            />
+          }
           tokenValue={selectedTokenBValue?.tokenValue}
           onClick={() => fillTokenPairsAndOpenModal(TokenSelection.TokenB)}
           onSetTokenValue={(value) => tokenBValue(value)}

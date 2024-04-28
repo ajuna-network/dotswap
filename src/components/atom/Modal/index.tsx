@@ -7,6 +7,7 @@ import classNamesLib from "classnames";
 interface ModalProps {
   isOpen: boolean;
   title?: string;
+  disableOverlayClick?: boolean;
   children: ReactNode;
   onClose: () => void;
   onBack?: () => void | undefined;
@@ -17,13 +18,24 @@ const Modal: FC<ModalProps> = ({
   isOpen,
   children,
   title,
+  disableOverlayClick,
   onClose,
   onBack,
   classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:rounded-sm dark:outline dark:outline-8 dark:outline-black",
 }) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={
+          disableOverlayClick
+            ? () => {
+                null;
+              }
+            : onClose
+        }
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"

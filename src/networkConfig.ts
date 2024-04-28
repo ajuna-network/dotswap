@@ -34,4 +34,12 @@ export const NETWORKS: Record<NetworkKeys, NetworkConfig> = {
     assethubSubscanUrl: "https://assethub-kusama.subscan.io",
     relaySubscanUrl: "https://kusama.subscan.io",
   },
+  [NetworkKeys.Polkadot]: {
+    nativeTokenSymbol: "DOT",
+    rpcUrlRelay: "wss://rpc.polkadot.io/",
+    rpcUrl: "wss://polkadot-asset-hub-rpc.polkadot.io/",
+    parents: 1,
+    assethubSubscanUrl: "https://assethub-polkadot.subscan.io",
+    relaySubscanUrl: "https://polkadot.subscan.io",
+  },
 };

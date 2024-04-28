@@ -17,8 +17,10 @@ import CrosschainReviewTransactionModal from "../CrosschainReviewTransactionModa
 import {
   formatDecimalsFromToken,
   formatInputTokenValue,
+  formatNumberEnUs,
   getCrossInDestinationFee,
   getCrossOutDestinationFee,
+  isApiAvailable,
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
 import TokenIcon from "../../atom/TokenIcon";
@@ -31,6 +33,7 @@ import {
   executeCrossOut,
 } from "../../../services/crosschain";
 import WarningMessage from "../../atom/WarningMessage";
+import dotAcpToast from "../../../app/util/toast";
 
 type CrossChainSwapProps = {
   isPopupEdit?: boolean;
@@ -462,6 +465,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   };
 
   const handleCrosschainExec = async () => {
+    const isApiReady = api && relayApi && (await isApiAvailable(api, relayApi));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     setReviewModalOpen(false);
     if (crosschainExtrinsic) {
       dispatch({
@@ -473,6 +481,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         payload: {
           id: "crosschain",
           notificationModalOpen: true,
+          notificationPercentage: 0,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
           notificationTitle: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
@@ -637,13 +646,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.originChainFee")}</div>
               <span className="text-gray-400">
-                ~ {originChainFee} {selectedToken.tokenSymbol}
+                ~ {formatNumberEnUs(Number(originChainFee), Number(selectedToken.decimals))} {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.destinationChainFee")}</div>
               <span className="text-gray-400">
-                ~ {destinationChainFee} {selectedToken.tokenSymbol}
+                ~ {formatNumberEnUs(Number(destinationChainFee), Number(selectedToken.decimals))}{" "}
+                {selectedToken.tokenSymbol}
               </span>
             </div>
             <div className="flex w-full items-center justify-between text-medium tracking-[.2px]">
@@ -671,6 +681,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       <CrosschainReviewTransactionModal
         open={reviewModalOpen}
         tokenSymbol={selectedToken.tokenSymbol}
+        tokenDecimals={selectedToken.decimals}
         nativeChainName={crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType}
         destinationChainName={crosschainSelectedChain.chainB.chainType}
         destinationBalance={

@@ -6,6 +6,7 @@ import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { getAssetTokenFromNativeToken } from "../../services/tokenServices";
+import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {
   // Sentry
@@ -207,6 +208,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //TODO: returns cors error
 
 // export const getSpotPrice = async (symbol: string) => {
+//     if (!symbol || symbol === "") return;
 //   const getNameFromSymbol = (symbol: string) => {
 //     switch (symbol) {
 //       case "KSM":
@@ -217,7 +219,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //         return "roco-finance";
 //       case "GUPPY":
 //         return "guppy-gang";
-//       case "USDT":
+//       case "USDt":
 //         return "tether";
 //       case "USDC":
 //         return "usd-coin";
@@ -228,6 +230,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //   };
 
 //   const name = getNameFromSymbol(symbol);
+//   if (name === "" || name === "guppy-gang") return;
 
 //   const options = {
 //     method: "GET",
@@ -240,32 +243,30 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //     options
 //   );
 //   const json = await res.json();
+
 //   return json[name].usd;
 // };
 //
-// fees for AssetHubKusama -> Kusama Relay Chain
-// source chain fee: 0.000087322311 KSM
-// destination chain fee: 0.001032999966 KSM
+// destination chain fee for Polkadot Asset Hub -> Polkadot Relay Chain
+// destination chain fee: 0.0020830735 DOT
 export const getCrossInDestinationFee = () => {
-  return "0.001032999966";
+  return "0.0020830735";
 };
 
 //
-// fees for Kusama Relay Chain -> AssetHubKusama
-// source chain fee: 0.00060714529 KSM
-// destination chain fee: 0.001329999669 KSM
+// destination chain fee for Polkadot Relay Chain -> Polkadot Asset Hub
+// destination chain fee: 0.0397 DOT
 export const getCrossOutDestinationFee = () => {
-  return "0.001329999669";
+  return "0.0397";
 };
 
 // function for calculating max amount for cross out
-// existential deposit for kusama relay chain is 0.000333333 KSM
-// xcm instructions buffer for cross out is 0.000371525 KSM
+// existential deposit for polkadot relay chain is 1.0000000000 DOT
+// xcm instructions buffer for cross out is 0.000371525 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
-// KSM has 12 decimal places, in the future we should probably make this dynamic
 export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFee: string) => {
-  const xcmInstructionsBuffer = new Decimal("0.000371525");
-  const existentialDeposit = new Decimal("0.000333333");
+  const xcmInstructionsBuffer = new Decimal("0.001371525");
+  const existentialDeposit = new Decimal("1.0000000000");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
@@ -278,12 +279,12 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 };
 
 // function for calculating max amount for cross in
-// existential deposit for kusama asset hub is 0.000003333 KSM
-// xcm instructions buffer for cross in is 0.0005298333 KSM
+// existential deposit for polkadot asset hub is 1.0000000000 DOT
+// xcm instructions buffer for cross in is 0.0005298333 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
 export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
-  const xcmInstructionsBuffer = new Decimal("0.0005298333");
-  const existentialDeposit = new Decimal("0.000003333");
+  const xcmInstructionsBuffer = new Decimal("0.0015298333");
+  const existentialDeposit = new Decimal("0");
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossInDestinationFee());
@@ -377,4 +378,26 @@ export const formatNumberEnUs = (value: number, fixed?: number, showDollarSign =
   formattedValue = `${showApprox ? approx : ""}${showDollarSign ? dollarSign : ""}${formattedValue}`;
 
   return formattedValue;
+};
+
+/*
+ * Function to check if api and/or relayApi are available
+ * @param api
+ * @param relayApi
+ * @returns boolean
+ */
+export const isApiAvailable = async (api?: ApiPromise, relayApi?: ApiPromise): Promise<boolean> => {
+  if (api && relayApi) {
+    const isReady = (await api.isReadyOrError) && (await relayApi.isReadyOrError);
+    return isReady ? true : false;
+  }
+  if (api && api.isConnected) {
+    const isReady = await api.isReadyOrError;
+    return isReady ? true : false;
+  }
+  if (relayApi && relayApi.isConnected) {
+    const isReady = await relayApi.isReadyOrError;
+    return isReady ? true : false;
+  }
+  return false;
 };

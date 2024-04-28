@@ -17,7 +17,7 @@ const App: FC = () => {
   const { api, relayApi } = state;
 
   const isOnline = useOnlineStatus();
-  const isMobile = useIsMobile();
+  const { isMobile, isResponsive } = useIsMobile();
 
   const walletConnected: WalletAccount = LocalStorage.get("wallet-connected");
 
@@ -30,7 +30,7 @@ const App: FC = () => {
 
   return (
     <AppStateProvider state={state} dispatch={dispatch}>
-      {!isMobile ? (
+      {!isMobile && !isResponsive ? (
         !isOnline ? (
           <OfflinePage />
         ) : (
@@ -40,7 +40,7 @@ const App: FC = () => {
           </>
         )
       ) : (
-        <MobilePage />
+        <MobilePage isMobile={isMobile} />
       )}
     </AppStateProvider>
   );

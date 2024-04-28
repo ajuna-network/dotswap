@@ -29,10 +29,11 @@ import { SwapOrPools } from "../../../app/types/enum";
 import { urlTo } from "../../../app/util/helper";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
 import classNames from "classnames";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
+import dotAcpToast from "../../../app/util/toast";
 
 type AssetTokenProps = {
   tokenSymbol: string;
@@ -90,7 +91,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
   const [nativeTokenWithSlippage, setNativeTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [assetTokenWithSlippage, setAssetTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(15);
+  const [slippageValue, setSlippageValue] = useState<number>(1);
   const [inputEdited, setInputEdited] = useState<InputEditedProps>({ inputType: InputEditedType.exactIn });
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [poolExists, setPoolExists] = useState<boolean>(false);
@@ -142,6 +143,11 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
   };
 
   const handlePool = async () => {
+    const isApiReady = api && (await isApiAvailable(api));
+    if (!isApiReady) {
+      dotAcpToast.error(t("error.api.notReady"), undefined, null);
+      return;
+    }
     if (!tokenBalances) return;
     setReviewModalOpen(false);
     if (waitingForTransaction) {
@@ -168,6 +174,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
           notificationModalOpen: true,
           notificationAction: t("modal.notifications.addLiquidity"),
           notificationType: ToasterType.PENDING,
+          notificationPercentage: 15,
           notificationTitle: t("modal.notifications.addLiquidity"),
           notificationMessage: t("modal.notifications.proceed"),
           notificationChainDetails: null,
@@ -206,6 +213,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
             id: "liquidity",
             props: {
               notificationType: ToasterType.ERROR,
+              notificationPercentage: null,
               notificationTitle: t("modal.notifications.error"),
               notificationMessage: `Transaction failed: ${error}`,
               notificationLink: null,
