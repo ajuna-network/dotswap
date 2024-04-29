@@ -286,6 +286,40 @@
     "company": "MVP Workshop"
   },
   "error": {
+    "pallet": {
+      "AmountOneLessThanMinimal": "Provided amount should be greater than or equal to the existential deposit/asset's minimal amount.",
+      "AmountOutTooHigh": "Desired amount can't be equal to the pool reserve.",
+      "AmountTwoLessThanMinimal": "Provided amount should be greater than or equal to the existential deposit/asset's minimal amount.",
+      "ProvidedMinimumNotSufficientForSwap": "Calculated amount out is less than provided minimum amount.",
+      "AssetOneDepositDidNotMeetMinimum": "The minimal amount requirement for the first token in the pair wasn't met.",
+      "EqualAssets": "Provided assets are equal.",
+      "IncorrectPoolAssetId": "It was not possible to get or increment the Id of the pool.",
+      "CorrespondenceError": "Unable to find an element in an array/vec that should have one-to-one correspondence with another. For example, an array of assets constituting a path should have a corresponding array of amounts along the path.",
+      "InsufficientLiquidity": "Insufficient liquidity in the pool.",
+      "PoolExists": "Pool already exists.",
+      "PoolNotFound": "The pool doesn't exist.",
+      "ProvidedMaximumNotSufficientForSwap": "Provided maximum amount is not sufficient for swap.",
+      "WrongDesiredAmount": "Desired amount can't be zero.",
+      "ZeroAmount": "Amount can't be zero.",
+      "ZeroLiquidity": "Requested liquidity can't be zero."
+    },
+    "platform": {
+      "AmountOneLessThanMinimal": "The provided amount is less than the minimum required for this asset.",
+      "AmountOutTooHigh": "Please consider reducing the desired amount, as the minimum amount per token must remain in the pool as a reserve.",
+      "AmountTwoLessThanMinimal": "Your order trade is lower than the trading minimum.",
+      "ProvidedMinimumNotSufficientForSwap": "The transaction could not be completed due to the set slippage.",
+      "AssetOneDepositDidNotMeetMinimum": "Amount provided for the first token in the pair is below the minimum required for this asset.",
+      "EqualAssets": "Provided assets are equal. Please choose two different assets.",
+      "IncorrectPoolAssetId": "Error: the pool wasn't find.",
+      "CorrespondenceError": "Something happened, please try again.",
+      "InsufficientLiquidity": "The swap cannot be completed due to insufficient liquidity in the pool. Please try again with a lower amount.",
+      "PoolExists": "This pool already exists.",
+      "PoolNotFound": "This pool doesn't exist.",
+      "ProvidedMaximumNotSufficientForSwap": "The transaction could not be completed due to the set slippage. Please increase the slippage tolerance for the transaction to proceed successfully.",
+      "WrongDesiredAmount": "Desired amount can't be zero.",
+      "ZeroAmount": "Desired amount can't be zero.",
+      "ZeroLiquidity": "Requested liquidity can't be zero."
+    },
     "api": {
       "notReady": "Please reconnect your wallet."
     },

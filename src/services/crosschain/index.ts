@@ -9,7 +9,11 @@ import { ActionType, CrosschainTransactionTypes, ToasterType } from "../../app/t
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
-import { calculateMaxAmountForCrossIn, calculateMaxAmountForCrossOut } from "../../app/util/helper";
+import {
+  calculateMaxAmountForCrossIn,
+  calculateMaxAmountForCrossOut,
+  errorMessageHandler,
+} from "../../app/util/helper";
 import { t } from "i18next";
 
 // Relay chain -> Parachain
@@ -133,7 +137,7 @@ async function setupCallAndSign(
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: "Error",
-            notificationMessage: err.message || "Error executing crosschain",
+            notificationMessage: err.message ? errorMessageHandler(err.message) : "Error executing crosschain",
           },
         },
       });
