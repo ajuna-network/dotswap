@@ -82,6 +82,16 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     handleTokenValueChange("").then();
   }, [api]);
 
+  const existentialDeposit =
+    tokenBalances && tokenBalances.existentialDeposit && tokenBalances.existentialDepositRelay
+      ? crosschainSelectedChain.chainA.chainType === "Asset Hub"
+        ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
+        : formatDecimalsFromToken(
+            tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
+            tokenBalances.tokenDecimals
+          )
+      : "0";
+
   const fetchData = async () => {
     if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances.tokenDecimals || !api || !relayApi)
       return;
@@ -295,14 +305,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     if (!selectedToken.tokenSymbol || !selectedToken.tokenBalance || !crosschainSelectedChain || !selectedAccount)
       return;
 
-    const existentialDeposit =
-      crosschainSelectedChain.chainA.chainType === "Asset Hub"
-        ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
-        : formatDecimalsFromToken(
-            tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
-            tokenBalances.tokenDecimals
-          );
-
     calculateCrosschainMaxAmount(
       availableBalanceA.toString(),
       selectedToken.decimals,
@@ -427,14 +429,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     let payloadTokenValue = "";
     setIsGreaterThanMax(false);
     if (maxTriggered) {
-      const existentialDeposit =
-        crosschainSelectedChain.chainA.chainType === "Asset Hub"
-          ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
-          : formatDecimalsFromToken(
-              tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
-              tokenBalances.tokenDecimals
-            );
-
       payloadTokenValue = await tokenValue(
         await calculateCrosschainMaxAmount(
           value,
@@ -498,11 +492,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         payload: {
           id: "crosschain",
           notificationModalOpen: true,
-          notificationPercentage: 0,
+          notificationPercentage: 1,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
-          notificationTitle: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
-          notificationMessage: "Proceed in your wallet",
+          notificationTitle: "Warming up DOTswap",
+          notificationMessage: "Please proceed in your wallet",
           notificationChainDetails: {
             originChain: crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType,
             destinationChain: crosschainSelectedChain.chainB.chainType,

@@ -86,6 +86,10 @@ export const errorMessageHandler = (errorValue: string) => {
       return t("error.platform.ZeroAmount");
     case t("error.pallet.ZeroLiquidity"):
       return t("error.platform.ZeroLiquidity");
+    case t("error.pallet.NotExpendable"):
+      return t("error.platform.NotExpendable");
+    case t("error.pallet.TransactionCanceled"):
+      return t("error.platform.TransactionCanceled");
     default:
       return errorValue;
   }

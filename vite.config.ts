@@ -8,14 +8,22 @@ import svgr from "vite-plugin-svgr";
 export default defineConfig(({ command }) => {
   const pluginsList = [react(), svgr()];
 
+  const optimizeDeps: {
+    include?: string[];
+    exclude?: string[];
+  } = {
+    include: ["react-i18next"],
+  };
+
   if (command === "serve") {
     return {
       server: {
         host: "dedswap.local",
       },
       plugins: [...pluginsList, mkcert(), EnvironmentPlugin("all")],
+      optimizeDeps,
     };
   }
 
-  return { plugins: pluginsList };
+  return { plugins: pluginsList, optimizeDeps };
 });
