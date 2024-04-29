@@ -38,7 +38,7 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
   const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
   const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(destinationChainName === "Asset Hub" ? Number("0.001371525") : Number("0.0015298333"))
+    .plus(destinationChainName === "Asset Hub" ? Number("0.03") : Number("0.03"))
     .toString();
 
   const destinationBalanceAfter = new Decimal(Number(destinationBalance))

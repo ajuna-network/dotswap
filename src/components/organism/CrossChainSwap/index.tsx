@@ -544,7 +544,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
   const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.001371525") : Number("0.0015298333"))
+    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.03") : Number("0.03"))
     .toString();
 
   return (
