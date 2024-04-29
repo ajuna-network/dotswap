@@ -10,7 +10,7 @@ const PendingNotification: FC = () => {
   const pendingNotifications = notifications.filter((n) => n.notificationType === ToasterType.PENDING);
 
   return pendingNotifications && pendingNotifications.length > 0 ? (
-    <div className="group relative flex cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center">
+    <div className="group relative flex min-w-max cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center">
       <span className="font-medium lowercase leading-none text-white">
         {pendingNotifications.length} {t("modal.notifications.pending")}
       </span>
