@@ -94,6 +94,7 @@ const ConnectWallet = () => {
     handleDisconnect(dispatch);
     setWalletAccount({} as WalletAccount);
     setModalStep({ step: WalletConnectSteps.stepExtensions });
+
     dispatch({
       type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
       payload: "",
@@ -160,12 +161,12 @@ const ConnectWallet = () => {
       <div className="flex items-center justify-end gap-8">
         {pendingNotifications && pendingNotifications.length > 0 && (
           <div className="group relative flex cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center">
-            <span className="font-medium lowercase leading-none text-white">
+            <span className="font-medium lowercase leading-none text-white dark:font-omnes-bold">
               {pendingNotifications.length} {t("modal.notifications.pending")}
             </span>
             <CircleLoader className="animate-spin" />
             <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm text-dark-300 opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 dark:bg-primary-500 dark:text-white [&>path]:fill-yellow-100">
-              <div className="font-inter text-medium font-normal normal-case leading-normal dark:font-omnes-bold">
+              <div className="font-inter text-medium font-normal normal-case leading-normal ">
                 {pendingNotifications.length}{" "}
                 {pendingNotifications.length > 1 ? t("wallet.pendingMultiple") : t("wallet.pendingSingle")}{" "}
                 {t("wallet.pending")}

@@ -18,6 +18,7 @@ import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defau
 import { base64Encode } from "@polkadot/util-crypto";
 import { getSpecTypes } from "@polkadot/types-known";
 import { t } from "i18next";
+import { NotificationAction } from "../../store/notifications/interface.ts";
 
 export const setupPolkadotApi = async (
   rpcUrl: string,
@@ -259,7 +260,7 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
   };
 };
 
-export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) => {
+export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction | NotificationAction>) => {
   LocalStorage.remove("wallet-connected");
   dispatch({ type: ActionType.SET_ACCOUNTS, payload: [] });
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: {} as WalletAccount });
@@ -269,6 +270,8 @@ export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) 
   dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: "0" });
+  dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+  dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
   dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
 };
 
