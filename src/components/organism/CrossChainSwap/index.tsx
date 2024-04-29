@@ -60,7 +60,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainSelectedChain,
     crosschainExtrinsic,
     assetLoading,
-    messageQueueProcessedFee,
   } = state;
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -542,21 +541,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     }
   };
 
-  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee))
-    .plus(
-      crosschainSelectedChain.chainB.chainType === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
-    .toString();
+  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
   const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.000371525") : Number("0.0005298333"))
-    .plus(
-      crosschainSelectedChain.chainB.chainType === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
+    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.001371525") : Number("0.0015298333"))
     .toString();
 
   return (

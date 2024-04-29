@@ -291,14 +291,14 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 // destination chain fee for Polkadot Asset Hub -> Polkadot Relay Chain
 // destination chain fee: 0.0020830735 DOT
 export const getCrossInDestinationFee = () => {
-  return "0.0020830735";
+  return "0.0029169265";
 };
 
 //
 // destination chain fee for Polkadot Relay Chain -> Polkadot Asset Hub
 // destination chain fee: 0.0397 DOT
 export const getCrossOutDestinationFee = () => {
-  return "0.0397";
+  return "0.003593";
 };
 
 // function for calculating max amount for cross out
@@ -310,7 +310,8 @@ export const calculateMaxAmountForCrossOut = (
   originChainFee: string,
   chainExistentialDeposit: string
 ) => {
-  const xcmInstructionsBuffer = new Decimal("0.001371525");
+  //   const xcmInstructionsBuffer = new Decimal("0.01371525");
+  const xcmInstructionsBuffer = new Decimal("0.03");
   const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
@@ -332,7 +333,8 @@ export const calculateMaxAmountForCrossIn = (
   originChainFee: string,
   chainExistentialDeposit: string
 ) => {
-  const xcmInstructionsBuffer = new Decimal("0.0015298333");
+  //   const xcmInstructionsBuffer = new Decimal("0.015298333");
+  const xcmInstructionsBuffer = new Decimal("0.03");
   const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
