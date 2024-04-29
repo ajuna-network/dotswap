@@ -165,7 +165,7 @@ const ConnectWallet = () => {
             </span>
             <CircleLoader className="animate-spin" />
             <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm text-dark-300 opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 dark:bg-primary-500 dark:text-white [&>path]:fill-yellow-100">
-              <div className="font-inter text-medium font-normal normal-case leading-normal">
+              <div className="font-inter text-medium font-normal normal-case leading-normal dark:font-omnes-bold">
                 {pendingNotifications.length}{" "}
                 {pendingNotifications.length > 1 ? t("wallet.pendingMultiple") : t("wallet.pendingSingle")}{" "}
                 {t("wallet.pending")}
