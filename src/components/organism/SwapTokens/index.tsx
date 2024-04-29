@@ -118,7 +118,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
     tokenValue: "0",
   });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(1);
+  const [slippageValue, setSlippageValue] = useState<number>(10);
   const [walletHasEnoughNativeToken, setWalletHasEnoughNativeToken] = useState<boolean>(false);
   const [availablePoolTokenA, setAvailablePoolTokenA] = useState<TokenProps[]>([]);
   const [availablePoolTokenB, setAvailablePoolTokenB] = useState<TokenProps[]>([]);
