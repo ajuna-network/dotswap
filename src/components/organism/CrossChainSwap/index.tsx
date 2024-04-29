@@ -294,6 +294,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   useEffect(() => {
     if (!selectedToken.tokenSymbol || !selectedToken.tokenBalance || !crosschainSelectedChain || !selectedAccount)
       return;
+
+    const existentialDeposit =
+      crosschainSelectedChain.chainA.chainType === "Asset Hub"
+        ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
+        : formatDecimalsFromToken(
+            tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
+            tokenBalances.tokenDecimals
+          );
+
     calculateCrosschainMaxAmount(
       availableBalanceA.toString(),
       selectedToken.decimals,
@@ -302,6 +311,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         : CrosschainTransactionTypes.crossOut,
       crosschainDestinationWalletAddress,
       crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+      existentialDeposit,
       selectedAccount
     ).then((value) => {
       setMaxValue(value);
@@ -417,6 +427,14 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     let payloadTokenValue = "";
     setIsGreaterThanMax(false);
     if (maxTriggered) {
+      const existentialDeposit =
+        crosschainSelectedChain.chainA.chainType === "Asset Hub"
+          ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
+          : formatDecimalsFromToken(
+              tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
+              tokenBalances.tokenDecimals
+            );
+
       payloadTokenValue = await tokenValue(
         await calculateCrosschainMaxAmount(
           value,
@@ -426,6 +444,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             : CrosschainTransactionTypes.crossOut,
           crosschainDestinationWalletAddress,
           crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+          existentialDeposit,
           selectedAccount
         )
       );

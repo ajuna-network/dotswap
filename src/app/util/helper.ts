@@ -301,9 +301,13 @@ export const getCrossOutDestinationFee = () => {
 // existential deposit for polkadot relay chain is 1.0000000000 DOT
 // xcm instructions buffer for cross out is 0.000371525 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
-export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFee: string) => {
+export const calculateMaxAmountForCrossOut = (
+  freeBalance: string,
+  originChainFee: string,
+  chainExistentialDeposit: string
+) => {
   const xcmInstructionsBuffer = new Decimal("0.001371525");
-  const existentialDeposit = new Decimal("1.0000000000");
+  const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
@@ -319,9 +323,13 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 // existential deposit for polkadot asset hub is 1.0000000000 DOT
 // xcm instructions buffer for cross in is 0.0005298333 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
-export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
+export const calculateMaxAmountForCrossIn = (
+  freeBalance: string,
+  originChainFee: string,
+  chainExistentialDeposit: string
+) => {
   const xcmInstructionsBuffer = new Decimal("0.0015298333");
-  const existentialDeposit = new Decimal("0");
+  const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossInDestinationFee());

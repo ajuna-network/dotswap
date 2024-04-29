@@ -103,6 +103,8 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       frozen: balances?.frozen || "0",
     };
 
+    const existentialDepositRelay = relayApi.consts.balances.existentialDeposit;
+
     // Return data
     return {
       balanceAsset: balanceAsset,
@@ -110,6 +112,7 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       spotPrice: spotPrice,
       ss58Format,
       existentialDeposit: existentialDeposit.toHuman(),
+      existentialDepositRelay: existentialDepositRelay.toHuman(),
       tokenDecimals,
       tokenSymbol,
       assets: myAssetTokenData.filter((asset) => asset !== null),
@@ -168,7 +171,6 @@ export const setTokenBalanceUpdate = async (
   const tokenMetadata = api.registry.getChainProperties();
   const tokenDecimals = tokenMetadata?.tokenDecimals?.toHuman()?.toString() as string;
   const nativeTokenNewBalance = formatDecimalsFromToken(balance?.free.toString() || "0", tokenDecimals) || "0";
-  const existentialDeposit = api.consts.balances.existentialDeposit;
 
   const tokenAsset = await api.query.assets.account(assetId, walletAddress);
 
@@ -199,7 +201,6 @@ export const setTokenBalanceUpdate = async (
       free: nativeTokenNewBalance,
     },
     assets: assetsUpdated,
-    existentialDeposit: existentialDeposit.toHuman(),
   };
 };
 
