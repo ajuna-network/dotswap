@@ -287,7 +287,7 @@ const getChainMetadata = (api: ApiPromise) => {
 
 export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
   const wallet = getWalletBySource(account.wallet?.extensionName);
-  await wallet?.enable("DOTswap");
+  await wallet?.enable(t("seo.global.title"));
   const extension = wallet?.extension;
   if (extension) {
     const metadataCurrentArray = await wallet.extension.metadata.get();
@@ -337,7 +337,7 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
-    await wallet?.enable("DOTswap");
+    await wallet?.enable(t("seo.global.title"));
   }
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);

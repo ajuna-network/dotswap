@@ -25,6 +25,10 @@
     "swap": {
       "title": "Swap",
       "description": "DOTswap Swap Details Page description"
+    },
+    "crosschain": {
+      "title": "Crosschain",
+      "description": "DOTswap Crosschain Page description"
     }
   },
   "button": {
