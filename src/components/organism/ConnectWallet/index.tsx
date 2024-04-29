@@ -164,8 +164,8 @@ const ConnectWallet = () => {
               {pendingNotifications.length} {t("modal.notifications.pending")}
             </span>
             <CircleLoader className="animate-spin" />
-            <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 [&>path]:fill-yellow-100 ">
-              <div className="font-inter text-medium font-normal normal-case leading-normal text-dark-300">
+            <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm text-dark-300 opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 dark:bg-primary-500 dark:text-white [&>path]:fill-yellow-100">
+              <div className="font-inter text-medium font-normal normal-case leading-normal">
                 {pendingNotifications.length}{" "}
                 {pendingNotifications.length > 1 ? t("wallet.pendingMultiple") : t("wallet.pendingSingle")}{" "}
                 {t("wallet.pending")}
@@ -186,14 +186,14 @@ const ConnectWallet = () => {
               </Button>
             ) : (
               <button
-                className="flex items-center justify-center gap-[26px]"
+                className="flex items-center justify-center gap-[26px] text-gray-300 dark:bg-white dark:bg-opacity-30 dark:px-6 dark:py-2 dark:font-omnes-bold dark:text-white"
                 onClick={() => {
                   setSelectAccountModalOpen(true);
                 }}
               >
-                <div className="flex flex-col items-start justify-start text-gray-300">
+                <div className="flex flex-col items-start justify-start">
                   <div className="font-[500]">{walletAccount?.name || "Account"}</div>
-                  <div className="text-small">{reduceAddress(walletAccount?.address, 6, 6)}</div>
+                  <div className="text-small dark:uppercase">{reduceAddress(walletAccount?.address, 6, 6)}</div>
                 </div>
                 <div className="flex items-center justify-center">
                   <Identicon value={walletAccount?.address} size={32} theme="polkadot" className="!cursor-pointer" />

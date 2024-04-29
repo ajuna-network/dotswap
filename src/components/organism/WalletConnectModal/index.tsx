@@ -1,6 +1,6 @@
 import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
-import { WalletConnectSteps } from "../../../app/types/enum";
+import { ButtonVariants, WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
 import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
@@ -57,7 +57,7 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                   <div className="flex basis-24 items-center">
                     {wallet?.installed ? (
                       <Button
-                        className="btn-secondary-white"
+                        variant={ButtonVariants.btnSecondaryGray}
                         onClick={async () => {
                           try {
                             await wallet?.enable("DOTswap");
@@ -73,7 +73,7 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                       </Button>
                     ) : (
                       <Button
-                        className="btn-secondary-white"
+                        variant={ButtonVariants.btnSecondaryGray}
                         onClick={() => {
                           handleWalletInstall(wallet);
                         }}

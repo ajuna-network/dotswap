@@ -71,8 +71,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     tokenBalance: "",
   });
 
-  //To do: Temporary notification clear until new notifications are implemented app-wide
-
   useEffect(() => {
     setSelectedToken({
       tokenSymbol: "",
@@ -550,8 +548,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   return (
     <div className="flex w-full max-w-[552px] flex-col items-center justify-center gap-5">
-      <div className="relative flex w-full gap-7 rounded-2xl bg-white p-8">
-        <div className="flex basis-1/2 items-center gap-1 rounded-lg bg-purple-100 px-4 py-6">
+      <div className="relative flex w-full gap-7 rounded-2xl bg-white p-8 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-80">
+        <div className="flex basis-1/2 items-center gap-1 rounded-lg bg-purple-100 px-4 py-6 dark:rounded-sm dark:border-8 dark:border-black dark:bg-white">
           <div className="flex items-center justify-center">
             {crosschainSelectedChain.chainA.chainType === "Asset Hub" ? (
               <AssetHub width={37} height={35} />
@@ -560,20 +558,20 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             )}
           </div>
           <div className="flex flex-1 flex-col items-start justify-center">
-            <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100">
+            <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100 dark:font-extrabold dark:uppercase">
               {t("crosschainPage.from")}
             </div>
-            <div className="text-left text-base font-normal leading-[19.2px] tracking-[.2px]">
+            <div className="text-left text-base font-normal leading-[19.2px] tracking-[.2px] dark:font-extrabold">
               {crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType}
             </div>
           </div>
         </div>
-        <div className="flex basis-1/2 items-center gap-1 rounded-lg bg-purple-100 px-4 py-6">
+        <div className="flex basis-1/2 items-center gap-1 rounded-lg bg-purple-100 px-4 py-6 dark:rounded-sm dark:border-8 dark:border-black dark:bg-white">
           <div className="flex flex-1 flex-col items-end justify-center">
-            <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100">
+            <div className="text-small font-normal leading-[13.2px] tracking-[.3px] text-gray-100 dark:font-extrabold dark:uppercase">
               {t("crosschainPage.to")}
             </div>
-            <div className="text-right text-base font-normal leading-[19.2px] tracking-[.2px]">
+            <div className="text-right text-base font-normal leading-[19.2px] tracking-[.2px] dark:font-extrabold">
               {crosschainSelectedChain.chainB.chainName + " " + crosschainSelectedChain.chainB.chainType}
             </div>
           </div>
@@ -586,7 +584,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           </div>
         </div>
         <button
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 dark:rounded-md dark:border-8 dark:border-black dark:bg-white"
           onClick={() => {
             handleChainSwitch();
           }}
@@ -595,8 +593,8 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           <CrossChainBtnIcon className="-rotate-90 hover:rotate-90 hover:cursor-pointer" width={42} height={42} />
         </button>
       </div>
-      <div className="flex  w-full flex-col gap-[14px] rounded-2xl bg-white p-8">
-        <div className="flex  w-full flex-col gap-[6px]">
+      <div className="flex w-full flex-col gap-[14px] rounded-2xl bg-white p-8 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-80">
+        <div className="flex w-full flex-col gap-[6px]">
           <div>
             <TokenAmountInput
               tokenText={selectedToken?.tokenSymbol}
@@ -619,6 +617,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
               assetLoading={assetLoading}
               onMaxClick={handleMaxClick}
               maxVisible={true}
+              className="dark:mb-0"
             />
           </div>
           <DestinationWalletAddress
@@ -642,7 +641,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         selectedTokenValue.tokenValue !== "0" &&
         !tooManyDecimalsError.isError &&
         selectedToken.tokenBalance !== "" ? (
-          <div className="flex w-full flex-col gap-3 rounded-2xl bg-purple-50 px-4 py-3">
+          <div className="flex w-full flex-col gap-3 rounded-2xl bg-purple-50 px-4 py-3 dark:rounded-sm dark:border-8 dark:border-black dark:bg-white dark:font-open-sans dark:font-extrabold">
             <div className="flex w-full items-center justify-between text-medium">
               <div className="capitalize text-gray-300">{t("crosschainPage.originChainFee")}</div>
               <span className="text-gray-400">

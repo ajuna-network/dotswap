@@ -1496,11 +1496,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
 
   return (
     <div className="flex max-w-[460px] flex-col gap-4 dark:mt-[35px] dark:max-w-[604px]">
-      <div
-        className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5
-       dark:rounded-[2px] dark:bg-[#FFFFFFCC] dark:outline dark:outline-8 dark:outline-black
-      "
-      >
+      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-80">
         <div className="relative flex w-full items-center justify-between">
           <h3 className="heading-6 font-unbounded-variable font-normal dark:font-omnes-bold dark:text-[40px] dark:font-bold">
             {t("swapPage.swap")}
@@ -1613,7 +1609,9 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
               >
                 <div className="flex w-full flex-row justify-between">
                   <div className="flex">
-                    {inputEdited.inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
+                    {inputEdited.inputType === InputEditedType.exactIn
+                      ? t("swapPage.minReceived")
+                      : t("swapPage.maxPaid")}
                   </div>
                   <span className="text-dark-500">
                     {inputEdited.inputType === InputEditedType.exactIn

@@ -69,11 +69,11 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
           <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dark:font-omnes-bold dark:text-heading-4">
-            <div className="no-scrollbar flex overflow-y-scroll">{inputValueA}</div>
+            <div className="flex overflow-y-auto">{inputValueA}</div>
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
           {priceA.gt(0) && (
-            <span className="font-inter text-small text-gray-200 dark:font-open-sans">
+            <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-extrabold">
               {formatNumberEnUs(priceA.toNumber(), undefined, true)}
             </span>
           )}
@@ -86,11 +86,11 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
             {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
           <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dark:font-omnes-bold dark:text-heading-4">
-            <div className="no-scrollbar flex overflow-y-scroll">{inputValueB}</div>
+            <div className="flex overflow-y-auto">{inputValueB}</div>
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
           {priceB.gt(0) && (
-            <span className="font-inter text-small text-gray-200 dark:font-open-sans">
+            <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-extrabold">
               {formatNumberEnUs(priceB.toNumber(), undefined, true)}
             </span>
           )}

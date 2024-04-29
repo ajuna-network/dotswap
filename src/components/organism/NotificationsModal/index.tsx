@@ -13,6 +13,7 @@ import { ToasterType } from "../../../app/types/enum";
 import dotAcpToast from "../../../app/util/toast";
 import { ActionType } from "../../../app/types/enum";
 import { formatNumberEnUs } from "../../../app/util/helper";
+import { toast } from "react-hot-toast";
 
 interface Props {
   id: string;
@@ -142,7 +143,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     if (!currentNotification?.notificationTitle) return null;
 
     return (
-      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em]">
+      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em] dark:font-omnes-bold">
         {currentNotification?.notificationTitle}
       </div>
     );
@@ -177,13 +178,13 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
     return (
       <div className="flex items-center justify-center gap-1">
-        <div className="flex items-center gap-2 rounded-medium bg-gray-500 px-2 py-0.5">
+        <div className="flex items-center gap-2 rounded-medium bg-gray-500 px-2 py-0.5 dark:rounded-md">
           <span className="font-fira-sans text-sm leading-relaxed">
             {currentNotification?.notificationChainDetails.originChain}
           </span>
           <ArrowRightLong />
         </div>
-        <div className="flex items-center justify-center rounded-medium bg-black px-2 py-0.5">
+        <div className="flex items-center justify-center rounded-medium bg-black px-2 py-0.5 dark:rounded-md">
           <span className="font-fira-sans text-sm leading-relaxed text-white">
             {currentNotification?.notificationChainDetails.destinationChain}
           </span>
@@ -197,7 +198,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
     return (
       <div className="flex max-w-notification">
-        <p className="text-center font-inter text-medium leading-tight tracking-[0.0125em] text-black text-opacity-70">
+        <p className="text-center font-inter text-medium leading-tight tracking-[0.0125em] text-black text-opacity-70 dark:font-open-sans">
           {currentNotification?.notificationMessage}
         </p>
       </div>
@@ -213,7 +214,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
           href={currentNotification?.notificationLink.href}
           target="_blank"
           rel="noreferrer"
-          className="text-center font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90"
+          className="text-center font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90 dark:font-omnes-bold dark:text-[16px]"
         >
           <span>{currentNotification?.notificationLink.text}</span>
         </a>

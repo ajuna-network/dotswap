@@ -145,10 +145,10 @@ const AssetsTable = () => {
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex w-full justify-between px-8 py-4">
+      <div className="flex w-full justify-between px-8 py-4 dark:text-white">
         <div className="flex flex-col items-start justify-center">
           <div className="flex items-center gap-2">
-            <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+            <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dark:text-white">
               {t("dashboardPage.myTotalAssets")}
             </div>
             <Tooltip message={t("dashboardPage.totalAssetsTooltip")} />
@@ -158,7 +158,7 @@ const AssetsTable = () => {
           </div>
         </div>
         <div className="flex flex-col items-start justify-center">
-          <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+          <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dark:text-white">
             {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
             <Tooltip message={t("dashboardPage.tokenPriceTooltip")} />
           </div>
@@ -169,8 +169,8 @@ const AssetsTable = () => {
       </div>
       {assetsList.length === 0 ? (
         <div className="flex w-full flex-1 flex-col gap-6">
-          <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white">
-            <div className="font-unbounded-variable text-medium font-normal text-dark-300">
+          <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white dark:rounded-none dark:bg-opacity-80 dark:outline dark:outline-8 dark:outline-black">
+            <div className="font-unbounded-variable text-medium font-normal text-dark-300 dark:font-open-sans dark:text-large dark:font-extrabold">
               {walletConnected ? t("dashboardPage.loadingAssets") : t("dashboardPage.connectWallet")}
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4">
@@ -185,8 +185,13 @@ const AssetsTable = () => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
-          <AccordionList title={t("dashboardPage.assetList")} nested alwaysOpen className="rounded-t-2xl bg-white">
+        <div className="flex flex-col gap-6 dark:gap-0 dark:bg-[#FFFFFFCC] dark:outline dark:outline-8 dark:outline-black">
+          <AccordionList
+            title={t("dashboardPage.assetList")}
+            nested
+            alwaysOpen
+            className="rounded-t-2xl bg-white dark:rounded-none dark:bg-opacity-80"
+          >
             {assetsList &&
               assetsList.length > 0 &&
               assetsList.map((token: AssetListToken) => {
@@ -216,7 +221,11 @@ const AssetsTable = () => {
               })}
           </AccordionList>
 
-          <AccordionList nested title={t("dashboardPage.otherAssets")} className="rounded-b-2xl bg-white">
+          <AccordionList
+            nested
+            title={t("dashboardPage.otherAssets")}
+            className="rounded-b-2xl bg-white dark:rounded-none dark:bg-opacity-80"
+          >
             {assetLoading ? (
               <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.loadingAssets")}</div>
             ) : otherAssets.length > 0 ? (
@@ -224,7 +233,9 @@ const AssetsTable = () => {
                 return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssets")}</div>
+              <div className="flex flex-col items-center justify-center py-8 dark:font-open-sans dark:font-extrabold">
+                {t("dashboardPage.noAssets")}
+              </div>
             )}
           </AccordionList>
         </div>
@@ -233,6 +244,7 @@ const AssetsTable = () => {
       <Modal
         isOpen={swapModalOpen}
         disableOverlayClick={true}
+        classNames="rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:bg-transparent dark:shadow-none dark:border-none"
         onClose={() => {
           setSwapModalOpen(!swapModalOpen);
         }}

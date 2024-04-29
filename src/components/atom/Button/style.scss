@@ -1,10 +1,10 @@
 button {
   &.btn-primary {
-    @apply flex w-full items-center justify-center gap-2 rounded-full font-unbounded-variable font-normal dark:font-omnes-bold dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none;
+    @apply flex w-full items-center justify-center gap-2 rounded-full font-unbounded-variable font-normal dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none dark:font-omnes-bold;
 
     &-pink {
       @extend .btn-primary;
-      @apply border border-pink bg-pink text-white hover:border-black hover:bg-black;
+      @apply border border-pink bg-pink text-white hover:border-black hover:bg-black dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none;
 
       &-lg {
         @extend .btn-primary-pink;
@@ -38,17 +38,17 @@ button {
 
     &-white {
       @extend .btn-secondary;
-      @apply border border-black bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
+      @apply border border-black bg-white text-black hover:border-transparent hover:bg-pink hover:text-white dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none;
     }
 
     &-white-no-border {
       @extend .btn-secondary;
-      @apply bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
+      @apply bg-white text-black hover:border-transparent hover:bg-pink hover:text-white dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none;
     }
 
     &-gray {
       @extend .btn-secondary;
-      @apply border border-purple-100 bg-purple-100 text-black hover:border-purple-200 hover:bg-purple-200;
+      @apply border border-purple-100 bg-purple-100 text-black hover:border-purple-200 hover:bg-purple-200 dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none dark:font-omnes-bold;
     }
   }
 
@@ -73,7 +73,7 @@ button {
 
   &.btn-select {
     @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-inter text-large font-normal 
-    dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none dark:border-[6px] dark:border-black dark:p-2 dark:font-open-sans dark:font-extrabold dark:h-[52px];
+    dark:h-[52px] dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none dark:border-[6px] dark:border-black dark:p-2 dark:font-open-sans dark:font-extrabold;
 
     &-pink {
       @extend .btn-select;

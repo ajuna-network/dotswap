@@ -49,6 +49,7 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
   onClick,
   onMaxClick,
   maxVisible,
+  className = "",
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLInputElement>(null);
@@ -100,7 +101,7 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
     <div
       ref={wrapperRef}
       className={classNames(
-        "relative flex flex-col items-center justify-start rounded-lg border bg-purple-100 px-4 py-6 dark:mb-5 dark:rounded-[2px] dark:outline dark:outline-8 dark:outline-black",
+        `relative flex flex-col items-center justify-start rounded-lg border bg-purple-100 px-4 py-6 dark:mb-5 dark:rounded-sm dark:border-8 dark:border-black ${className}`,
         {
           "border-pink": isFocused,
           "border-transparent": !isFocused,
@@ -122,7 +123,13 @@ const TokenAmountInput: FC<TokenAmountInputProps> = ({
           displayType={"input"}
           disabled={disabled || !tokenText}
           placeholder={"0"}
-          className={`no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-5 font-bold ${!tokenText ? "text-gray-200" : "text-gray-300"} outline-none placeholder:text-gray-200`}
+          className={classNames(
+            "no-scrollbar w-full basis-auto bg-transparent font-unbounded-variable text-heading-5 font-bold outline-none placeholder:text-gray-200",
+            {
+              "text-gray-200": !tokenText,
+              "text-gray-300": tokenText,
+            }
+          )}
           onFocus={() => setIsFocused(true)}
           value={tokenValue || "0"}
           isAllowed={({ floatValue }) => {

@@ -109,7 +109,7 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
       </div>
       <div className="flex gap-2">
         <div className="flex basis-1/2 flex-col items-center justify-end">
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start font-omnes-bold">
             <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
               {nativeTokenIcon}
               {formatNumberEnUs(Number(nativeTokens), 4)}
@@ -122,7 +122,9 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
           <p className="text-small font-medium uppercase text-gray-200">{t("poolDataCard.totalTokensLocked")}</p>
         </div>
         <div className="flex basis-1/2 flex-col items-center justify-end text-large font-medium">
-          <span>{lpTokenAsset?.balance ? lpTokenAsset.balance?.replace(/[, ]/g, "") : 0}</span>
+          <span className="dark:font-omnes-bold">
+            {lpTokenAsset?.balance ? lpTokenAsset.balance?.replace(/[, ]/g, "") : 0}
+          </span>
           <p className="text-small font-medium uppercase text-gray-200">{t("poolDataCard.lpTokens")}</p>
         </div>
       </div>

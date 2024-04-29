@@ -12,6 +12,7 @@ import { formatNumberEnUs } from "../../../app/util/helper";
 import Decimal from "decimal.js";
 import { useAppContext } from "../../../state";
 import Tooltip from "../../atom/Tooltip";
+import classNames from "classnames";
 
 type AccordionAssetItemProps = {
   token: AssetListToken;
@@ -24,7 +25,7 @@ type AccordionAssetItemProps = {
 
 const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
   token,
-  className = "border-t border-1 border-purple-100",
+  className = "border-t border-1 border-purple-100 dark:border-none",
   children,
   alwaysOpen = false,
   defaultOpen = false,
@@ -115,72 +116,77 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
     >
       <div
         ref={titleElm}
-        className={`flex w-full flex-row justify-between p-8 ${children ? "cursor-pointer" : "cursor-default"}`}
+        className={classNames("px-8", {
+          "cursor-pointer": children,
+          "cursor-default": !children,
+        })}
         data-height={accordionHeight.titleElmHeight}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         tabIndex={0}
         role="button"
       >
-        <div
-          className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}
-        >
-          <div className="flex w-1/4 items-center justify-start gap-3 font-unbounded-variable text-heading-6 font-normal">
-            <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
-            <span>{token.assetTokenMetadata.symbol}</span>
-          </div>
-          <div className="flex w-1/2 items-center justify-start">
-            <div className="flex flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
-                {t("assetItem.total")}
-              </div>
-              <div
-                className="font-titillium-web text-base font-semibold"
-                data-balance={totalBalance && totalBalance !== "0" ? totalBalance : 0}
-              >
-                {totalBalance && totalBalance !== "0"
-                  ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
-                  : "0"}
-                {token.spotPrice ? " (" + usdTotalBalance + ")" : ""}
+        <div className="flex w-full flex-row justify-between border-b-2 border-white py-8">
+          <div
+            className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}
+          >
+            <div className="flex w-1/4 items-center justify-start gap-3 font-unbounded-variable text-heading-6 font-normal dark:font-omnes-bold">
+              <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
+              <span>{token.assetTokenMetadata.symbol}</span>
+            </div>
+            <div className="flex w-1/2 items-center justify-start">
+              <div className="flex flex-col">
+                <div className="font-titillium-web text-medium font-normal uppercase text-dark-200 dark:font-omnes-bold">
+                  {t("assetItem.total")}
+                </div>
+                <div
+                  className="font-titillium-web text-base font-semibold dark:font-omnes-bold"
+                  data-balance={totalBalance && totalBalance !== "0" ? totalBalance : 0}
+                >
+                  {totalBalance && totalBalance !== "0"
+                    ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
+                    : "0"}
+                  {token.spotPrice ? " (" + usdTotalBalance + ")" : ""}
+                </div>
               </div>
             </div>
+            <div className="flex w-1/4 flex-row items-center justify-end gap-4 px-6">
+              {token.tokenId === "" && (
+                <Button
+                  onClick={handleCrosschainModal}
+                  variant={ButtonVariants.btnSecondaryWhiteNoBorder}
+                  className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
+                  disabled={crosschainNotificationPending}
+                >
+                  {t("button.crossChain")}
+                  {crosschainNotificationPending && <Tooltip message={t("tooltip.crosschainPending")} />}
+                </Button>
+              )}
+              {handleSwapModal && (
+                <Button
+                  onClick={() => {
+                    handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
+                  }}
+                  variant={ButtonVariants.btnSecondaryWhiteNoBorder}
+                  className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
+                  disabled={swapNotificationPending}
+                >
+                  {t("button.swap")}
+                  {swapNotificationPending && <Tooltip message={t("tooltip.swapPending")} />}
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex w-1/4 flex-row items-center justify-end gap-4 px-6">
-            {token.tokenId === "" && (
-              <Button
-                onClick={handleCrosschainModal}
-                variant={ButtonVariants.btnSecondaryGray}
-                className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
-                disabled={crosschainNotificationPending}
+          <div className="flex w-10 flex-row items-center justify-end">
+            {!alwaysOpen && children && (
+              <button
+                className={`flex items-center justify-center transition-all duration-300 ease-in-out ${isOpen ? "rotate-180 transform opacity-100" : "opacity-40"}`}
+                onClick={toggleAccordionAssetItem}
               >
-                {t("button.crossChain")}
-                {crosschainNotificationPending && <Tooltip message={t("tooltip.crosschainPending")} />}
-              </Button>
-            )}
-            {handleSwapModal && (
-              <Button
-                onClick={() => {
-                  handleSwapModal(token.tokenId === "" ? "0" : token.tokenId);
-                }}
-                variant={ButtonVariants.btnSecondaryGray}
-                className="max-w-max cursor-pointer gap-2 disabled:opacity-50"
-                disabled={swapNotificationPending}
-              >
-                {t("button.swap")}
-                {swapNotificationPending && <Tooltip message={t("tooltip.swapPending")} />}
-              </Button>
+                <DownArrow />
+              </button>
             )}
           </div>
-        </div>
-        <div className="flex w-10 flex-row items-center justify-end">
-          {!alwaysOpen && children && (
-            <button
-              className={`flex items-center justify-center transition-all duration-300 ease-in-out ${isOpen ? "rotate-180 transform opacity-100" : "opacity-40"}`}
-              onClick={toggleAccordionAssetItem}
-            >
-              <DownArrow />
-            </button>
-          )}
         </div>
       </div>
       {children && (
@@ -194,7 +200,12 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
         </div>
       )}
       {token.tokenId === "" && (
-        <Modal isOpen={crossChainModalOpen} onClose={handleCrosschainModal} disableOverlayClick={true}>
+        <Modal
+          isOpen={crossChainModalOpen}
+          onClose={handleCrosschainModal}
+          disableOverlayClick={true}
+          classNames="rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:bg-transparent dark:shadow-none dark:border-none"
+        >
           <CrossChainSwap isPopupEdit={false} />
         </Modal>
       )}

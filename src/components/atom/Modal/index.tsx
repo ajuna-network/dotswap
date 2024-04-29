@@ -21,7 +21,7 @@ const Modal: FC<ModalProps> = ({
   disableOverlayClick,
   onClose,
   onBack,
-  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:rounded-sm dark:outline dark:outline-8 dark:outline-black",
+  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:rounded-sm dark:border-8 dark:border-black",
 }) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -66,7 +66,7 @@ const Modal: FC<ModalProps> = ({
                   })}
                 >
                   {onBack ? (
-                    <button className="flex justify-end" onClick={onBack}>
+                    <button className="mr-4 flex justify-end" onClick={onBack}>
                       <BackArrow />
                     </button>
                   ) : null}

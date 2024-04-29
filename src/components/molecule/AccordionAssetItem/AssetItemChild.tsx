@@ -18,7 +18,7 @@ const AssetItemChild: FC<AssetItemChildProps> = ({
   isRelayChain = false,
   tokenSymbol,
   tokenSpotPrice,
-  className = "bg-purple-100 rounded-[10px]",
+  className = "bg-purple-100 rounded-[10px] dark:bg-white",
 }) => {
   const { state } = useAppContext();
 
@@ -76,18 +76,20 @@ const AssetItemChild: FC<AssetItemChildProps> = ({
           {!isRelayChain ? <AssetHubToken width={24} height={24} /> : <DotToken width={24} height={24} />}
           <div className="flex flex-col gap-1">
             <div className="text-heading-6 leading-none">{balances.chainName !== "" ? balances.chainName : ""}</div>
-            <div className="text-medium leading-none">{isRelayChain === true ? "Relay chain" : "Parachain"}</div>
+            <div className="text-medium leading-none">
+              {isRelayChain === true ? t("assetItem.relayChain") : t("assetItem.parachain")}
+            </div>
           </div>
         </div>
         <div className="flex items-start justify-end gap-8">
           {balances && balances.lockedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200">
+              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200 dark:font-omnes-bold">
                 {t("assetItem.locked")}
                 <Tooltip message={t("assetItem.lockedTooltip")} />
               </div>
               <div
-                className="text-base font-semibold"
+                className="text-base font-semibold dark:font-omnes-bold"
                 data-balance={balances && balances.lockedTokenBalance !== 0 ? balances.lockedTokenBalance : 0}
               >
                 {balances && balances.lockedTokenBalance !== 0
@@ -104,12 +106,12 @@ const AssetItemChild: FC<AssetItemChildProps> = ({
 
           {balances && balances.reservedTokenBalance !== 0 ? (
             <div className="flex flex-col">
-              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200">
+              <div className="flex items-center gap-1 font-titillium-web text-medium font-normal uppercase text-dark-200 dark:font-omnes-bold">
                 {t("assetItem.reserved")}
                 <Tooltip message={t("assetItem.reservedTooltip")} />
               </div>
               <div
-                className="text-base font-semibold"
+                className="text-base font-semibold dark:font-omnes-bold"
                 data-balance={balances && balances.reservedTokenBalance !== 0 ? balances.reservedTokenBalance : 0}
               >
                 {balances && balances.reservedTokenBalance !== 0
@@ -125,11 +127,11 @@ const AssetItemChild: FC<AssetItemChildProps> = ({
           ) : null}
 
           <div className="flex flex-col">
-            <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
+            <div className="font-titillium-web text-medium font-normal uppercase text-dark-200 dark:font-omnes-bold">
               {t("assetItem.available")}
             </div>
             <div
-              className="text-base font-semibold"
+              className="text-base font-semibold dark:font-omnes-bold"
               data-balance={balances && balances.freeTokenBalance !== 0 ? balances.freeTokenBalance : 0}
             >
               {balances
