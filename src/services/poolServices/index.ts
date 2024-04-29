@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
@@ -16,8 +16,8 @@ import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
 import { convertMicroDOTToDOT } from "../swapServices";
 import { NotificationAction } from "../../store/notifications/interface";
-import { TokenBalanceData } from "../../app/types/index";
-import { setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
+import { TokenBalanceData } from "../../app/types";
+import { setTokenBalanceUpdate } from "../polkadotWalletServices";
 
 const { parents, nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
@@ -219,7 +219,7 @@ const handleDispatchError = (
           notificationType: ToasterType.ERROR,
           notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
-          notificationMessage: `${docs.join(" ")}`,
+          notificationMessage: errorMessageHandler(docs.join(" ")),
           notificationLink: {
             text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
@@ -238,7 +238,9 @@ const handleDispatchError = (
           notificationType: ToasterType.ERROR,
           notificationPercentage: null,
           notificationTitle: t("modal.notifications.error"),
-          notificationMessage: response.dispatchError?.toString() ?? t("modal.notifications.genericError"),
+          notificationMessage: response.dispatchError?.toString()
+            ? errorMessageHandler(response.dispatchError.toString())
+            : t("modal.notifications.genericError"),
           notificationLink: {
             text: t("modal.notifications.viewInBlockExplorer"),
             href: `${assethubSubscanUrl}/extrinsic/${response.txHash}`,
@@ -484,6 +486,7 @@ export const addLiquidity = async (
       }
     })
     .catch((error: any) => {
+      const errorMessage = errorMessageHandler(error);
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
@@ -492,7 +495,7 @@ export const addLiquidity = async (
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
-            notificationMessage: `Transaction failed: ${error}`,
+            notificationMessage: `Transaction failed: ${errorMessage}`,
           },
         },
       });
@@ -547,6 +550,7 @@ export const removeLiquidity = async (
       }
     })
     .catch((error: any) => {
+      const errorMessage = errorMessageHandler(error);
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
@@ -555,7 +559,7 @@ export const removeLiquidity = async (
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
-            notificationMessage: `Transaction failed: ${error}`,
+            notificationMessage: `Transaction failed: ${errorMessage}`,
           },
         },
       });

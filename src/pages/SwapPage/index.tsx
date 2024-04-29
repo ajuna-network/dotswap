@@ -64,19 +64,29 @@ const SwapPage: FC = () => {
   };
   return (
     <div className="flex w-full flex-1 flex-col items-start justify-center px-6 py-8">
-      <div className="z-10 flex gap-2 rounded-3xl bg-white p-1">
+      <div
+        className="z-10 flex gap-2 rounded-3xl bg-white p-1 
+      dark:rounded-sm dark:bg-[#FFFFFFCC] dark:outline dark:outline-[6px] dark:outline-black
+      "
+      >
         <button
-          className={classNames("h-[37px] w-[71px] rounded-3xl", {
-            "bg-purple-100": swapOrPools === SwapOrPools.swap,
-          })}
+          className={classNames(
+            "h-[37px] w-[71px] rounded-3xl  dark:rounded-sm dark:px-4 dark:py-3 dark:font-open-sans dark:text-small dark:font-extrabold dark:uppercase",
+            {
+              "bg-purple-100": swapOrPools === SwapOrPools.swap,
+            }
+          )}
           onClick={() => navigateToSwap()}
         >
           {t("button.swap")}
         </button>
         <button
-          className={classNames("h-[37px] w-[71px] rounded-3xl", {
-            "bg-purple-100": swapOrPools === SwapOrPools.pools,
-          })}
+          className={classNames(
+            "h-[37px] w-[71px] rounded-3xl  dark:rounded-sm dark:px-4 dark:py-3 dark:font-open-sans dark:text-small dark:font-extrabold dark:uppercase",
+            {
+              "bg-purple-100": swapOrPools === SwapOrPools.pools,
+            }
+          )}
           onClick={() => navigateToPools()}
         >
           {t("button.pools")}

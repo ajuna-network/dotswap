@@ -73,7 +73,7 @@ To report any bugs or security vulnerability found please follow the instruction
 
 ### Customizing Styles with Tailwind.css:
 
-The project uses Tailwind.css for styling, making it easy to customize the look and feel of your decentralized exchange. To make style adjustments, you can edit the `tailwind.config.js` file. This file contains configuration options for colors, fonts, spacing, and more. Developers can modify these settings to match their project's branding and design requirements.
+The project uses Tailwind.css for styling, making it easy to customize the look and feel of your decentralized exchange. To make style adjustments, you can edit the `tailwind.config.ts` file. This file contains configuration options for colors, fonts, spacing, and more. Developers can modify these settings to match their project's branding and design requirements.
 
 ### Modifying Images, Fonts, and Global SCSS:
 

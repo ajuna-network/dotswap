@@ -511,12 +511,12 @@ const WithdrawPoolLiquidity = () => {
 
   return (
     <div className="flex w-full max-w-[460px] flex-col gap-4">
-      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
+      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-90">
         <div className="grid w-full grid-cols-4">
           <button className="col-span-1 flex justify-start" onClick={navigateToPools}>
             <BackArrow width={24} height={24} />
           </button>
-          <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal">
+          <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal dark:font-omnes-bold dark:text-lg">
             {location?.state?.pageType === LiquidityPageType.removeLiquidity
               ? t("poolsPage.removeLiquidity")
               : t("poolsPage.addLiquidity")}
@@ -583,15 +583,17 @@ const WithdrawPoolLiquidity = () => {
         </Button>
         {selectedTokenNativeValue?.tokenValue !== "" && selectedTokenAssetValue?.tokenValue !== "" && (
           <>
-            {" "}
             <div
-              className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
-                " translate-all  easy-and-out h-[52px] duration-300": !poolInfo,
-                "translate-all easy-and-out h-[180px] duration-300 ": poolInfo,
-              })}
+              className={classNames(
+                "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dark:rounded-sm dark:font-open-sans dark:font-bold",
+                {
+                  "h-[52px]": !poolInfo,
+                  "h-[185px]": poolInfo,
+                }
+              )}
             >
               <div className="flex w-full flex-row text-medium font-normal">
-                <div className="flex w-full items-center justify-between">
+                <div className="flex w-full items-center justify-between dark:font-extrabold">
                   <span>
                     1 {selectedTokenA.nativeTokenSymbol} ={" "}
                     {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}
@@ -609,16 +611,16 @@ const WithdrawPoolLiquidity = () => {
                 </div>
               </div>
               <div
-                className={classNames("flex flex-col justify-between gap-2", {
-                  "translate-all easy-and-out  bottom-[-170px] opacity-0 duration-300": !poolInfo,
-                  "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": poolInfo,
+                className={classNames("translate-all easy-and-out flex flex-col justify-between gap-2 duration-300", {
+                  "bottom-[-170px] opacity-0": !poolInfo,
+                  "top-[150px] opacity-100": poolInfo,
                 })}
               >
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("poolsPage.priceImpact")}</div>
                   <span className="text-dark-500">~ {priceImpact}%</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenA.nativeTokenSymbol})`}</div>
                   <span className="text-dark-500">
                     {formatNumberEnUs(
@@ -631,7 +633,7 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenA.nativeTokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{`${t("poolsPage.minimumWithdrawn")} (${selectedTokenB.tokenSymbol})`}</div>
 
                   <span className="text-dark-500">
@@ -643,11 +645,11 @@ const WithdrawPoolLiquidity = () => {
                       selectedTokenB.tokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("poolsPage.transactionCost")}</div>
                   <span className="text-dark-500">{addLiquidityGasFee}</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("poolsPage.route")}</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
                     <HubIcon /> <span className="text-dark-500">{t("poolsPage.assetHub")}</span>

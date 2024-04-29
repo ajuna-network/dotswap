@@ -54,6 +54,43 @@ export const formatDecimalsFromToken = (base: Decimal.Value, decimals: string) =
   return new Decimal(base || 0).dividedBy(Math.pow(10, parseFloat(decimals || "0"))).toFixed();
 };
 
+export const errorMessageHandler = (errorValue: string) => {
+  switch (errorValue) {
+    case t("error.pallet.AmountOneLessThanMinimal"):
+      return t("error.platform.AmountOneLessThanMinimal");
+    case t("error.pallet.AmountOutTooHigh"):
+      return t("error.platform.AmountOutTooHigh");
+    case t("error.pallet.AmountTwoLessThanMinimal"):
+      return t("error.platform.AmountTwoLessThanMinimal");
+    case t("error.pallet.ProvidedMinimumNotSufficientForSwap"):
+      return t("error.platform.ProvidedMinimumNotSufficientForSwap");
+    case t("error.pallet.AssetOneDepositDidNotMeetMinimum"):
+      return t("error.platform.AssetOneDepositDidNotMeetMinimum");
+    case t("error.pallet.EqualAssets"):
+      return t("error.platform.EqualAssets");
+    case t("error.pallet.IncorrectPoolAssetId"):
+      return t("error.platform.IncorrectPoolAssetId");
+    case t("error.pallet.CorrespondenceError"):
+      return t("error.platform.CorrespondenceError");
+    case t("error.pallet.InsufficientLiquidity"):
+      return t("error.platform.InsufficientLiquidity");
+    case t("error.pallet.PoolExists"):
+      return t("error.platform.PoolExists");
+    case t("error.pallet.PoolNotFound"):
+      return t("error.platform.PoolNotFound");
+    case t("error.pallet.ProvidedMaximumNotSufficientForSwap"):
+      return t("error.platform.ProvidedMaximumNotSufficientForSwap");
+    case t("error.pallet.WrongDesiredAmount"):
+      return t("error.platform.WrongDesiredAmount");
+    case t("error.pallet.ZeroAmount"):
+      return t("error.platform.ZeroAmount");
+    case t("error.pallet.ZeroLiquidity"):
+      return t("error.platform.ZeroLiquidity");
+    default:
+      return errorValue;
+  }
+};
+
 export const checkIfPoolAlreadyExists = (id: string, poolArray: AnyJson[]) => {
   let exists = false;
 
