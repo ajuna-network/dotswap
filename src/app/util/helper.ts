@@ -224,7 +224,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
     method: "GET",
     headers: {
       accept: "application/json",
-      "X-API-KEY": "bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=",
+      "X-API-KEY": import.meta.env.VITE_COINSTATS_API_KEY,
     },
   };
   const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
