@@ -384,6 +384,7 @@ export const getAssetTokenSpotPrice = async (
 
 // get native token value from asset token
 export const getNativeTokenSpotPrice = async (api: any, tokenId: string, tokenDecimals: string) => {
+  if (!api || !Object.keys(api).length) return "0";
   const value = await getNativeTokenFromAssetToken(api, tokenId, "1000000").then((res) => {
     if (res) {
       return formatDecimalsFromToken(res.toString().replace(/[, ]/g, ""), tokenDecimals);

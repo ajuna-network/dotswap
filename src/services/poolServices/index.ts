@@ -631,7 +631,7 @@ export const getAllLiquidityPoolsTokensMetadata = async (api: ApiPromise, dispat
   if (pools) {
     const poolsAssetTokenIds = pools?.map((pool: any) => {
       if (pool?.[0]?.[1].interior?.X2) {
-        const poolsTokenIds = pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex.replace(/[, ]/g, "").toString();
+        const poolsTokenIds = pool?.[0]?.[1]?.interior?.X2?.[1]?.GeneralIndex?.replace(/[, ]/g, "").toString();
         return poolsTokenIds;
       }
     });
