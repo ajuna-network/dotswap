@@ -51,7 +51,7 @@ import SwapSelectTokenModal from "../SwapSelectTokenModal";
 import { whitelist } from "../../../whitelist";
 import TokenIcon from "../../atom/TokenIcon";
 import SlippageControl from "../../molecule/SlippageControl/SlippageControl";
-import { formatNumberEnUs, isApiAvailable } from "../../../app/util/helper";
+import { formatNumberEnUs, isApiAvailable, errorMessageHandler } from "../../../app/util/helper";
 import dotAcpToast from "../../../app/util/toast";
 
 type SwapTokenProps = {
@@ -118,7 +118,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
     tokenValue: "0",
   });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(1);
+  const [slippageValue, setSlippageValue] = useState<number>(10);
   const [walletHasEnoughNativeToken, setWalletHasEnoughNativeToken] = useState<boolean>(false);
   const [availablePoolTokenA, setAvailablePoolTokenA] = useState<TokenProps[]>([]);
   const [availablePoolTokenB, setAvailablePoolTokenB] = useState<TokenProps[]>([]);
@@ -575,11 +575,11 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
       payload: {
         id: "swap",
         notificationModalOpen: true,
-        notificationPercentage: 0,
+        notificationPercentage: 1,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
-        notificationTitle: "Warming up DOTSwap just for you",
-        notificationMessage: "Proceed in your wallet",
+        notificationTitle: "Warming up DOTswap",
+        notificationMessage: "Please proceed in your wallet",
         notificationChainDetails: null,
         notificationTransactionDetails: {
           fromToken: {
@@ -653,6 +653,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         );
       }
     } catch (error) {
+      const errorMessage = errorMessageHandler(error as any);
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
@@ -661,7 +662,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             notificationType: ToasterType.ERROR,
             notificationPercentage: null,
             notificationTitle: t("modal.notifications.error"),
-            notificationMessage: `Transaction failed: ${error}`,
+            notificationMessage: `Transaction failed: ${errorMessage}`,
           },
         },
       });

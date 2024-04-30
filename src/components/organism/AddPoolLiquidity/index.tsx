@@ -91,7 +91,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
   const [nativeTokenWithSlippage, setNativeTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [assetTokenWithSlippage, setAssetTokenWithSlippage] = useState<TokenValueProps>({ tokenValue: "" });
   const [slippageAuto, setSlippageAuto] = useState<boolean>(true);
-  const [slippageValue, setSlippageValue] = useState<number>(1);
+  const [slippageValue, setSlippageValue] = useState<number>(10);
   const [inputEdited, setInputEdited] = useState<InputEditedProps>({ inputType: InputEditedType.exactIn });
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [poolExists, setPoolExists] = useState<boolean>(false);

@@ -44,6 +44,7 @@ export type TokenBalanceData = {
   spotPrice: string;
   ss58Format: AnyJson;
   existentialDeposit: string;
+  existentialDepositRelay: string;
   tokenDecimals: string;
   tokenSymbol: string;
   assets: any;

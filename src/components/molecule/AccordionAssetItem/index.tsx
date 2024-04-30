@@ -129,8 +129,8 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
             <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
             <span>{token.assetTokenMetadata.symbol}</span>
           </div>
-          <div className="flex w-1/2 items-center justify-start">
-            <div className="flex flex-col">
+          <div className="flex w-1/2 items-center justify-start gap-4">
+            <div className="flex w-1/2 flex-col">
               <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">
                 {t("assetItem.total")}
               </div>
@@ -144,6 +144,14 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
                 {token.spotPrice ? " (" + usdTotalBalance + ")" : ""}
               </div>
             </div>
+            {token.spotPrice && token.spotPrice !== "0" && (
+              <div className="flex w-1/2 flex-col">
+                <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Token Price</div>
+                <div className="font-titillium-web text-base font-semibold" data-spotprice={token.spotPrice || 0}>
+                  {formatNumberEnUs(Number(token.spotPrice || 0), Number(token.assetTokenMetadata.decimals), true)}
+                </div>
+              </div>
+            )}
           </div>
           <div className="flex w-1/4 flex-row items-center justify-end gap-4 px-6">
             {token.tokenId === "" && (

@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
-import { getAssetTokenFromNativeToken } from "../../services/tokenServices";
+import { getAssetTokenFromNativeToken, getNativeTokenFromAssetToken } from "../../services/tokenServices";
 import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {
@@ -86,6 +86,10 @@ export const errorMessageHandler = (errorValue: string) => {
       return t("error.platform.ZeroAmount");
     case t("error.pallet.ZeroLiquidity"):
       return t("error.platform.ZeroLiquidity");
+    case t("error.pallet.NotExpendable"):
+      return t("error.platform.NotExpendable");
+    case t("error.pallet.TransactionCanceled"):
+      return t("error.platform.TransactionCanceled");
     default:
       return errorValue;
   }
@@ -242,7 +246,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
  * @returns USD value of the token
  */
 
-//TODO: returns cors error
+//TODO: returns cors errors
 
 // export const getSpotPrice = async (symbol: string) => {
 //     if (!symbol || symbol === "") return;
@@ -287,23 +291,28 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 // destination chain fee for Polkadot Asset Hub -> Polkadot Relay Chain
 // destination chain fee: 0.0020830735 DOT
 export const getCrossInDestinationFee = () => {
-  return "0.0020830735";
+  return "0.0029169265";
 };
 
 //
 // destination chain fee for Polkadot Relay Chain -> Polkadot Asset Hub
 // destination chain fee: 0.0397 DOT
 export const getCrossOutDestinationFee = () => {
-  return "0.0397";
+  return "0.003593";
 };
 
 // function for calculating max amount for cross out
 // existential deposit for polkadot relay chain is 1.0000000000 DOT
 // xcm instructions buffer for cross out is 0.000371525 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
-export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFee: string) => {
-  const xcmInstructionsBuffer = new Decimal("0.001371525");
-  const existentialDeposit = new Decimal("1.0000000000");
+export const calculateMaxAmountForCrossOut = (
+  freeBalance: string,
+  originChainFee: string,
+  chainExistentialDeposit: string
+) => {
+  //   const xcmInstructionsBuffer = new Decimal("0.01371525");
+  const xcmInstructionsBuffer = new Decimal("0.03095");
+  const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
@@ -319,9 +328,14 @@ export const calculateMaxAmountForCrossOut = (freeBalance: string, originChainFe
 // existential deposit for polkadot asset hub is 1.0000000000 DOT
 // xcm instructions buffer for cross in is 0.0005298333 DOT
 // free balance - origin chain fee - destination chain fee - existential deposit
-export const calculateMaxAmountForCrossIn = (freeBalance: string, originChainFee: string) => {
-  const xcmInstructionsBuffer = new Decimal("0.0015298333");
-  const existentialDeposit = new Decimal("0");
+export const calculateMaxAmountForCrossIn = (
+  freeBalance: string,
+  originChainFee: string,
+  chainExistentialDeposit: string
+) => {
+  //   const xcmInstructionsBuffer = new Decimal("0.015298333");
+  const xcmInstructionsBuffer = new Decimal("0.0393");
+  const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossInDestinationFee());
@@ -366,6 +380,20 @@ export const getAssetTokenSpotPrice = async (
   );
 
   return spotPrice.toString();
+};
+
+// get native token value from asset token
+export const getNativeTokenSpotPrice = async (api: any, tokenId: string, tokenDecimals: string) => {
+  if (!api || !Object.keys(api).length) return "0";
+  const value = await getNativeTokenFromAssetToken(api, tokenId, "1000000").then((res) => {
+    if (res) {
+      return formatDecimalsFromToken(res.toString().replace(/[, ]/g, ""), tokenDecimals);
+    }
+    return "0";
+  });
+
+  const spotPrice = new Decimal(1).dividedBy(new Decimal(value)).toFixed();
+  return spotPrice;
 };
 
 // function for formatting numbers
