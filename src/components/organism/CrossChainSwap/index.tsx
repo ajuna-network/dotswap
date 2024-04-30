@@ -200,12 +200,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   ]);
 
   const setOriginChainFee = async () => {
-    const originChainFee = await calculateOriginFee(selectedAccount, crosschainExtrinsic);
-    dispatch({ type: ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE, payload: originChainFee });
+    if (api && relayApi) {
+      const selectedApi = crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi;
+      const originChainFee = await calculateOriginFee(selectedApi, selectedAccount, crosschainExtrinsic);
+      dispatch({ type: ActionType.SET_CROSSCHAIN_ORIGIN_CHAIN_FEE, payload: originChainFee });
+    }
   };
 
   useEffect(() => {
-    setOriginChainFee().then();
+    if (crosschainExtrinsic) setOriginChainFee().then();
   }, [crosschainExtrinsic]);
 
   const assetHubChainAvailableBalance = new Decimal(Number(tokenBalances?.balanceAsset?.free || 0)).minus(
@@ -301,7 +304,16 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   const [isGreaterThanMax, setIsGreaterThanMax] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!selectedToken.tokenSymbol || !selectedToken.tokenBalance || !crosschainSelectedChain || !selectedAccount)
+    if (
+      !selectedToken.tokenSymbol ||
+      !selectedToken.tokenBalance ||
+      !crosschainSelectedChain ||
+      !selectedAccount ||
+      !api ||
+      !relayApi ||
+      !crosschainDestinationWalletAddress ||
+      !existentialDeposit
+    )
       return;
 
     calculateCrosschainMaxAmount(
@@ -317,7 +329,17 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     ).then((value) => {
       setMaxValue(value);
     });
-  }, [selectedToken.tokenSymbol, selectedToken.tokenBalance, selectedToken.decimals, crosschainSelectedChain]);
+  }, [
+    selectedToken.tokenSymbol,
+    selectedToken.tokenBalance,
+    selectedToken.decimals,
+    crosschainSelectedChain,
+    selectedAccount,
+    api,
+    relayApi,
+    crosschainDestinationWalletAddress,
+    existentialDeposit,
+  ]);
 
   const tokenBalanceDecimal = new Decimal(Number(maxValue) || 0);
 
@@ -332,7 +354,12 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       }
       if (
         selectedToken.tokenSymbol === nativeToken.assetTokenMetadata.symbol &&
-        tokenDecimals.gt(tokenBalanceDecimal)
+        (tokenDecimals.gt(tokenBalanceDecimal) ||
+          tokenDecimals.minus(Number(crosschainOriginChainFee) || 0).lt(0) ||
+          tokenDecimals
+            .minus(Number(crosschainOriginChainFee) || 0)
+            .minus(Number(crosschainDestinationChainFee) || 0)
+            .lt(0))
       ) {
         return {
           label: t("button.insufficientTokenAmount", { token: nativeToken.assetTokenMetadata.symbol }),
@@ -428,6 +455,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     let payloadTokenValue = "";
     setIsGreaterThanMax(false);
     if (maxTriggered) {
+      const isApiReady = api && relayApi && (await isApiAvailable(api, relayApi));
+      if (!isApiReady) {
+        dotAcpToast.error(t("error.api.notReady"), undefined, null);
+        return;
+      }
       payloadTokenValue = await tokenValue(
         await calculateCrosschainMaxAmount(
           value,
@@ -543,9 +575,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
   const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
-  const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.0393") : Number("0.03095"))
-    .toString();
+  const originChainFee = new Decimal(Number(crosschainOriginChainFee)).toString();
 
   return (
     <div className="flex w-full max-w-[552px] flex-col items-center justify-center gap-5">
@@ -704,8 +734,15 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       />
       <WarningMessage
         show={
-          (selectedTokenValue.tokenValue !== "" && crosschainExactTokenAmount === "0") ||
-          (isGreaterThanMax && maxValue === "0")
+          (selectedTokenValue.tokenValue === "" && crosschainExactTokenAmount === "0") ||
+          (isGreaterThanMax && maxValue !== "0") ||
+          (selectedTokenValue.tokenValue !== "" &&
+            crosschainExactTokenAmount !== "0" &&
+            new Decimal(Number(selectedTokenValue.tokenValue) || 0).lt(
+              new Decimal(Number(crosschainOriginChainFee) || 0).plus(
+                new Decimal(Number(crosschainDestinationChainFee) || 0)
+              )
+            ))
         }
         message={t("crosschainPage.insufficientBalanceWarning")}
       />
