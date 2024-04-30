@@ -165,7 +165,7 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       },
     });
     percentage += Math.floor(Math.random() * 5) + 1;
-    if (percentage >= 94) {
+    if (percentage >= 92) {
       clearInterval(interval);
     }
   }, 900);
