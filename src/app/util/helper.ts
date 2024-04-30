@@ -220,9 +220,6 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 
   if (tokenId === "" || tokenSymbol === "GUPPY") return;
 
-  //Nikola: YVGksGThNevgv9XJ0uqVE6ecVyx73Dbcd0qkYu17wes=
-  //Robert: bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=
-
   const options = {
     method: "GET",
     headers: {
@@ -316,10 +313,6 @@ export const calculateMaxAmountForCrossOut = (
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
-  console.log("freeBalanceDecimal", freeBalanceDecimal.toString());
-  console.log("originChainFeeDecimal", originChainFeeDecimal.toString());
-  console.log("existentialDeposit", existentialDeposit.toString());
-  console.log("destinationChainFeeDecimal", destinationChainFeeDecimal.toString());
 
   return (
     freeBalanceDecimal
