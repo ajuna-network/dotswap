@@ -311,17 +311,24 @@ export const calculateMaxAmountForCrossOut = (
   chainExistentialDeposit: string
 ) => {
   //   const xcmInstructionsBuffer = new Decimal("0.01371525");
-  const xcmInstructionsBuffer = new Decimal("0.03095");
+  //   const xcmInstructionsBuffer = new Decimal("0.03095");
   const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossOutDestinationFee());
-  return freeBalanceDecimal
-    .minus(xcmInstructionsBuffer)
-    .minus(originChainFeeDecimal)
-    .minus(existentialDeposit)
-    .minus(destinationChainFeeDecimal)
-    .toString();
+  console.log("freeBalanceDecimal", freeBalanceDecimal.toString());
+  console.log("originChainFeeDecimal", originChainFeeDecimal.toString());
+  console.log("existentialDeposit", existentialDeposit.toString());
+  console.log("destinationChainFeeDecimal", destinationChainFeeDecimal.toString());
+
+  return (
+    freeBalanceDecimal
+      // .minus(xcmInstructionsBuffer)
+      .minus(originChainFeeDecimal)
+      .minus(existentialDeposit)
+      .minus(destinationChainFeeDecimal)
+      .toString()
+  );
 };
 
 // function for calculating max amount for cross in
@@ -334,17 +341,19 @@ export const calculateMaxAmountForCrossIn = (
   chainExistentialDeposit: string
 ) => {
   //   const xcmInstructionsBuffer = new Decimal("0.015298333");
-  const xcmInstructionsBuffer = new Decimal("0.0393");
+  //   const xcmInstructionsBuffer = new Decimal("0.0393");
   const existentialDeposit = new Decimal(chainExistentialDeposit);
   const freeBalanceDecimal = new Decimal(freeBalance);
   const originChainFeeDecimal = new Decimal(originChainFee);
   const destinationChainFeeDecimal = new Decimal(getCrossInDestinationFee());
-  return freeBalanceDecimal
-    .minus(xcmInstructionsBuffer)
-    .minus(originChainFeeDecimal)
-    .minus(existentialDeposit)
-    .minus(destinationChainFeeDecimal)
-    .toString();
+  return (
+    freeBalanceDecimal
+      // .minus(xcmInstructionsBuffer)
+      .minus(originChainFeeDecimal)
+      .minus(existentialDeposit)
+      .minus(destinationChainFeeDecimal)
+      .toString()
+  );
 };
 
 export const generateRandomString = (length: number) => {
