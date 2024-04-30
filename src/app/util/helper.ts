@@ -5,7 +5,7 @@ import { t } from "i18next";
 import { UrlParamType, TokenBalanceData } from "../types";
 import { isHex } from "@polkadot/util";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
-import { getAssetTokenFromNativeToken } from "../../services/tokenServices";
+import { getAssetTokenFromNativeToken, getNativeTokenFromAssetToken } from "../../services/tokenServices";
 import { ApiPromise } from "@polkadot/api";
 
 export const init = () => {
@@ -380,6 +380,19 @@ export const getAssetTokenSpotPrice = async (
   );
 
   return spotPrice.toString();
+};
+
+// get native token value from asset token
+export const getNativeTokenSpotPrice = async (api: any, tokenId: string, tokenDecimals: string) => {
+  const value = await getNativeTokenFromAssetToken(api, tokenId, "1000000").then((res) => {
+    if (res) {
+      return formatDecimalsFromToken(res.toString().replace(/[, ]/g, ""), tokenDecimals);
+    }
+    return "0";
+  });
+
+  const spotPrice = new Decimal(1).dividedBy(new Decimal(value)).toFixed();
+  return spotPrice;
 };
 
 // function for formatting numbers
