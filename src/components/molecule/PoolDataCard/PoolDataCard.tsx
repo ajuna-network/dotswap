@@ -110,11 +110,11 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
       <div className="flex gap-2">
         <div className="flex basis-1/2 flex-col items-center justify-end">
           <div className="flex flex-col items-start font-omnes-bold">
-            <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
+            <span className="flex items-center gap-1 text-large font-medium [&>img]:h-4 [&>img]:w-4 [&>svg]:h-4 [&>svg]:w-4">
               {nativeTokenIcon}
               {formatNumberEnUs(Number(nativeTokens), 4)}
             </span>
-            <span className="flex items-center gap-1 text-large font-medium [&>svg]:h-4 [&>svg]:w-4">
+            <span className="flex items-center gap-1 text-large font-medium [&>img]:h-4 [&>img]:w-4 [&>svg]:h-4 [&>svg]:w-4">
               {assetTokenIcon}
               {formatNumberEnUs(Number(assetTokens), 4)}
             </span>

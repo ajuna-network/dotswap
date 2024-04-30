@@ -35,8 +35,8 @@ const PoolsPage = () => {
                 nativeTokens={item.totalTokensLocked.nativeToken.formattedValue}
                 assetTokens={item.totalTokensLocked.assetToken.formattedValue}
                 lpTokenAsset={item.lpTokenAsset}
-                assetTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[1]} width="32" height="32" />}
-                nativeTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[0]} width="32" height="32" />}
+                assetTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[1]} width={"32px"} height={"32px"} />}
+                nativeTokenIcon={<TokenIcon tokenSymbol={item.name.split("–")[0]} width={"32px"} height={"32px"} />}
                 assetTokenId={item.assetTokenId}
                 lpTokenId={item.lpTokenId}
               />

@@ -14,7 +14,7 @@ const PendingNotification: FC = () => {
       <span className="font-medium lowercase leading-none text-white">
         {pendingNotifications.length} {t("modal.notifications.pending")}
       </span>
-      <CircleLoader className="animate-spin" />
+      <CircleLoader className="h-6 w-6 animate-spin" />
       <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 dedswap:bg-primary-500 dedswap:text-white [&>path]:fill-yellow-100">
         <div className="font-inter text-medium font-normal normal-case leading-normal text-dark-300 dedswap:font-open-sans dedswap:text-white">
           {pendingNotifications.length}{" "}

@@ -144,7 +144,7 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
               >
                 {totalBalance && totalBalance !== "0"
                   ? formattedTotalBalance + " " + token.assetTokenMetadata.symbol
-                  : "0"}
+                  : "0 " + token.assetTokenMetadata.symbol}
                 {token.spotPrice ? " (" + usdTotalBalance + ")" : ""}
               </div>
             </div>

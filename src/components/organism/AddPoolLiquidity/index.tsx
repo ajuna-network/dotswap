@@ -384,7 +384,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
         };
       }
 
-      const assetTokenBalance = new Decimal(selectedTokenB.assetTokenBalance?.replace(/[, ]/g, ""));
+      const assetTokenBalance = new Decimal(selectedTokenB.assetTokenBalance?.replace(/[, ]/g, "") || 0);
       const assetTokenBalanceFormatted = formatDecimalsFromToken(assetTokenBalance, selectedTokenB.decimals);
       if (selectedAssetTokenNumber.gt(assetTokenBalanceFormatted)) {
         return { label: t("button.insufficientTokenAmount", { token: selectedTokenB.tokenSymbol }), disabled: true };

@@ -2,7 +2,7 @@ import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
 import { ButtonVariants, WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
-import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
+import { type Wallet, type WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
