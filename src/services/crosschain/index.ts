@@ -46,6 +46,7 @@ export const calculateCrosschainMaxAmount = async (
   crosschainTransactionType: CrosschainTransactionTypes,
   destinationAddress: string,
   api: ApiPromise | null,
+  existentialDeposit: string,
   account: WalletAccount
 ): Promise<string> => {
   let maxAmount = "";
@@ -59,6 +60,7 @@ export const calculateCrosschainMaxAmount = async (
         crosschainTransactionType,
         destinationAddress,
         api,
+        existentialDeposit,
         account
       );
       if (originFeeA === originFeeB || count > 1) {
@@ -77,6 +79,7 @@ const recurseMaxAmount = async (
   crosschainTransactionType: CrosschainTransactionTypes,
   destinationAddress: string,
   api: ApiPromise,
+  existentialDeposit: string,
   account: WalletAccount
 ): Promise<{ originFeeA: string; originFeeB: string; calculatedMaxAmount: string }> => {
   const tokenAmountDecimal = new Decimal(tokenAmount).times(Math.pow(10, decimals)).toFixed();
@@ -84,11 +87,11 @@ const recurseMaxAmount = async (
   if (crosschainTransactionType === CrosschainTransactionTypes.crossIn) {
     extrinsic = await createCrossInExtrinsic(api, tokenAmountDecimal, destinationAddress);
     originFeeA = await calculateOriginFee(account, extrinsic);
-    calculatedMaxAmount = calculateMaxAmountForCrossIn(tokenAmount, originFeeA);
+    calculatedMaxAmount = calculateMaxAmountForCrossIn(tokenAmount, originFeeA, existentialDeposit);
   } else {
     extrinsic = await createCrossOutExtrinsic(api, tokenAmountDecimal, destinationAddress);
     originFeeA = await calculateOriginFee(account, extrinsic);
-    calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA);
+    calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA, existentialDeposit);
   }
   const calculatedMaxAmountDecimal = new Decimal(calculatedMaxAmount).times(Math.pow(10, decimals)).toFixed();
   // if the calculated max amount is less 0 then return 0

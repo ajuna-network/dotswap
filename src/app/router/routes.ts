@@ -21,6 +21,10 @@ const SEO_ROUTES = {
     title: t("seo.swap.title"),
     description: t("seo.swap.description"),
   },
+  [CROSS_CHAIN_ROUTE]: {
+    title: t("seo.crosschain.title"),
+    description: t("seo.crosschain.description"),
+  },
 };
 
 export {

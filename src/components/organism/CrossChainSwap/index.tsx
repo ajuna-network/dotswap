@@ -60,7 +60,6 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     crosschainSelectedChain,
     crosschainExtrinsic,
     assetLoading,
-    messageQueueProcessedFee,
   } = state;
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
@@ -81,6 +80,16 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
 
     handleTokenValueChange("").then();
   }, [api]);
+
+  const existentialDeposit =
+    tokenBalances && tokenBalances.existentialDeposit && tokenBalances.existentialDepositRelay
+      ? crosschainSelectedChain.chainA.chainType === "Asset Hub"
+        ? formatDecimalsFromToken(tokenBalances.existentialDeposit.replace(/[, ]/g, ""), tokenBalances.tokenDecimals)
+        : formatDecimalsFromToken(
+            tokenBalances.existentialDepositRelay.replace(/[, ]/g, ""),
+            tokenBalances.tokenDecimals
+          )
+      : "0";
 
   const fetchData = async () => {
     if (!crosschainDestinationWalletAddress || !tokenBalances || !tokenBalances.tokenDecimals || !api || !relayApi)
@@ -294,6 +303,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
   useEffect(() => {
     if (!selectedToken.tokenSymbol || !selectedToken.tokenBalance || !crosschainSelectedChain || !selectedAccount)
       return;
+
     calculateCrosschainMaxAmount(
       availableBalanceA.toString(),
       selectedToken.decimals,
@@ -302,6 +312,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         : CrosschainTransactionTypes.crossOut,
       crosschainDestinationWalletAddress,
       crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+      existentialDeposit,
       selectedAccount
     ).then((value) => {
       setMaxValue(value);
@@ -426,6 +437,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
             : CrosschainTransactionTypes.crossOut,
           crosschainDestinationWalletAddress,
           crosschainSelectedChain.chainA.chainType === "Asset Hub" ? api : relayApi,
+          existentialDeposit,
           selectedAccount
         )
       );
@@ -479,11 +491,11 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
         payload: {
           id: "crosschain",
           notificationModalOpen: true,
-          notificationPercentage: 0,
+          notificationPercentage: 1,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
-          notificationTitle: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Crossing in" : "Crossing out",
-          notificationMessage: "Proceed in your wallet",
+          notificationTitle: "Warming up DOTswap",
+          notificationMessage: "Please proceed in your wallet",
           notificationChainDetails: {
             originChain: crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType,
             destinationChain: crosschainSelectedChain.chainB.chainType,
@@ -529,21 +541,10 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
     }
   };
 
-  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee))
-    .plus(
-      crosschainSelectedChain.chainB.chainType === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
-    .toString();
+  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
   const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.000371525") : Number("0.0005298333"))
-    .plus(
-      crosschainSelectedChain.chainB.chainType === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
+    .plus(crosschainSelectedChain.chainB.chainType === "Asset Hub" ? Number("0.0393") : Number("0.03095"))
     .toString();
 
   return (

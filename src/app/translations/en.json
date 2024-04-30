@@ -25,6 +25,10 @@
     "swap": {
       "title": "Swap",
       "description": "DOTswap Swap Details Page description"
+    },
+    "crosschain": {
+      "title": "Crosschain",
+      "description": "DOTswap Crosschain Page description"
     }
   },
   "button": {
@@ -47,6 +51,7 @@
     "confirm": "Confirm",
     "connectWallet": "Connect Wallet",
     "support": "Support",
+    "analytics": "Analytics",
     "max": "Max",
     "close": "Close",
     "cancel": "Cancel",
@@ -74,24 +79,24 @@
     "added": "added",
     "notifications": {
       "success": "Success",
-      "swapSuccess": "Success! YEAH BABY, YEAH!",
-      "crosschainSuccess": "Success! YEAH BABY, YEAH!",
-      "poolsSuccess": "Success! YEAH BABY, YEAH!",
+      "swapSuccess": "Success!",
+      "crosschainSuccess": "Success!",
+      "poolsSuccess": "Success!",
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
-      "transactionInitiatedTitle": "Warming up DOTSwap just for you",
-      "transactionInitiatedNotification": "You can close this modal at any time. We will notify you about transaction updates.",
-      "transactionBroadcastedTitle": "Warming up DOTSwap just for you",
-      "transactionBroadcastedNotification": "Transaction broadcasted. Waiting for confirmation.",
-      "transactionIncludedInBlockTitle": "DOTSwap rocking and rolling",
-      "transactionIncludedInBlockNotification": "Transaction included in block. Waiting for confirmation.",
-      "transactionIsProcessingTitle": "DOTSwap accepted your swap!",
-      "transactionIsProcessingTitleBelow70": "DOTSwap getting you the best deal",
-      "transactionIsProcessingTitleAbove70": "Almost done... just finalizing the last things.",
+      "transactionInitiatedTitle": "Warming up DOTswap",
+      "transactionInitiatedNotification": "Please proceed in your wallet",
+      "transactionBroadcastedTitle": "DOTSwap getting you the best deal",
+      "transactionBroadcastedNotification": "Transaction is processing. You can close this window anytime.",
+      "transactionIncludedInBlockTitle": "DOTSwap submitted your transaction to block",
+      "transactionIncludedInBlockNotification": "Transaction is processing. You can close this window anytime.",
+      "transactionIsProcessingTitle": "Transaction block is being validated",
+      "transactionIsProcessingTitleBelow70": "DOTswap is waiting for block to be added to the chain",
+      "transactionIsProcessingTitleAbove70": "Sit tight! We're confirming your transaction on the blockchain",
       "transactionIsProcessingNotification": "Transaction is processing. You can close this window anytime.",
-      "isProcessingBelow70": "Almost there! Your transaction is being processed.",
-      "isProcessingAbove70": "Your transaction is almost complete. Hang tight!",
+      "isProcessingBelow70": "Transaction is processing. You can close this window anytime.",
+      "isProcessingAbove70": "Transaction is processing. You can close this window anytime.",
       "addLiquidity": "Adding Liquidity",
       "removeLiquidity": "Removing Liquidity",
       "proceed": "Proceed in your wallet",
@@ -307,7 +312,9 @@
       "ProvidedMaximumNotSufficientForSwap": "Provided maximum amount is not sufficient for swap.",
       "WrongDesiredAmount": "Desired amount can't be zero.",
       "ZeroAmount": "Amount can't be zero.",
-      "ZeroLiquidity": "Requested liquidity can't be zero."
+      "ZeroLiquidity": "Requested liquidity can't be zero.",
+      "NotExpendable": "Token: NotExpendable",
+      "TransactionCanceled": "Error: Cancelled"
     },
     "platform": {
       "AmountOneLessThanMinimal": "The provided amount is less than the minimum required for this asset.",
@@ -324,7 +331,9 @@
       "ProvidedMaximumNotSufficientForSwap": "The transaction could not be completed due to the set slippage. Please increase the slippage tolerance for the transaction to proceed successfully.",
       "WrongDesiredAmount": "Desired amount can't be zero.",
       "ZeroAmount": "Desired amount can't be zero.",
-      "ZeroLiquidity": "Requested liquidity can't be zero."
+      "ZeroLiquidity": "Requested liquidity can't be zero.",
+      "NotExpendable": "The amount is not expendable.",
+      "TransactionCanceled": "Canceled"
     },
     "api": {
       "notReady": "Please reconnect your wallet."

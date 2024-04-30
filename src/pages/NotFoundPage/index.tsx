@@ -1,5 +1,5 @@
 import { t } from "i18next";
-import DotSwapLogo from "../../assets/img/dot-swap-logo.svg?react";
+import DotSwapLogo from "../../assets/img/dot-swap-logo-alpha.svg?react";
 import AlertIcon from "../../assets/img/alert-icon.svg?react";
 import DedSwapLogo from "../../assets/img/ded-bird-logo.png";
 

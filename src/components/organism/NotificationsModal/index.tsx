@@ -112,26 +112,34 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     switch (currentNotification?.notificationType) {
       case ToasterType.SUCCESS:
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success">
-            <SuccessIcon />
+          <div className="flex h-16 w-16 items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success">
+              <SuccessIcon />
+            </div>
           </div>
         );
       case ToasterType.PENDING:
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-400">
-            <LottieMedium />
+          <div className="flex h-16 w-16 items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-400">
+              <LottieMedium />
+            </div>
           </div>
         );
       case ToasterType.INFO:
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300">
-            <InfoIcon className="[&>path]:fill-white" />
+          <div className="flex h-16 w-16 items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-300">
+              <InfoIcon className="[&>path]:fill-white" />
+            </div>
           </div>
         );
       case ToasterType.ERROR:
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-alert">
-            <AlertIcon />
+          <div className="flex h-16 w-16 items-center justify-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-alert">
+              <AlertIcon />
+            </div>
           </div>
         );
       default:
@@ -153,7 +161,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     if (!currentNotification?.notificationTransactionDetails) return null;
 
     return (
-      <div className="flex items-center gap-2 py-2">
+      <div className="flex items-center gap-2 py-2 text-[14px]">
         <div className="flex items-center gap-1">
           <TokenIcon tokenSymbol={fromTokenSymbol} width="16" height="16" />
           <p>{fromTokenAmount ?? ""}</p>
@@ -198,7 +206,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
     return (
       <div className="flex max-w-notification">
-        <p className="text-center font-inter text-medium leading-tight tracking-[0.0125em] text-black text-opacity-70 dark:font-open-sans">
+        <p className="text-center font-inter text-medium leading-tight tracking-[0.0125em] text-black text-opacity-70">
           {currentNotification?.notificationMessage}
         </p>
       </div>
@@ -268,8 +276,8 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
   return (
     <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
-      <div className="min-w-modal max-w-full">
-        <div className="flex flex-col items-center gap-3 py-10 dark:font-open-sans">
+      <div className="flex min-h-[310px] w-[390px] flex-col items-center justify-center">
+        <div className="flex h-full w-full flex-col items-center gap-3 py-10  dark:font-open-sans">
           {currentNotification?.notificationType === ToasterType.PENDING
             ? renderPercentageSpinner()
             : renderNotificationIcon()}

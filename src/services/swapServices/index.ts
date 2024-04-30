@@ -347,6 +347,7 @@ export const performSwapNativeForAsset = async (
     })
     .catch((error) => {
       const errorMessage = errorMessageHandler(error);
+
       dispatch({
         type: ActionType.UPDATE_NOTIFICATION,
         payload: {
