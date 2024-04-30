@@ -15,15 +15,21 @@ const POOLS_PAGE = "/pools";
 const SEO_ROUTES = {
   [POOLS_ROUTE]: {
     title: t("seo.pools.title"),
-    description: t("seo.pools.description"),
+    description: t("seo.pools.description", {
+      platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+    }),
   },
   [SWAP_ROUTE]: {
     title: t("seo.swap.title"),
-    description: t("seo.swap.description"),
+    description: t("seo.swap.description", {
+      platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+    }),
   },
   [CROSS_CHAIN_ROUTE]: {
     title: t("seo.crosschain.title"),
-    description: t("seo.crosschain.description"),
+    description: t("seo.crosschain.description", {
+      platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+    }),
   },
 };
 

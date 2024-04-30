@@ -139,7 +139,9 @@ async function sendTransaction(
             props: {
               notificationType: ToasterType.PENDING,
               notificationPercentage: 15,
-              notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+              notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+                platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+              }),
               notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
             },
           },
@@ -152,7 +154,9 @@ async function sendTransaction(
             props: {
               notificationType: ToasterType.PENDING,
               notificationPercentage: 30,
-              notificationTitle: t("modal.notifications.transactionBroadcastedTitle"),
+              notificationTitle: t("modal.notifications.transactionBroadcastedTitle", {
+                platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+              }),
               notificationMessage: t("modal.notifications.transactionBroadcastedNotification"),
             },
           },
@@ -165,7 +169,9 @@ async function sendTransaction(
             props: {
               notificationType: ToasterType.PENDING,
               notificationPercentage: 45,
-              notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+              notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle", {
+                platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+              }),
               notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
               notificationLink: {
                 text: t("modal.notifications.viewInBlockExplorer"),
@@ -182,7 +188,9 @@ async function sendTransaction(
               props: {
                 notificationType: ToasterType.PENDING,
                 notificationPercentage: percentage,
-                notificationTitle: t("modal.notifications.transactionIsProcessingTitleBelow70"),
+                notificationTitle: t("modal.notifications.transactionIsProcessingTitleBelow70", {
+                  platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+                }),
                 notificationMessage: t("modal.notifications.isProcessingAbove70"),
                 notificationLink: {
                   text: t("modal.notifications.viewInBlockExplorer"),

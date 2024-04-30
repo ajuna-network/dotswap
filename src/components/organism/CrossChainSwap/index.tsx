@@ -526,7 +526,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           notificationPercentage: 1,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
-          notificationTitle: "Warming up DOTswap",
+          notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          }),
           notificationMessage: "Please proceed in your wallet",
           notificationChainDetails: {
             originChain: crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType,

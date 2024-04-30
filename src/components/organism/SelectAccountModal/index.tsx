@@ -28,7 +28,11 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
     if (accounts.length === 0 && selectedAccount?.wallet) {
       const fetchAccounts = async () => {
         const wallet = await getWalletBySource(selectedAccount?.wallet?.extensionName);
-        await wallet?.enable(t("seo.global.title"));
+        await wallet?.enable(
+          t("seo.global.title", {
+            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          })
+        );
         const accounts = await wallet?.getAccounts();
         dispatch({
           type: ActionType.SET_ACCOUNTS,
@@ -103,7 +107,9 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
       {infoMessage && (
         <InfoMessage
           title={t("wallet.infoMessage.title")}
-          message={t("wallet.infoMessage.description")}
+          message={t("wallet.infoMessage.description", {
+            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          })}
           handleClose={handleClose}
         />
       )}

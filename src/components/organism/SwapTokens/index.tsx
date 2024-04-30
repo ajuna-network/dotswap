@@ -579,7 +579,9 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         notificationPercentage: 1,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
-        notificationTitle: "Warming up DOTswap",
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+        }),
         notificationMessage: "Please proceed in your wallet",
         notificationChainDetails: null,
         notificationTransactionDetails: {

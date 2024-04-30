@@ -147,7 +147,9 @@ const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<Notif
       id: "liquidity",
       props: {
         notificationType: ToasterType.PENDING,
-        notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+        }),
         notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
         notificationPercentage: 30,
       },
@@ -162,7 +164,9 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       id: "liquidity",
       props: {
         notificationType: ToasterType.PENDING,
-        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle", {
+          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+        }),
         notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
         notificationPercentage: 50,
         notificationLink: {
@@ -179,7 +183,9 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
     const title =
       percentage <= 70
-        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70", {
+            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          })
         : t("modal.notifications.transactionIsProcessingTitleAbove70");
     dispatch({
       type: ActionType.UPDATE_NOTIFICATION,

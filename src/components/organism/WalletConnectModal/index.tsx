@@ -60,7 +60,11 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                         variant={ButtonVariants.btnSecondaryGray}
                         onClick={async () => {
                           try {
-                            await wallet?.enable(t("seo.global.title"));
+                            await wallet?.enable(
+                              t("seo.global.title", {
+                                platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+                              })
+                            );
                             await wallet?.getAccounts().then((accounts) => {
                               handleContinueClick(accounts);
                             });
