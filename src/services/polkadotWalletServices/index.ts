@@ -28,7 +28,7 @@ export const setupPolkadotApi = async (
     const provider = stateProvider || new WsProvider(rpcUrl);
     await provider.isReady;
 
-    const api = stateApi || new ApiPromise({ provider });
+    const api = stateApi || new ApiPromise({ noInitWarn: true, provider: provider });
     await api.isReadyOrError;
 
     return { provider, api };
