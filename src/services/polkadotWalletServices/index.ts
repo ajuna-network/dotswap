@@ -340,7 +340,6 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
-    console.log("wallet not signed");
     await wallet?.enable(t("seo.global.title"));
     return;
   }
