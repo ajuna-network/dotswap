@@ -1,14 +1,16 @@
 import React, { FC } from "react";
 import TooltipIcon from "../../../assets/img/tooltip-icon.svg?react";
 import TooltipBottom from "../../../assets/img/tooltip-bottom.svg?react";
+import classNames from "classnames";
 
 interface TooltipProps {
   message: string;
   children?: React.ReactNode;
   className?: string;
+  invertedStyle?: boolean;
 }
 
-const Tooltip: FC<TooltipProps> = ({ message, children, className = "right-1/2" }) => {
+const Tooltip: FC<TooltipProps> = ({ message, children, className = "right-1/2", invertedStyle }) => {
   return (
     <div className="group relative z-50 flex items-center justify-center">
       <div
@@ -21,7 +23,9 @@ const Tooltip: FC<TooltipProps> = ({ message, children, className = "right-1/2" 
           <TooltipBottom className="[&>path]:fill-yellow-100 dedswap:[&>path]:fill-primary-500" />
         </div>
       </div>
-      <div className="flex items-center justify-center">{children ? children : <TooltipIcon />}</div>
+      <div className="flex items-center justify-center">
+        {children ? children : <TooltipIcon className={classNames({ "dedswap:invert": invertedStyle })} />}
+      </div>
     </div>
   );
 };
