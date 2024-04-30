@@ -57,12 +57,12 @@ const SlippageControl: FC<SlippageControlProps> = ({
                     "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": !slippageAuto,
-                      "bg-purple-100": slippageAuto,
+                      "bg-primary-500 text-white dedswap:bg-purple-100 dedswap:text-gray-400": slippageAuto,
                     }
                   )}
                   onClick={() => {
                     setSlippageAuto(true);
-                    setSlippageValue(15);
+                    setSlippageValue(10);
                   }}
                   disabled={loadingState || !selectedAccount.address}
                 >
@@ -73,7 +73,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
                     "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": slippageAuto,
-                      "bg-purple-100": !slippageAuto,
+                      "bg-primary-500 text-white dedswap:bg-purple-100 dedswap:text-gray-400": !slippageAuto,
                     }
                   )}
                   onClick={() => {
