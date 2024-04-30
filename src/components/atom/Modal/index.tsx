@@ -2,6 +2,7 @@ import { FC, ReactNode, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import ModalCloseIcon from "../../../assets/img/modal-close-icon.svg?react";
 import BackArrow from "../../../assets/img/back-arrow.svg?react";
+import classNamesLib from "classnames";
 
 interface ModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ const Modal: FC<ModalProps> = ({
   disableOverlayClick,
   onClose,
   onBack,
-  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow",
+  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dedswap:rounded-sm dedswap:border-8 dedswap:border-black",
 }) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -60,15 +61,17 @@ const Modal: FC<ModalProps> = ({
             >
               <Dialog.Panel className={`relative z-10 transform overflow-hidden  p-[18px] ${classNames}`}>
                 <div
-                  className={`mb-[6px] flex items-center pb-[8px] pr-[24px] pt-[10px] ${title || onBack ? "border-b border-b-gray-50" : ""}`}
+                  className={classNamesLib("mb-[6px] flex items-center pb-[8px] pr-[24px] pt-[10px] dedswap:pr-0", {
+                    "border-b border-b-gray-50 dedswap:mb-6 dedswap:border-none": title || onBack,
+                  })}
                 >
                   {onBack ? (
-                    <button className="flex justify-end" onClick={onBack}>
+                    <button className="mr-4 flex justify-end" onClick={onBack}>
                       <BackArrow />
                     </button>
                   ) : null}
 
-                  <div className="flex w-full justify-center font-unbounded-variable text-heading-6 leading-[120%]">
+                  <div className="flex w-full justify-center font-unbounded-variable text-heading-6 leading-[120%] dedswap:justify-start dedswap:font-omnes-bold dedswap:text-heading-4">
                     {title}
                   </div>
                   <button className="flex justify-end" onClick={onClose}>

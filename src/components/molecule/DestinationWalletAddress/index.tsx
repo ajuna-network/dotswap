@@ -56,9 +56,9 @@ const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName
   };
 
   return (
-    <div className="flex w-full rounded-lg bg-purple-100 px-4 py-6">
+    <div className="flex w-full rounded-lg bg-purple-100 px-4 py-6 dedswap:rounded-sm dedswap:border-8 dedswap:border-black dedswap:bg-white">
       <div className="flex flex-1 flex-col items-start justify-center text-small font-normal tracking-[.3px]">
-        <div className="text-gray-200">
+        <div className="text-gray-200 dedswap:font-omnes-bold dedswap:uppercase">
           {t("destinationWalletAddress.destination")} {chainName} {t("destinationWalletAddress.address")}
         </div>
         {!isPopupEdit ? (
@@ -73,11 +73,13 @@ const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName
           />
         ) : (
           <>
-            <span className="text-gray-200">{crosschainDestinationWalletAddress}</span>
+            <span className="text-gray-200 dedswap:font-omnes-bold dedswap:uppercase dedswap:text-black">
+              {crosschainDestinationWalletAddress}
+            </span>
             <Modal isOpen={open} onClose={onClose} title={t("destinationWalletAddress.modalTitle")}>
               <div className="flex w-[391px] items-center justify-between py-4 text-small font-normal tracking-[.3px]">
                 <WalletAddressInputField
-                  className="!w-[391px] rounded-lg bg-purple-100 px-4 py-6 text-center"
+                  className="!w-[391px] rounded-lg bg-purple-100 px-4 py-6 text-center dedswap:border-8 dedswap:border-black dedswap:py-4"
                   disabled={disabled}
                   inputValue={inputValue}
                   handleAddressChange={handleAddressChange}
@@ -88,19 +90,15 @@ const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName
               </div>
               <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
               <div className="flex flex-row justify-center gap-[6px]">
-                <button
-                  className="flex w-full max-w-[160.5px] items-center justify-center px-4 py-3 font-unbounded-variable text-small leading-[13.2px] tracking-[.96px]"
-                  onClick={onClose}
-                >
+                <Button variant={ButtonVariants.btnCloseModal} onClick={onClose}>
                   {t(`destinationWalletAddress.modalCancel`)}
-                </button>
+                </Button>
                 <Button
                   onClick={() => {
                     handleAddressValidation(inputValue);
                   }}
                   disabled={!isAddressValid}
-                  variant={ButtonVariants.btnInteractivePink}
-                  className="max-w-[160.5px] !rounded-full !px-4 !py-3 !font-unbounded-variable text-small !leading-[13.2px] tracking-[.96px]"
+                  variant={ButtonVariants.btnPrimaryPinkSm}
                 >
                   {t(`destinationWalletAddress.modalConfirm`)}
                 </Button>
@@ -112,7 +110,7 @@ const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName
       <div className="px-4 py-3">
         {disabled || isPopupEdit ? (
           <button
-            className="font-unbounded-variable text-small leading-[13.64px] tracking-[.96px] "
+            className="font-unbounded-variable text-small leading-[13.64px] tracking-[.96px] dedswap:font-open-sans dedswap:font-extrabold dedswap:uppercase"
             onClick={() => {
               setDisabled(!disabled);
               isPopupEdit && setOpen(true);
@@ -123,7 +121,7 @@ const DestinationWalletAddress: FC<DestinationWalletAddressProps> = ({ chainName
           </button>
         ) : (
           <button
-            className="font-unbounded-variable text-small leading-[13.64px] tracking-[.96px] "
+            className="font-unbounded-variable text-small leading-[13.64px] tracking-[.96px]"
             onClick={() => {
               handleAddressValidation(inputValue);
             }}
@@ -179,13 +177,18 @@ const WalletAddressInputField: FC<WalletAddressInputFieldProps> = ({
       />
       {!isAddressValid && (
         <div
-          className={`absolute left-0 flex translate-y-full items-center gap-[6px] ${!isPopupEdit ? "bottom-0" : "bottom-[-6px]"}`}
+          className={classNames(
+            "absolute left-0 flex translate-y-full items-center gap-[6px] dedswap:font-open-sans dedswap:font-extrabold",
+            {
+              "bottom-0": !isPopupEdit,
+              "bottom-[-6px]": isPopupEdit,
+            }
+          )}
         >
           <AlertIcon width={16} height={16} />
           <span className="text-alert">{t("destinationWalletAddress.invalidAddress")}</span>
-
           <span>-</span>
-          <button className="font-normal capitalize" onClick={onClose}>
+          <button className="font-normal capitalize dedswap:font-open-sans dedswap:font-extrabold" onClick={onClose}>
             {t("destinationWalletAddress.resetAddress")}
           </button>
         </div>

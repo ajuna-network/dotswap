@@ -20,9 +20,11 @@ import {
   formatDecimalsFromToken,
   formatInputTokenValue,
   getAssetTokenSpotPrice,
+  getPlatform,
   liquidityProviderFee,
 } from "../../../app/util/helper";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
+import SwitchArrowRounded from "../../../assets/img/switch-arrow-rounded.svg?react";
 import ArrowDownIcon from "../../../assets/img/down-arrow.svg?react";
 import HubIcon from "../../../assets/img/asset-hub-icon.svg?react";
 import { LottieMedium } from "../../../assets/loader";
@@ -578,7 +580,9 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         notificationPercentage: 1,
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
-        notificationTitle: "Warming up DOTswap",
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+          platform: getPlatform(),
+        }),
         notificationMessage: "Please proceed in your wallet",
         notificationChainDetails: null,
         notificationTransactionDetails: {
@@ -1495,10 +1499,12 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
   }, [tokenSelected]);
 
   return (
-    <div className="flex max-w-[460px] flex-col gap-4">
-      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5">
+    <div className="flex max-w-[460px] flex-col gap-4 dedswap:mt-[35px] dedswap:max-w-[604px]">
+      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dedswap:rounded-sm dedswap:border-8 dedswap:border-black dedswap:bg-opacity-80">
         <div className="relative flex w-full items-center justify-between">
-          <h3 className="heading-6 font-unbounded-variable font-normal">{t("swapPage.swap")}</h3>
+          <h3 className="heading-6 font-unbounded-variable font-normal dedswap:font-omnes-bold dedswap:text-[40px] dedswap:font-bold">
+            {t("swapPage.swap")}
+          </h3>
           <SlippageControl
             slippageValue={slippageValue}
             setSlippageValue={setSlippageValue}
@@ -1507,7 +1513,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             loadingState={swapLoading || assetLoading}
           />
         </div>
-        <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50" />
+        <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50 dedswap:hidden" />
         <TokenAmountInput
           tokenText={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
@@ -1559,7 +1565,8 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             !swapLoading && handleSwitchTokens();
           }}
         >
-          <SwitchArrow className="hover:rotate-180 hover:cursor-pointer" />
+          <SwitchArrow className="cursor-pointer hover:rotate-180 dedswap:hidden" />
+          <SwitchArrowRounded fill="#fff" className="hidden cursor-pointer hover:rotate-180 dedswap:block" />
         </button>
         <Button
           onClick={() => (getSwapButtonProperties.disabled ? null : setReviewModalOpen(true))}
@@ -1572,13 +1579,16 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
           <>
             {" "}
             <div
-              className={classNames("flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-dark-450", {
-                " translate-all  easy-and-out h-[52px] duration-300": !swapInfo,
-                "translate-all easy-and-out h-[185px] duration-300 ": swapInfo,
-              })}
+              className={classNames(
+                "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dedswap:rounded-sm dedswap:font-open-sans dedswap:font-bold",
+                {
+                  "h-[52px]": !swapInfo,
+                  "h-[185px]": swapInfo,
+                }
+              )}
             >
-              <div className="flex w-full flex-row text-medium font-normal">
-                <div className="flex w-full items-center justify-between">
+              <div className="flex w-full flex-row">
+                <div className="flex w-full items-center justify-between dedswap:font-extrabold">
                   <span>
                     1 {selectedTokens.tokenA.tokenSymbol} ={" "}
                     {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokens.tokenB.decimals))}{" "}
@@ -1596,14 +1606,16 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
                 </div>
               </div>
               <div
-                className={classNames("flex flex-col justify-between gap-2", {
-                  "translate-all easy-and-out  bottom-[-170px] opacity-0 duration-300": !swapInfo,
-                  "translate-all easy-and-out  top-[150px] opacity-100 duration-300 ": swapInfo,
+                className={classNames("translate-all easy-and-out flex flex-col justify-between gap-2 duration-300", {
+                  "bottom-[-170px] opacity-0": !swapInfo,
+                  "top-[150px] opacity-100": swapInfo,
                 })}
               >
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">
-                    {inputEdited.inputType === InputEditedType.exactIn ? "Minimum Received" : "Maximum Paid"}
+                    {inputEdited.inputType === InputEditedType.exactIn
+                      ? t("swapPage.minReceived")
+                      : t("swapPage.maxPaid")}
                   </div>
                   <span className="text-dark-500">
                     {inputEdited.inputType === InputEditedType.exactIn
@@ -1631,11 +1643,11 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
                         selectedTokens.tokenA.tokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("swapPage.priceImpact")}</div>
                   <span className="text-dark-500">~ {priceImpact}%</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("swapPage.liquidityFee")}</div>
                   <span className="text-dark-500">
                     {formatNumberEnUs(
@@ -1654,11 +1666,11 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
                       selectedTokens.tokenA.tokenSymbol}
                   </span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("swapPage.transactionCost")}</div>
                   <span className="text-dark-500">{swapGasFee}</span>
                 </div>
-                <div className="flex w-full flex-row justify-between text-medium font-normal">
+                <div className="flex w-full flex-row justify-between">
                   <div className="flex">{t("swapPage.route")}</div>
                   <div className="flex items-center gap-[3px] rounded-lg bg-gray-500 px-[8px] py-[2px]">
                     <HubIcon /> <span className="text-dark-500">{t("swapPage.assetHub")}</span>

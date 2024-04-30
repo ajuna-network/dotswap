@@ -42,7 +42,7 @@ const Toaster: FC<ToasterProps> = ({
   return (
     <div
       className={classNames(
-        "flex w-full max-w-toaster items-center rounded-br-lg rounded-tr-lg border-l-2 p-4 tracking-[0.2px] shadow-toaster-box-shadow",
+        "flex w-full max-w-toaster items-center rounded-br-lg rounded-tr-lg border-l-2 p-4 tracking-[0.2px] shadow-toaster-box-shadow dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
         {
           "border-success bg-green-100": type === ToasterType.SUCCESS,
           "border-blue-400 bg-blue-200": type === ToasterType.PENDING,
@@ -61,15 +61,15 @@ const Toaster: FC<ToasterProps> = ({
             "text-yellow-700": type === ToasterType.INFO,
           })}
         >
-          <div className="font-medium">{handleToasterHeaderText(type)}</div>
-          <div className="text-medium font-normal">{description}</div>
+          <div className="font-medium dedswap:font-omnes-bold">{handleToasterHeaderText(type)}</div>
+          <div className="text-medium font-normal dedswap:font-open-sans dedswap:font-extrabold">{description}</div>
           {blockExplorerLink && blockExplorerLink !== "" && (
             <div className="flex gap-0.5 pt-1">
               <a
                 href={blockExplorerLink}
                 target="_blank"
                 rel="noreferrer"
-                className="cursor-pointer border-b border-solid border-black pb-0.5 font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90"
+                className="cursor-pointer border-b border-solid border-black pb-0.5 font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90 dedswap:font-omnes-bold"
               >
                 {t("toaster.viewInBlockExplorer")}
               </a>

@@ -244,7 +244,7 @@ export const getSpotPrice = async (symbol: string) => {
     method: "GET",
     headers: {
       accept: "application/json",
-      "X-API-KEY": `${import.meta.env.VITE_COINSTATS_API_KEY}`,
+      "X-API-KEY": process.env.VITE_COINSTATS_API_KEY,
     },
   };
 
@@ -252,7 +252,10 @@ export const getSpotPrice = async (symbol: string) => {
     const spotPriceObject = Object.fromEntries(
       await Promise.all(
         names.map(async (name) => {
-          const response = await fetch(`https://openapiv1.coinstats.app/coins/${name}?currency=USD`, options);
+          const response = await fetch(
+            `https://openapiv1.coinstats.app/coins/${name}?currency=USD`,
+            options as RequestInit
+          );
           const data = await response.json();
           return [name, JSON.stringify(data.price, null, 2)];
         })
@@ -508,15 +511,22 @@ export const formatNumberEnUs = (value: number, fixed?: number, showDollarSign =
 export const isApiAvailable = async (api?: ApiPromise, relayApi?: ApiPromise): Promise<boolean> => {
   if (api && relayApi) {
     const isReady = (await api.isReadyOrError) && (await relayApi.isReadyOrError);
-    return isReady ? true : false;
+    return !!isReady;
   }
   if (api && api.isConnected) {
     const isReady = await api.isReadyOrError;
-    return isReady ? true : false;
+    return !!isReady;
   }
   if (relayApi && relayApi.isConnected) {
     const isReady = await relayApi.isReadyOrError;
-    return isReady ? true : false;
+    return !!isReady;
   }
   return false;
+};
+
+export const getPlatform = () => {
+  if (process.env.VITE_VERSION === "dotswap") {
+    return "DOTswap";
+  }
+  return "DEDswap";
 };

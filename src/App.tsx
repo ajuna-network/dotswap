@@ -13,7 +13,6 @@ import { useIsMobile } from "./app/hooks/useIsMobile";
 import MobilePage from "./MobilePage";
 
 const App: FC = () => {
-  // OBRISI ME
   const { dispatch, state } = useStateAndDispatch();
   const { api, relayApi } = state;
 

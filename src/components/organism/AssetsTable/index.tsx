@@ -132,22 +132,22 @@ const AssetsTable = () => {
 
   return (
     <div className="flex h-full w-full flex-col">
-      <div className="flex w-full justify-between px-8 py-4">
+      <div className="flex w-full justify-between px-8 py-4 dedswap:text-white">
         <div className="flex flex-col items-start justify-center">
           <div className="flex items-center gap-2">
-            <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+            <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dedswap:text-white">
               {t("dashboardPage.myTotalAssets")}
             </div>
-            <Tooltip message={t("dashboardPage.totalAssetsTooltip")} />
+            <Tooltip message={t("dashboardPage.totalAssetsTooltip")} invertedStyle={true} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(walletBalanceUSD) || 0)}
           </div>
         </div>
         <div className="flex flex-col items-start justify-center">
-          <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300">
+          <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dedswap:text-white">
             {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
-            <Tooltip message={t("dashboardPage.tokenPriceTooltip")} />
+            <Tooltip message={t("dashboardPage.tokenPriceTooltip")} invertedStyle={true} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(tokenBalances?.spotPrice || 0))}
@@ -156,8 +156,8 @@ const AssetsTable = () => {
       </div>
       {assetsList.length === 0 ? (
         <div className="flex w-full flex-1 flex-col gap-6">
-          <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white">
-            <div className="font-unbounded-variable text-medium font-normal text-dark-300">
+          <div className="mb-4 flex flex-1 flex-col items-center justify-center gap-6 rounded-2xl bg-white dedswap:rounded-none dedswap:bg-opacity-80 dedswap:outline dedswap:outline-8 dedswap:outline-black">
+            <div className="font-unbounded-variable text-medium font-normal text-dark-300 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold">
               {walletConnected ? t("dashboardPage.loadingAssets") : t("dashboardPage.connectWallet")}
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4">
@@ -172,8 +172,13 @@ const AssetsTable = () => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
-          <AccordionList title={t("dashboardPage.assetList")} nested alwaysOpen className="rounded-t-2xl bg-white">
+        <div className="flex flex-col gap-6 dedswap:gap-0 dedswap:bg-[#FFFFFFCC] dedswap:outline dedswap:outline-8 dedswap:outline-black">
+          <AccordionList
+            title={t("dashboardPage.assetList")}
+            nested
+            alwaysOpen
+            className="rounded-t-2xl bg-white dedswap:rounded-none dedswap:bg-opacity-80"
+          >
             {assetsList &&
               assetsList.length > 0 &&
               assetsList.map((token: AssetListToken) => {
@@ -203,7 +208,11 @@ const AssetsTable = () => {
               })}
           </AccordionList>
 
-          <AccordionList nested title={t("dashboardPage.otherAssets")} className="rounded-b-2xl bg-white">
+          <AccordionList
+            nested
+            title={t("dashboardPage.otherAssets")}
+            className="rounded-b-2xl bg-white dedswap:rounded-none dedswap:bg-opacity-80"
+          >
             {assetLoading ? (
               <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.loadingAssets")}</div>
             ) : otherAssets.length > 0 ? (
@@ -211,7 +220,9 @@ const AssetsTable = () => {
                 return <AccordionAssetItem key={token.tokenId} token={token} />;
               })
             ) : (
-              <div className="flex flex-col items-center justify-center py-8">{t("dashboardPage.noAssets")}</div>
+              <div className="flex flex-col items-center justify-center py-8 dedswap:font-open-sans dedswap:font-extrabold">
+                {t("dashboardPage.noAssets")}
+              </div>
             )}
           </AccordionList>
         </div>
@@ -220,6 +231,7 @@ const AssetsTable = () => {
       <Modal
         isOpen={swapModalOpen}
         disableOverlayClick={true}
+        classNames="rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dedswap:bg-transparent dedswap:shadow-none dedswap:border-none"
         onClose={() => {
           setSwapModalOpen(!swapModalOpen);
         }}

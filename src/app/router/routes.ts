@@ -1,4 +1,5 @@
 import { t } from "i18next";
+import { getPlatform } from "../util/helper";
 
 const HOME_ROUTE = "/";
 const POOLS_ROUTE = "pools";
@@ -15,15 +16,21 @@ const POOLS_PAGE = "/pools";
 const SEO_ROUTES = {
   [POOLS_ROUTE]: {
     title: t("seo.pools.title"),
-    description: t("seo.pools.description"),
+    description: t("seo.pools.description", {
+      platform: getPlatform(),
+    }),
   },
   [SWAP_ROUTE]: {
     title: t("seo.swap.title"),
-    description: t("seo.swap.description"),
+    description: t("seo.swap.description", {
+      platform: getPlatform(),
+    }),
   },
   [CROSS_CHAIN_ROUTE]: {
     title: t("seo.crosschain.title"),
-    description: t("seo.crosschain.description"),
+    description: t("seo.crosschain.description", {
+      platform: getPlatform(),
+    }),
   },
 };
 

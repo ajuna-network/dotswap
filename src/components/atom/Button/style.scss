@@ -1,10 +1,10 @@
 button {
   &.btn-primary {
-    @apply flex w-full items-center justify-center gap-2 rounded-full font-unbounded-variable font-normal;
+    @apply flex w-full items-center justify-center gap-2 rounded-full font-unbounded-variable font-normal dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none dedswap:font-omnes-bold;
 
     &-pink {
       @extend .btn-primary;
-      @apply border border-pink bg-pink text-white hover:border-black hover:bg-black;
+      @apply border border-pink bg-pink text-white hover:border-black hover:bg-black dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none;
 
       &-lg {
         @extend .btn-primary-pink;
@@ -13,7 +13,7 @@ button {
 
       &-sm {
         @extend .btn-primary-pink;
-        @apply px-4 py-3 text-small;
+        @apply px-4 py-3 text-small dedswap:text-medium;
       }
     }
 
@@ -28,32 +28,32 @@ button {
 
       &-sm {
         @extend .btn-primary-ghost;
-        @apply px-4 py-3 text-small;
+        @apply px-4 py-3 text-small dedswap:text-medium;
       }
     }
   }
 
   &.btn-secondary {
-    @apply box-border flex w-full items-center justify-center rounded-full  px-4 py-3 font-unbounded-variable text-small font-normal;
+    @apply box-border flex w-full items-center justify-center rounded-full  px-4 py-3 font-unbounded-variable text-small font-normal dedswap:font-omnes-bold;
 
     &-white {
       @extend .btn-secondary;
-      @apply border border-black bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
+      @apply border border-black bg-white text-black hover:border-transparent hover:bg-pink hover:text-white dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none;
     }
 
     &-white-no-border {
       @extend .btn-secondary;
-      @apply bg-white text-black hover:border-transparent hover:bg-pink hover:text-white;
+      @apply bg-white text-black hover:border-transparent hover:bg-pink hover:text-white dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none;
     }
 
     &-gray {
       @extend .btn-secondary;
-      @apply border border-purple-100 bg-purple-100 text-black hover:border-purple-200 hover:bg-purple-200;
+      @apply border border-purple-100 bg-purple-100 text-black hover:border-purple-200 hover:bg-purple-200 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none dedswap:font-omnes-bold;
     }
   }
 
   &.btn-interactive {
-    @apply flex w-full items-center justify-center gap-2 rounded-lg p-4 font-inter font-normal;
+    @apply flex w-full items-center justify-center gap-2 rounded-lg p-4 font-inter font-normal dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none dedswap:p-4 dedswap:font-open-sans dedswap:text-heading-5 dedswap:font-bold;
 
     &-pink {
       @extend .btn-interactive;
@@ -72,11 +72,12 @@ button {
   }
 
   &.btn-select {
-    @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-inter text-large font-normal;
+    @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-inter text-large font-normal 
+    dedswap:h-[52px] dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none dedswap:border-[6px] dedswap:border-black dedswap:p-2 dedswap:font-open-sans dedswap:font-extrabold;
 
     &-pink {
       @extend .btn-select;
-      @apply bg-pink text-white  hover:bg-black;
+      @apply bg-pink text-white hover:bg-black;
     }
 
     &-gray {
@@ -90,6 +91,6 @@ button {
     }
   }
   &.btn-close-modal {
-    @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-unbounded-variable text-medium font-normal hover:text-pink;
+    @apply flex w-full items-center justify-center gap-2 rounded-full px-3 py-1.5 font-unbounded-variable text-medium font-normal hover:text-pink dedswap:font-omnes-bold dedswap:text-large;
   }
 }

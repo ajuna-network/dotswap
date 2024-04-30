@@ -4,7 +4,7 @@ import { t } from "i18next";
 import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { errorMessageHandler, formatDecimalsFromToken } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken, getPlatform } from "../../app/util/helper";
 import { SwapAction } from "../../store/swap/interface";
 import { WalletAction } from "../../store/wallet/interface";
 import { NotificationAction } from "../../store/notifications/interface";
@@ -114,7 +114,9 @@ const handleIsBroadcastResponse = (response: SubmittableResult, dispatch: Dispat
       id: "swap",
       props: {
         notificationType: ToasterType.PENDING,
-        notificationTitle: t("modal.notifications.transactionBroadcastedTitle"),
+        notificationTitle: t("modal.notifications.transactionBroadcastedTitle", {
+          platform: getPlatform(),
+        }),
         notificationMessage: t("modal.notifications.transactionBroadcastedNotification"),
         notificationPercentage: 25,
       },
@@ -146,7 +148,9 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
     const title =
       percentage <= 70
-        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70", {
+            platform: getPlatform(),
+          })
         : t("modal.notifications.transactionIsProcessingTitleAbove70");
     dispatch({
       type: ActionType.UPDATE_NOTIFICATION,
@@ -284,7 +288,9 @@ const handleSwapTransactionResponse = (
         id: "swap",
         props: {
           notificationType: ToasterType.PENDING,
-          notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+          notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+            platform: getPlatform(),
+          }),
           notificationPercentage: 10,
           notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
         },

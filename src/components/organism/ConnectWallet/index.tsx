@@ -91,6 +91,7 @@ const ConnectWallet = () => {
     handleDisconnect(dispatch);
     setWalletAccount({} as WalletAccount);
     setModalStep({ step: WalletConnectSteps.stepExtensions });
+
     dispatch({
       type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
       payload: "",

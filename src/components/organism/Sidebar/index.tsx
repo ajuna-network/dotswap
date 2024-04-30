@@ -2,8 +2,12 @@ import classNames from "classnames";
 import { NavLink, useLocation } from "react-router-dom";
 import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, SUPPORT_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
 import CrossChainIcon from "../../../assets/img/cross-chain-icon.svg?react";
+import CrossChainWIcon from "../../../assets/img/cross-chain-w-icon.svg?react";
 import DashboardIcon from "../../../assets/img/dashboard-icon.svg?react";
+import DashboardWIcon from "../../../assets/img/dashboard-w-icon.svg?react";
 import SwapIcon from "../../../assets/img/swap-icon.svg?react";
+import SwapWIcon from "../../../assets/img/swap-w-icon.svg?react";
+import SupportWIcon from "../../../assets/img/support-w-icon.svg?react";
 import GitIcon from "../../../assets/img/git-icon.svg?react";
 import XIcon from "../../../assets/img/x-icon.svg?react";
 import TelegramIcon from "../../../assets/img/telegram-icon.svg?react";
@@ -15,61 +19,67 @@ const Sidebar = () => {
 
   return (
     <div className="shrink-1 sticky top-8 flex max-h-[calc(100vh-64px)] w-full max-w-[194px] flex-col gap-6">
-      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 ">
-        <div className="mb-12 pl-4">
+      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dedswap:rounded-md dedswap:bg-black">
+        <div className="flex w-full">
           <AppLogo />
         </div>
-        <div className="flex h-full w-full flex-col justify-between text-dark-300">
+        <div className="flex h-full w-full flex-col justify-between text-dark-300 dedswap:text-white">
           <div>
             <NavLink
               to={DASHBOARD_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
                     location.pathname.includes(DASHBOARD_ROUTE),
                 }
               )}
             >
-              <DashboardIcon />
+              <DashboardIcon className="dedswap:hidden" />
+              <DashboardWIcon className="hidden dedswap:block" />
               {t("button.dashboard")}
             </NavLink>
             <NavLink
               to={SWAP_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SWAP_ROUTE),
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
+                    location.pathname.includes(SWAP_ROUTE),
                 }
               )}
             >
-              <SwapIcon />
+              <SwapIcon className="dedswap:hidden" />
+              <SwapWIcon className="hidden dedswap:block" />
               {t("button.swap")}
             </NavLink>
             <NavLink
               to={CROSS_CHAIN_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
                     location.pathname.includes(CROSS_CHAIN_ROUTE),
                 }
               )}
             >
-              <CrossChainIcon />
+              <CrossChainIcon className="dedswap:hidden" />
+              <CrossChainWIcon className="hidden dedswap:block" />
               {t("button.crossChain")}
             </NavLink>
           </div>
           <NavLink
             to={import.meta.env.VITE_ANALYTICS_URL}
+            target="_blank"
             className={classNames(
-              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100",
+              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
               {
                 "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SUPPORT_ROUTE),
               }
             )}
           >
-            <DashboardIcon />
+            <DashboardIcon className="dedswap:hidden" />
+            <SupportWIcon className="hidden dedswap:block" />
             {t("button.analytics")}
           </NavLink>
         </div>

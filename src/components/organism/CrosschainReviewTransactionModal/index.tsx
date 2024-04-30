@@ -56,16 +56,18 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
     >
       <div className="flex w-[391px] items-center justify-between py-9">
         <div className="flex items-center gap-[2px]">
-          <div className="flex items-center gap-[10px] rounded-full bg-gray-5 px-2 py-[2px] text-medium capitalize">
+          <div className="flex items-center gap-[10px] rounded-full bg-gray-5 px-2 py-[2px] text-medium capitalize dedswap:rounded-md">
             {nativeChainName}
             <ArrowRightIcon />
           </div>
-          <div className="flex items-center gap-[10px] rounded-full bg-black px-2 py-[2px] text-medium capitalize text-white">
+          <div className="flex items-center gap-[10px] rounded-full bg-black px-2 py-[2px] text-medium capitalize text-white dedswap:rounded-md">
             {destinationChainName}
           </div>
         </div>
         <div className="flex flex-col items-end text-medium">
-          <div className="font-inter uppercase">{t(`crosschainReviewTransactionModal.transfer`)}</div>
+          <div className="font-inter uppercase dedswap:font-open-sans">
+            {t(`crosschainReviewTransactionModal.transfer`)}
+          </div>
           <span className="font-semibold">
             {formatNumberEnUs(Number(crosschainExactTokenAmount), Number(tokenDecimals))} {tokenSymbol}
           </span>
@@ -76,35 +78,35 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
         <div className="flex flex-col gap-3">
           {destinationBalance && (
             <div className="flex justify-between">
-              <span className="font-inter text-medium capitalize text-gray-300">
+              <span className="font-inter text-medium capitalize text-gray-300 dedswap:font-open-sans dedswap:font-extrabold">
                 {destinationChainName} {t(`crosschainReviewTransactionModal.currentBalance`)}
               </span>
-              <span className="font-inter text-medium text-gray-400">
+              <span className="font-inter text-medium text-gray-400 dedswap:font-open-sans dedswap:font-extrabold">
                 {formatNumberEnUs(Number(destinationBalance), Number(tokenDecimals))} {tokenSymbol}
               </span>
             </div>
           )}
           <div className="flex justify-between">
-            <span className="font-inter text-medium capitalize text-gray-300">
+            <span className="font-inter text-medium capitalize text-gray-300 dedswap:font-open-sans dedswap:font-extrabold">
               {t(`crosschainReviewTransactionModal.transferringAmount`)}
             </span>
-            <span className="font-inter text-medium text-gray-400">
+            <span className="font-inter text-medium text-gray-400 dedswap:font-open-sans dedswap:font-extrabold">
               {formatNumberEnUs(Number(crosschainExactTokenAmount), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-inter text-medium capitalize text-gray-300">
+            <span className="font-inter text-medium capitalize text-gray-300 dedswap:font-open-sans dedswap:font-extrabold">
               {t(`crosschainReviewTransactionModal.originChainFee`)}
             </span>
-            <span className="font-inter text-medium text-gray-400">
+            <span className="font-inter text-medium text-gray-400 dedswap:font-open-sans dedswap:font-extrabold">
               ~ {formatNumberEnUs(Number(originChainFee), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="font-inter text-medium capitalize text-gray-300">
+            <span className="font-inter text-medium capitalize text-gray-300 dedswap:font-open-sans dedswap:font-extrabold">
               {t(`crosschainReviewTransactionModal.destinationChainFee`)}
             </span>
-            <span className="font-inter text-medium text-gray-400">
+            <span className="font-inter text-medium text-gray-400 dedswap:font-open-sans dedswap:font-extrabold">
               ~ {formatNumberEnUs(Number(destinationChainFee), Number(tokenDecimals))} {tokenSymbol}
             </span>
           </div>
@@ -112,10 +114,10 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
             <>
               <hr className="mb-0 mt-3 w-full border-[0.7px] border-gray-50" />
               <div className="flex justify-between">
-                <span className="font-inter text-medium capitalize text-gray-300">
+                <span className="font-inter text-medium capitalize text-gray-300 dedswap:font-open-sans dedswap:font-extrabold">
                   {destinationChainName} {t(`crosschainReviewTransactionModal.newBalance`)}
                 </span>
-                <span className="font-inter text-medium text-gray-400">
+                <span className="font-inter text-medium text-gray-400 dedswap:font-open-sans dedswap:font-extrabold">
                   ~ {formatNumberEnUs(Number(destinationBalanceAfter), Number(tokenDecimals))} {tokenSymbol}
                 </span>
               </div>
@@ -124,17 +126,10 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
         </div>
         <hr className="mb-3 mt-5 w-full border-[0.7px] border-gray-50" />
         <div className="flex flex-row justify-center gap-[6px]">
-          <button
-            className="flex w-full max-w-[176px] items-center justify-center px-4 py-3 font-unbounded-variable text-small leading-[13.2px] tracking-[.96px]"
-            onClick={onClose}
-          >
+          <Button variant={ButtonVariants.btnCloseModal} onClick={onClose}>
             {t(`crosschainReviewTransactionModal.close`)}
-          </button>
-          <Button
-            onClick={onConfirmTransaction}
-            variant={ButtonVariants.btnInteractivePink}
-            className="max-w-[176px] !rounded-full !px-4 !py-3 !font-unbounded-variable text-small capitalize !leading-[13.2px] tracking-[.96px]"
-          >
+          </Button>
+          <Button onClick={onConfirmTransaction} variant={ButtonVariants.btnPrimaryPinkSm}>
             {t(`crosschainReviewTransactionModal.confirm`)} {t(`crosschainReviewTransactionModal.${transactionType}`)}
           </Button>
         </div>

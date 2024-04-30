@@ -1,6 +1,6 @@
 import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
-import { WalletConnectSteps } from "../../../app/types/enum";
+import { ButtonVariants, WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
 import { type Wallet, type WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
@@ -8,6 +8,7 @@ import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { getPlatform } from "../../../app/util/helper.ts";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -57,18 +58,17 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                   <div className="flex basis-24 items-center">
                     {wallet?.installed ? (
                       <Button
-                        className="btn-secondary-white"
+                        variant={ButtonVariants.btnSecondaryGray}
                         onClick={async () => {
                           try {
-                            await wallet?.enable(t("seo.global.title"));
-                            await wallet
-                              ?.getAccounts()
-                              .then((acc) => {
-                                handleContinueClick(acc);
+                            await wallet?.enable(
+                              t("seo.global.title", {
+                                platform: getPlatform(),
                               })
-                              .catch((error) => {
-                                console.error(error);
-                              });
+                            );
+                            await wallet?.getAccounts().then((accounts) => {
+                              handleContinueClick(accounts);
+                            });
                           } catch (error) {
                             console.error(error);
                           }
@@ -78,7 +78,7 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                       </Button>
                     ) : (
                       <Button
-                        className="btn-secondary-white"
+                        variant={ButtonVariants.btnSecondaryGray}
                         onClick={() => {
                           handleWalletInstall(wallet);
                         }}

@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken, isApiAvailable, getSpotPrice } from "../../app/util/helper";
+import { formatDecimalsFromToken, getPlatform, isApiAvailable, getSpotPrice } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
@@ -18,6 +18,7 @@ import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defau
 import { base64Encode } from "@polkadot/util-crypto";
 import { getSpecTypes } from "@polkadot/types-known";
 import { t } from "i18next";
+import { NotificationAction } from "../../store/notifications/interface.ts";
 
 export const setupPolkadotApi = async (
   rpcUrl: string,
@@ -263,7 +264,7 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
   };
 };
 
-export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) => {
+export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction | NotificationAction>) => {
   LocalStorage.remove("wallet-connected");
   dispatch({ type: ActionType.SET_ACCOUNTS, payload: [] });
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: {} as WalletAccount });
@@ -273,6 +274,8 @@ export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) 
   dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: "0" });
+  dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+  dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
   dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
 };
 
@@ -290,7 +293,11 @@ const getChainMetadata = (api: ApiPromise) => {
 
 export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
   const wallet = getWalletBySource(account.wallet?.extensionName);
-  await wallet?.enable(t("seo.global.title"));
+  await wallet?.enable(
+    t("seo.global.title", {
+      platform: getPlatform(),
+    })
+  );
   const extension = wallet?.extension;
   if (extension) {
     const metadataCurrentArray = await wallet.extension.metadata.get();
@@ -340,8 +347,11 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
-    await wallet?.enable(t("seo.global.title"));
-    return;
+    await wallet?.enable(
+      t("seo.global.title", {
+        platform: getPlatform(),
+      })
+    );
   }
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);

@@ -5,7 +5,7 @@ import { useAppContext } from "../../../state/index.tsx";
 import { FC, useEffect, useState } from "react";
 import { getWalletBySource } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
-import { reduceAddress } from "../../../app/util/helper";
+import { getPlatform, reduceAddress } from "../../../app/util/helper";
 import InfoMessage from "../../atom/InfoMessage/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { t } from "i18next";
@@ -28,7 +28,11 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
     if (accounts.length === 0 && selectedAccount?.wallet) {
       const fetchAccounts = async () => {
         const wallet = await getWalletBySource(selectedAccount?.wallet?.extensionName);
-        await wallet?.enable(t("seo.global.title"));
+        await wallet?.enable(
+          t("seo.global.title", {
+            platform: getPlatform(),
+          })
+        );
         const accounts = await wallet?.getAccounts();
         dispatch({
           type: ActionType.SET_ACCOUNTS,
@@ -55,8 +59,10 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
 
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
-      <div className="flex min-w-[450px] flex-col gap-1 py-7">
-        <div className="flex w-full items-start justify-start text-medium">{t("wallet.selectAccount")}</div>
+      <div className="flex min-w-[450px] flex-col gap-1 py-7 dedswap:pb-7 dedswap:pt-0">
+        <div className="flex w-full items-start justify-start text-medium dedswap:font-open-sans dedswap:font-extrabold">
+          {t("wallet.selectAccount")}
+        </div>
         {accounts?.map((account: WalletAccount, index: any) => {
           return (
             <div key={index} className="flex flex-col rounded-lg">
@@ -101,7 +107,9 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
       {infoMessage && (
         <InfoMessage
           title={t("wallet.infoMessage.title")}
-          message={t("wallet.infoMessage.description")}
+          message={t("wallet.infoMessage.description", {
+            platform: getPlatform(),
+          })}
           handleClose={handleClose}
         />
       )}

@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { errorMessageHandler, formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken, getPlatform, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
@@ -16,8 +16,8 @@ import { WalletAction } from "../../store/wallet/interface";
 import { whitelist } from "../../whitelist";
 import { convertMicroDOTToDOT } from "../swapServices";
 import { NotificationAction } from "../../store/notifications/interface";
-import { TokenBalanceData } from "../../app/types/index";
-import { setTokenBalanceUpdate } from "../../services/polkadotWalletServices";
+import { TokenBalanceData } from "../../app/types";
+import { setTokenBalanceUpdate } from "../polkadotWalletServices";
 
 const { parents, nativeTokenSymbol, assethubSubscanUrl } = useGetNetwork();
 
@@ -147,7 +147,9 @@ const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<Notif
       id: "liquidity",
       props: {
         notificationType: ToasterType.PENDING,
-        notificationTitle: t("modal.notifications.transactionInitiatedTitle"),
+        notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+          platform: getPlatform(),
+        }),
         notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
         notificationPercentage: 30,
       },
@@ -162,7 +164,9 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       id: "liquidity",
       props: {
         notificationType: ToasterType.PENDING,
-        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle"),
+        notificationTitle: t("modal.notifications.transactionIncludedInBlockTitle", {
+          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+        }),
         notificationMessage: t("modal.notifications.transactionIncludedInBlockNotification"),
         notificationPercentage: 50,
         notificationLink: {
@@ -179,7 +183,9 @@ const handleInBlockResponse = (response: SubmittableResult, dispatch: Dispatch<N
       percentage <= 70 ? t("modal.notifications.isProcessingBelow70") : t("modal.notifications.isProcessingAbove70");
     const title =
       percentage <= 70
-        ? t("modal.notifications.transactionIsProcessingTitleBelow70")
+        ? t("modal.notifications.transactionIsProcessingTitleBelow70", {
+            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          })
         : t("modal.notifications.transactionIsProcessingTitleAbove70");
     dispatch({
       type: ActionType.UPDATE_NOTIFICATION,

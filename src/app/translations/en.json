@@ -1,6 +1,6 @@
 {
   "seo": {
-    "dotAcp": "DOTswap",
+    "dotAcp": "{{platform}}",
     "og": {
       "title": "OG Title",
       "description": "OG description",
@@ -14,21 +14,21 @@
       "image": "https://example.com/twitter-image.jpg"
     },
     "global": {
-      "title": "DOTswap",
-      "description": "DOTswap App description",
+      "title": "{{platform}}",
+      "description": "{{platform}} App description",
       "keywords": "keyword1, keyword2, keyword3"
     },
     "pools": {
       "title": "Pools",
-      "description": "DOTswap Pools Page description"
+      "description": "{{platform}} Pools Page description"
     },
     "swap": {
       "title": "Swap",
-      "description": "DOTswap Swap Details Page description"
+      "description": "{{platform}} Swap Details Page description"
     },
     "crosschain": {
       "title": "Crosschain",
-      "description": "DOTswap Crosschain Page description"
+      "description": "{{platform}} Crosschain Page description"
     }
   },
   "button": {
@@ -85,14 +85,14 @@
       "pending": "Pending",
       "error": "Error",
       "genericError": "An error occured. Please try again.",
-      "transactionInitiatedTitle": "Warming up DOTswap",
+      "transactionInitiatedTitle": "Warming up {{platform}}",
       "transactionInitiatedNotification": "Please proceed in your wallet",
-      "transactionBroadcastedTitle": "DOTSwap getting you the best deal",
+      "transactionBroadcastedTitle": "{{platform}} getting you the best deal",
       "transactionBroadcastedNotification": "Transaction is processing. You can close this window anytime.",
-      "transactionIncludedInBlockTitle": "DOTSwap submitted your transaction to block",
+      "transactionIncludedInBlockTitle": "{{platform}} submitted your transaction to block",
       "transactionIncludedInBlockNotification": "Transaction is processing. You can close this window anytime.",
       "transactionIsProcessingTitle": "Transaction block is being validated",
-      "transactionIsProcessingTitleBelow70": "DOTswap is waiting for block to be added to the chain",
+      "transactionIsProcessingTitleBelow70": "{{platform}} is waiting for block to be added to the chain",
       "transactionIsProcessingTitleAbove70": "Sit tight! We're confirming your transaction on the blockchain",
       "transactionIsProcessingNotification": "Transaction is processing. You can close this window anytime.",
       "isProcessingBelow70": "Transaction is processing. You can close this window anytime.",
@@ -147,7 +147,7 @@
     "selectAccount": "Select Account",
     "infoMessage": {
       "title": "Need to see all your accounts?",
-      "description": "Head over to your wallet and customize which accounts can access DOTSwap."
+      "description": "Head over to your wallet and customize which accounts can access {{platform}}."
     },
     "pendingMultiple": "transactions are",
     "pendingSingle": "transaction is",
@@ -216,12 +216,15 @@
     "otherAssets": "Other Assets"
   },
   "assetItem": {
+    "tokenPrice": "Token Price",
     "locked": "Locked",
     "lockedTooltip": "Locked balance, not included in your available balance.",
     "reservedTooltip": "Reserved balance, not included in your available balance.",
     "reserved": "Reserved",
     "available": "Available balance",
-    "total": "Total balance"
+    "total": "Total balance",
+    "relayChain": "Relay chain",
+    "parachain": "Parachain"
   },
   "poolsPage": {
     "pools": "Pools",
@@ -258,7 +261,11 @@
     "liquidityFee": "Liquidity Fee",
     "transactionCost": "Transaction Cost",
     "route": "Route",
-    "assetHub": "Asset Hub"
+    "assetHub": "Asset Hub",
+    "balance": "Balance:",
+    "minReceived": "Minimum Received",
+    "maxPaid": "Maximum Paid",
+    "amountPercentage": "Amount percentage"
   },
   "crosschainPage": {
     "from": "From",

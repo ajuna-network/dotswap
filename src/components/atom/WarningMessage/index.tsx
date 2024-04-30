@@ -23,10 +23,8 @@ const WarningMessage: FC<WarningMessageProps> = ({ message, show }) => {
   };
 
   return show ? (
-    <div className="flex gap-5 rounded-2xl bg-yellow-100 p-6 font-inter text-sm font-normal">
-      <span className="mt-0.5">
-        <WarningIcon />
-      </span>
+    <div className="flex items-center justify-center gap-5 rounded-2xl bg-yellow-100 p-6 font-inter text-sm font-normal">
+      <WarningIcon />
       <span>{linkify(message)}</span>
     </div>
   ) : null;

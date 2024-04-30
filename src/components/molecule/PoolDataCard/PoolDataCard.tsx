@@ -60,7 +60,7 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
   };
 
   return (
-    <div className="col-span-1 flex h-full flex-col justify-between gap-8 rounded-2xl bg-gradient-to-b from-white from-[55%] to-purple-50 to-[45%] p-6">
+    <div className="col-span-1 flex h-full flex-col justify-between gap-8 rounded-2xl bg-gradient-to-b from-white from-[55%] to-purple-50 to-[45%] p-6 dedswap:gap-3 dedswap:rounded-[2px] dedswap:border-[6px] dedswap:border-black dedswap:bg-[#FFFFFFCC] dedswap:bg-none">
       <div className="flex gap-2">
         <div className="relative flex basis-2/5 flex-col font-unbounded-variable">
           <div className="relative flex">
@@ -109,7 +109,7 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
       </div>
       <div className="flex gap-2">
         <div className="flex basis-1/2 flex-col items-center justify-end">
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start font-omnes-bold">
             <span className="flex items-center gap-1 text-large font-medium [&>img]:h-4 [&>img]:w-4 [&>svg]:h-4 [&>svg]:w-4">
               {nativeTokenIcon}
               {formatNumberEnUs(Number(nativeTokens), 4)}
@@ -122,7 +122,9 @@ const PoolDataCard: FC<PoolDataCardProps> = ({
           <p className="text-small font-medium uppercase text-gray-200">{t("poolDataCard.totalTokensLocked")}</p>
         </div>
         <div className="flex basis-1/2 flex-col items-center justify-end text-large font-medium">
-          <span>{lpTokenAsset?.balance ? lpTokenAsset.balance?.replace(/[, ]/g, "") : 0}</span>
+          <span className="dedswap:font-omnes-bold">
+            {lpTokenAsset?.balance ? lpTokenAsset.balance?.replace(/[, ]/g, "") : 0}
+          </span>
           <p className="text-small font-medium uppercase text-gray-200">{t("poolDataCard.lpTokens")}</p>
         </div>
       </div>
