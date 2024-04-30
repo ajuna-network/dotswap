@@ -246,7 +246,7 @@ export const getSpotPrice = async (tokenSymbol: string) => {
  * @returns USD value of the token
  */
 
-//TODO: returns cors error
+//TODO: returns cors errors
 
 // export const getSpotPrice = async (symbol: string) => {
 //     if (!symbol || symbol === "") return;
