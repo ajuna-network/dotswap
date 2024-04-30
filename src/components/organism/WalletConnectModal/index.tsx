@@ -8,6 +8,7 @@ import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { getPlatform } from "../../../app/util/helper.ts";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -60,7 +61,11 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                         variant={ButtonVariants.btnSecondaryGray}
                         onClick={async () => {
                           try {
-                            await wallet?.enable(t("seo.global.title"));
+                            await wallet?.enable(
+                              t("seo.global.title", {
+                                platform: getPlatform(),
+                              })
+                            );
                             await wallet?.getAccounts().then((accounts) => {
                               handleContinueClick(accounts);
                             });

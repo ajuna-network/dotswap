@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken, getSpotPrice, isApiAvailable } from "../../app/util/helper";
+import { formatDecimalsFromToken, getPlatform, getSpotPrice, isApiAvailable } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
@@ -290,7 +290,11 @@ const getChainMetadata = (api: ApiPromise) => {
 
 export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
   const wallet = getWalletBySource(account.wallet?.extensionName);
-  await wallet?.enable(t("seo.global.title"));
+  await wallet?.enable(
+    t("seo.global.title", {
+      platform: getPlatform(),
+    })
+  );
   const extension = wallet?.extension;
   if (extension) {
     const metadataCurrentArray = await wallet.extension.metadata.get();
@@ -340,7 +344,11 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
-    await wallet?.enable(t("seo.global.title"));
+    await wallet?.enable(
+      t("seo.global.title", {
+        platform: getPlatform(),
+      })
+    );
   }
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);

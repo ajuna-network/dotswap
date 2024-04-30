@@ -151,7 +151,7 @@ const AssetsTable = () => {
             <div className="font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dedswap:text-white">
               {t("dashboardPage.myTotalAssets")}
             </div>
-            <Tooltip message={t("dashboardPage.totalAssetsTooltip")} />
+            <Tooltip message={t("dashboardPage.totalAssetsTooltip")} invertedStyle={true} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(walletBalanceUSD) || 0)}
@@ -160,7 +160,7 @@ const AssetsTable = () => {
         <div className="flex flex-col items-start justify-center">
           <div className="flex items-center gap-2 font-titillium-web text-heading-6 font-semibold leading-[24px] text-dark-300 dedswap:text-white">
             {tokenBalances?.tokenSymbol} {t("dashboardPage.price")}
-            <Tooltip message={t("dashboardPage.tokenPriceTooltip")} />
+            <Tooltip message={t("dashboardPage.tokenPriceTooltip")} invertedStyle={true} />
           </div>
           <div className="font-titillium-web text-heading-3 font-semibold leading-[48px]">
             {!walletConnected ? "$0.00" : "$" + formatNumberEnUs(Number(tokenBalances?.spotPrice || 0))}

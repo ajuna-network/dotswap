@@ -20,6 +20,7 @@ import {
   formatNumberEnUs,
   getCrossInDestinationFee,
   getCrossOutDestinationFee,
+  getPlatform,
   isApiAvailable,
 } from "../../../app/util/helper";
 import { fetchChainBalance } from "../../../services/polkadotWalletServices";
@@ -526,7 +527,9 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
           notificationPercentage: 1,
           notificationAction: crosschainSelectedChain.chainA.chainType === "Asset Hub" ? "Cross in" : "Cross out",
           notificationType: ToasterType.PENDING,
-          notificationTitle: "Warming up DOTswap",
+          notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
+            platform: getPlatform(),
+          }),
           notificationMessage: "Please proceed in your wallet",
           notificationChainDetails: {
             originChain: crosschainSelectedChain.chainA.chainName + " " + crosschainSelectedChain.chainA.chainType,

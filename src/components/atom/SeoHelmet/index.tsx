@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 
 import { useLocation, useParams } from "react-router-dom";
 import { SEO_ROUTES } from "../../../app/router/routes";
+import { getPlatform } from "../../../app/util/helper";
 
 const SeoHelmet: FC = () => {
   const { t } = useTranslation();
@@ -17,15 +18,22 @@ const SeoHelmet: FC = () => {
   const myLocation = replace.length > 0 ? replace?.[0] : location.pathname;
 
   const { title, description } = SEO_ROUTES[myLocation as keyof typeof SEO_ROUTES] || {
-    title: t("seo.global.title"),
-    description: t("seo.global.description"),
+    title: t("seo.global.title", {
+      platform: getPlatform(),
+    }),
+    description: t("seo.global.description", {
+      platform: getPlatform(),
+    }),
   };
+
+  const favicon = import.meta.env.VITE_VERSION === "dotswap" ? "/favicon-dot.ico" : "favicon-ded.ico";
 
   return (
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={t("seo.global.keywords")} />
+      <link rel="icon" href={favicon} />
 
       <meta property="og:title" content={t("seo.og.title")} />
       <meta property="og:description" content={t("seo.og.title")} />
