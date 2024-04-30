@@ -57,7 +57,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
                     "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": !slippageAuto,
-                      "bg-primary-500 text-white dedswap:bg-purple-100 dedswap:text-gray-400": slippageAuto,
+                      "bg-primary-500 text-white": slippageAuto,
                     }
                   )}
                   onClick={() => {
@@ -73,7 +73,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
                     "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": slippageAuto,
-                      "bg-primary-500 text-white dedswap:bg-purple-100 dedswap:text-gray-400": !slippageAuto,
+                      "bg-primary-500 text-white": !slippageAuto,
                     }
                   )}
                   onClick={() => {
