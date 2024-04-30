@@ -734,7 +734,7 @@ const CrossChainSwap = ({ isPopupEdit = true }: CrossChainSwapProps) => {
       <WarningMessage
         show={
           (selectedTokenValue.tokenValue === "" && crosschainExactTokenAmount === "0") ||
-          (isGreaterThanMax && maxValue !== "0") ||
+          //   (maxValue === "0" && !isGreaterThanMax) ||
           (selectedTokenValue.tokenValue !== "" &&
             crosschainExactTokenAmount !== "0" &&
             new Decimal(Number(selectedTokenValue.tokenValue) || 0).lt(

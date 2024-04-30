@@ -51,12 +51,12 @@ const AssetItemChild: FC<AssetItemChildProps> = ({
     const floatFreeTokenBalance = new Decimal(balances?.free).minus(balances?.frozen).toNumber();
     const floatUsdFreeTokenBalance = new Decimal(balances?.free)
       .minus(balances?.frozen)
-      .times(tokenSpotPrice)
+      .times(Number(tokenSpotPrice))
       .toNumber();
     const floatReservedTokenBalance = Number(balances?.reserved);
-    const floatUsdReservedTokenBalance = new Decimal(balances?.reserved).times(tokenSpotPrice).toNumber();
+    const floatUsdReservedTokenBalance = new Decimal(balances?.reserved).times(Number(tokenSpotPrice)).toNumber();
     const floatLockedTokenBalance = Number(balances?.frozen);
-    const floatUsdLockedTokenBalance = new Decimal(balances?.frozen).times(tokenSpotPrice).toNumber();
+    const floatUsdLockedTokenBalance = new Decimal(balances?.frozen).times(Number(tokenSpotPrice)).toNumber();
 
     setBalances({
       freeTokenBalance: floatFreeTokenBalance,

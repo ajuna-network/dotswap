@@ -187,14 +187,26 @@ export const isWalletAddressValid = (address: string) => {
   }
 };
 
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+};
+
+const setCookie = (name: string, value: string, minutes: number) => {
+  const date = new Date();
+  date.setTime(date.getTime() + minutes * 60 * 1000);
+  document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
+};
+
 /**
  * Fetches the spot price of a token from Coinstats API
  * @param tokenSymbol pass the token symbol to get the spot price in USD
  * @returns USD value of the token
  */
 
-export const getSpotPrice = async (tokenSymbol: string) => {
-  if (!tokenSymbol || tokenSymbol === "") return;
+export const getSpotPrice = async (symbol: string) => {
+  const data = getCookie("spotPrice");
 
   const getNameFromSymbol = (symbol: string) => {
     switch (symbol) {
@@ -210,31 +222,49 @@ export const getSpotPrice = async (tokenSymbol: string) => {
         return "tether";
       case "USDC":
         return "usd-coin";
-
       default:
-        return "";
+        return null;
     }
   };
 
-  const tokenId = getNameFromSymbol(tokenSymbol);
+  const singlePrice = getNameFromSymbol(symbol);
 
-  if (tokenId === "" || tokenSymbol === "GUPPY") return;
+  const names = ["polkadot", "tether", "usd-coin"];
+
+  if (singlePrice && !names.includes(singlePrice)) {
+    names.push(singlePrice);
+  } else if (data && singlePrice && names.includes(singlePrice)) {
+    const jsonData = JSON.parse(data);
+    return jsonData[singlePrice] || "0";
+  } else if (!singlePrice) {
+    return "0";
+  }
 
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
-      "X-API-KEY": "bkhPu4LoLJ/JGnUceErQHBp2V3CH/AZQGDZ68GNfTQk=",
+      "X-API-KEY": `${import.meta.env.VITE_COINSTATS_API_KEY}`,
     },
   };
-  const price = await fetch(`https://openapiv1.coinstats.app/coins/${tokenId}?currency=USD`, options)
-    .then((response) => response.json())
-    .then((response) => {
-      return JSON.stringify(response.price, null, 2);
-    })
-    .catch((err) => console.error(err));
 
-  return price;
+  try {
+    const spotPriceObject = Object.fromEntries(
+      await Promise.all(
+        names.map(async (name) => {
+          const response = await fetch(`https://openapiv1.coinstats.app/coins/${name}?currency=USD`, options);
+          const data = await response.json();
+          return [name, JSON.stringify(data.price, null, 2)];
+        })
+      )
+    );
+
+    setCookie("spotPrice", JSON.stringify(spotPriceObject), 1);
+    return spotPriceObject[singlePrice] || "0";
+  } catch (error) {
+    console.error("Error fetching spot price", error);
+    return "0";
+  }
 };
 
 /**
@@ -243,10 +273,9 @@ export const getSpotPrice = async (tokenSymbol: string) => {
  * @returns USD value of the token
  */
 
-//TODO: returns cors errors
-
 // export const getSpotPrice = async (symbol: string) => {
-//     if (!symbol || symbol === "") return;
+//   const data = getCookie("spotPrice");
+
 //   const getNameFromSymbol = (symbol: string) => {
 //     switch (symbol) {
 //       case "KSM":
@@ -261,14 +290,23 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //         return "tether";
 //       case "USDC":
 //         return "usd-coin";
-
 //       default:
-//         return "";
+//         return null;
 //     }
 //   };
 
-//   const name = getNameFromSymbol(symbol);
-//   if (name === "" || name === "guppy-gang") return;
+//   const singlePrice = getNameFromSymbol(symbol);
+
+//   const names = ["polkadot", "tether", "usd-coin"];
+
+//   if (singlePrice && !names.includes(singlePrice)) {
+//     names.push(singlePrice);
+//   } else if (data && singlePrice && names.includes(singlePrice)) {
+//     const jsonData = JSON.parse(data);
+//     return jsonData[singlePrice].usd || "0";
+//   } else if (!singlePrice) {
+//     return "0";
+//   }
 
 //   const options = {
 //     method: "GET",
@@ -276,15 +314,25 @@ export const getSpotPrice = async (tokenSymbol: string) => {
 //       accept: "application/json",
 //     },
 //   };
-//   const res = await fetch(
-//     `https://api.coingecko.com/api/v3/simple/price?ids=${name}&vs_currencies=usd&precision=2`,
-//     options
-//   );
-//   const json = await res.json();
-
-//   return json[name].usd;
+//   try {
+//     const res = await fetch(
+//       `https://api.coingecko.com/api/v3/simple/price?ids=${names}&vs_currencies=usd&precision=10`,
+//       options
+//     );
+//     if (!res.ok) {
+//       console.error("Error fetching spot price", res.status, res.statusText);
+//       return "0";
+//     }
+//     const json = await res.json();
+//     setCookie("spotPrice", JSON.stringify(json), 1);
+//     const token = (singlePrice && json[singlePrice].usd) || "0";
+//     return token;
+//   } catch (error) {
+//     console.error("Error fetching spot price", error);
+//     return "0";
+//   }
 // };
-//
+
 // destination chain fee for Polkadot Asset Hub -> Polkadot Relay Chain
 // destination chain fee: 0.0020830735 DOT
 export const getCrossInDestinationFee = () => {
@@ -366,7 +414,7 @@ export const getAssetTokenSpotPrice = async (
   tokenDecimals: string,
   tokenBalances: TokenBalanceData
 ) => {
-  if (!api || !Object.keys(api).length || !tokenBalances || !Object.keys(tokenBalances).length) return "";
+  if (!api || !Object.keys(api).length || !tokenBalances || !Object.keys(tokenBalances).length) return "0";
   if (tokenId === "") return tokenBalances.spotPrice;
   const nativeTokenValue = formatInputTokenValue(
     tokenBalances.balanceAsset.free && tokenBalances.balanceAsset.free !== "0" ? tokenBalances.balanceAsset.free : "1",
@@ -381,7 +429,7 @@ export const getAssetTokenSpotPrice = async (
 
   if (formattedToken === 0) return "0";
 
-  const spotPrice = new Decimal(Number(tokenBalances.spotPrice)).times(
+  const spotPrice = new Decimal(Number(tokenBalances.spotPrice) || 0).times(
     new Decimal(Number(tokenBalances?.balanceAsset?.free) || 1).div(formattedToken)
   );
 

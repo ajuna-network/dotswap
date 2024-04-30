@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken, getSpotPrice, isApiAvailable } from "../../app/util/helper";
+import { formatDecimalsFromToken, isApiAvailable, getSpotPrice } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
@@ -48,6 +48,17 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       return null;
     }
 
+    // Format data
+    const ss58Format = tokenMetadata?.ss58Format.toHuman();
+    const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman()?.toString();
+    const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman()?.toString();
+
+    // fetch relay balance and spot price
+    const [balances, spotPrice] = await Promise.all([
+      fetchNativeTokenBalances(walletAddress, tokenDecimals as string, relayApi),
+      getSpotPrice(tokenSymbol as string) || "0",
+    ]);
+
     // Process assets
     const myAssetTokenData = await Promise.all(
       allAssets.map(async ([assetId, assetDetails]) => {
@@ -66,20 +77,18 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
           : { balance: "", extra: "", reason: "", status: "" };
 
         if (whitelist.includes(cleanedTokenId) || tokenAssetData?.balance !== "") {
+          const spotPrice = await getSpotPrice(assetTokenMetadata.toHuman().symbol as string);
+
           return {
             tokenId: cleanedTokenId,
             assetTokenMetadata: assetTokenMetadata.toHuman(),
             tokenAsset: tokenAssetData,
+            spotPrice: spotPrice || "0",
           };
         }
         return null;
       })
     );
-
-    // Format data
-    const ss58Format = tokenMetadata?.ss58Format.toHuman();
-    const tokenDecimals = tokenMetadata?.tokenDecimals.toHuman()?.toString();
-    const tokenSymbol = tokenMetadata?.tokenSymbol.toHuman()?.toString();
 
     // Fetch balance
     const { data: balance } = await api.query.system.account(walletAddress);
@@ -90,12 +99,6 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       reserved: formatDecimalsFromToken(balance?.reserved.toString() || "0", tokenDecimals as string) || "0",
       frozen: formatDecimalsFromToken(balance?.frozen.toString() || "0", tokenDecimals as string) || "0",
     };
-
-    // fetch relay balance and spot price
-    const [balances, spotPrice] = await Promise.all([
-      fetchNativeTokenBalances(walletAddress, tokenDecimals as string, relayApi),
-      getSpotPrice(tokenSymbol as string) || "0",
-    ]);
 
     const balanceRelay = {
       free: balances?.free || "0",
@@ -337,7 +340,9 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
+    console.log("wallet not signed");
     await wallet?.enable(t("seo.global.title"));
+    return;
   }
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);

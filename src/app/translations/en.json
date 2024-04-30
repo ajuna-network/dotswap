@@ -269,7 +269,7 @@
     "originChainFee": "Origin chain fee",
     "destinationChainFee": "Destination chain fee",
     "route": "Route",
-    "insufficientBalanceWarning": "Current balance is insufficient to perform cross-chain transaction.",
+    "insufficientBalanceWarning": "Desired amount is insufficient to perform cross-chain transaction.",
     "isGreaterThanMaxWarning": "The maximum transferable amount is"
   },
   "mobilePage": {
@@ -333,7 +333,11 @@
       "notReady": "Please reconnect your wallet."
     },
     "wallet": {
-      "notSupported": "Wallet account is not supported"
+      "notSupported": "Wallet account is not supported",
+      "authError": {
+        "title": "Authorization error",
+        "message": "Please authorize your wallet extension to connect to {{appName}}"
+      }
     }
   }
 }

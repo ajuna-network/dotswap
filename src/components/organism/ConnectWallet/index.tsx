@@ -217,6 +217,7 @@ const ConnectWallet = () => {
       />
 
       <NotificationsModal id="install-wallet-notification" />
+      <NotificationsModal id="auth-wallet-notification" />
     </>
   );
 };

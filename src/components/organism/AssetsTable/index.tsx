@@ -6,12 +6,7 @@ import { whitelist } from "../../../whitelist";
 import AssetItemChild from "../../molecule/AccordionAssetItem/AssetItemChild";
 import Modal from "../../atom/Modal";
 import SwapTokens from "../SwapTokens";
-import {
-  formatDecimalsFromToken,
-  formatNumberEnUs,
-  getAssetTokenSpotPrice,
-  getSpotPrice,
-} from "../../../app/util/helper";
+import { formatDecimalsFromToken, formatNumberEnUs, getAssetTokenSpotPrice } from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
 import { ActionType } from "../../../app/types/enum";
 import ConnectWallet from "../ConnectWallet";
@@ -51,15 +46,8 @@ const AssetsTable = () => {
             spotPrice: spotPrice.toString() || "0",
           };
         }
-        const price = await getSpotPrice(token.assetTokenMetadata.symbol).then((data: string | void) => {
-          if (typeof data === "string") {
-            return data;
-          }
-        });
-        return {
-          ...token,
-          spotPrice: price || "0",
-        };
+
+        return token;
       })
     );
 
@@ -122,7 +110,6 @@ const AssetsTable = () => {
       );
 
       const whitelistedTokensUpdated = await updateSpotPrice(whitelistedTokens);
-
       const assetTokens = [nativeToken, ...whitelistedTokensUpdated];
 
       await calculateBalance(assetTokens, dispatch);

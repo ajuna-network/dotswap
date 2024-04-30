@@ -2,7 +2,7 @@ import Button from "../../atom/Button";
 import Modal from "../../atom/Modal";
 import { WalletConnectSteps } from "../../../app/types/enum";
 import { ModalStepProps } from "../../../app/types";
-import type { Wallet, WalletAccount } from "@talismn/connect-wallets";
+import { type Wallet, type WalletAccount } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
 import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
@@ -61,9 +61,14 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                         onClick={async () => {
                           try {
                             await wallet?.enable(t("seo.global.title"));
-                            await wallet?.getAccounts().then((accounts) => {
-                              handleContinueClick(accounts);
-                            });
+                            await wallet
+                              ?.getAccounts()
+                              .then((acc) => {
+                                handleContinueClick(acc);
+                              })
+                              .catch((error) => {
+                                console.error(error);
+                              });
                           } catch (error) {
                             console.error(error);
                           }
