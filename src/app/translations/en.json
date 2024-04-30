@@ -216,6 +216,7 @@
     "otherAssets": "Other Assets"
   },
   "assetItem": {
+    "tokenPrice": "Token Price",
     "locked": "Locked",
     "lockedTooltip": "Locked balance, not included in your available balance.",
     "reservedTooltip": "Reserved balance, not included in your available balance.",

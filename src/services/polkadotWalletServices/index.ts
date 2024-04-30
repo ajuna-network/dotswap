@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import { CrosschainAction } from "../../store/crosschain/interface";
 import { TokenBalanceData } from "../../app/types";
 import { ActionType } from "../../app/types/enum";
-import { formatDecimalsFromToken, getSpotPrice, isApiAvailable } from "../../app/util/helper";
+import { formatDecimalsFromToken, getPlatform, getSpotPrice, isApiAvailable } from "../../app/util/helper";
 import LocalStorage from "../../app/util/localStorage";
 import dotAcpToast from "../../app/util/toast";
 import { PoolAction } from "../../store/pools/interface";
@@ -292,7 +292,7 @@ export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccoun
   const wallet = getWalletBySource(account.wallet?.extensionName);
   await wallet?.enable(
     t("seo.global.title", {
-      platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+      platform: getPlatform(),
     })
   );
   const extension = wallet?.extension;
@@ -346,7 +346,7 @@ export const connectWalletAndFetchBalance = async (
   if (!account.wallet?.signer) {
     await wallet?.enable(
       t("seo.global.title", {
-        platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+        platform: getPlatform(),
       })
     );
   }

@@ -5,7 +5,7 @@ import { useAppContext } from "../../../state/index.tsx";
 import { FC, useEffect, useState } from "react";
 import { getWalletBySource } from "@talismn/connect-wallets";
 import { ActionType } from "../../../app/types/enum";
-import { reduceAddress } from "../../../app/util/helper";
+import { getPlatform, reduceAddress } from "../../../app/util/helper";
 import InfoMessage from "../../atom/InfoMessage/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { t } from "i18next";
@@ -30,7 +30,7 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
         const wallet = await getWalletBySource(selectedAccount?.wallet?.extensionName);
         await wallet?.enable(
           t("seo.global.title", {
-            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+            platform: getPlatform(),
           })
         );
         const accounts = await wallet?.getAccounts();
@@ -108,7 +108,7 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
         <InfoMessage
           title={t("wallet.infoMessage.title")}
           message={t("wallet.infoMessage.description", {
-            platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+            platform: getPlatform(),
           })}
           handleClose={handleClose}
         />

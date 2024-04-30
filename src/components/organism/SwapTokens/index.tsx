@@ -20,6 +20,7 @@ import {
   formatDecimalsFromToken,
   formatInputTokenValue,
   getAssetTokenSpotPrice,
+  getPlatform,
   liquidityProviderFee,
 } from "../../../app/util/helper";
 import SwitchArrow from "../../../assets/img/switch-arrow.svg?react";
@@ -580,7 +581,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
         notificationAction: "Swap",
         notificationType: ToasterType.PENDING,
         notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
-          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          platform: getPlatform(),
         }),
         notificationMessage: "Please proceed in your wallet",
         notificationChainDetails: null,

@@ -7,7 +7,7 @@ import { Dispatch } from "react";
 import useGetNetwork from "../../app/hooks/useGetNetwork";
 import { LpTokenAsset, PoolCardProps } from "../../app/types";
 import { ActionType, ServiceResponseStatus, ToasterType } from "../../app/types/enum";
-import { errorMessageHandler, formatDecimalsFromToken, isApiAvailable } from "../../app/util/helper";
+import { errorMessageHandler, formatDecimalsFromToken, getPlatform, isApiAvailable } from "../../app/util/helper";
 import dotAcpToast from "../../app/util/toast";
 import NativeTokenIcon from "../../assets/img/dot-token.svg";
 import AssetTokenIcon from "../../assets/img/test-token.svg";
@@ -148,7 +148,7 @@ const handleInBroadcast = (response: SubmittableResult, dispatch: Dispatch<Notif
       props: {
         notificationType: ToasterType.PENDING,
         notificationTitle: t("modal.notifications.transactionInitiatedTitle", {
-          platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+          platform: getPlatform(),
         }),
         notificationMessage: t("modal.notifications.transactionInitiatedNotification"),
         notificationPercentage: 30,

@@ -468,3 +468,10 @@ export const isApiAvailable = async (api?: ApiPromise, relayApi?: ApiPromise): P
   }
   return false;
 };
+
+export const getPlatform = () => {
+  if (import.meta.env.VITE_VERSION === "dotswap") {
+    return "DOTswap";
+  }
+  return "DEDswap";
+};

@@ -8,6 +8,7 @@ import { useAppContext } from "../../../state/index.tsx";
 import Identicon from "@polkadot/react-identicon";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { getPlatform } from "../../../app/util/helper.ts";
 
 interface WalletConnectModalProps {
   open: boolean;
@@ -62,7 +63,7 @@ const WalletConnectModal: FC<WalletConnectModalProps> = ({
                           try {
                             await wallet?.enable(
                               t("seo.global.title", {
-                                platform: import.meta.env.VITE_VERSION === "dotswap" ? "DOTswap" : "DEDswap",
+                                platform: getPlatform(),
                               })
                             );
                             await wallet?.getAccounts().then((accounts) => {
