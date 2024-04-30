@@ -25,7 +25,7 @@ type AccordionAssetItemProps = {
 
 const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
   token,
-  className = "border-t border-1 border-purple-100 dark:border-none",
+  className = "border-t border-1 border-purple-100 dedswap:border-none",
   children,
   alwaysOpen = false,
   defaultOpen = false,
@@ -129,17 +129,17 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
         <div
           className={`flex w-full flex-1 justify-between ${children ? "border-r border-solid border-black border-opacity-10" : ""}`}
         >
-          <div className="flex w-1/4 items-center justify-start gap-3 font-unbounded-variable text-heading-6 font-normal dark:font-omnes-bold">
+          <div className="flex w-1/4 items-center justify-start gap-3 font-unbounded-variable text-heading-6 font-normal dedswap:font-omnes-bold">
             <TokenIcon tokenSymbol={token.assetTokenMetadata.symbol} />
             <span>{token.assetTokenMetadata.symbol}</span>
           </div>
           <div className="flex w-1/2 items-center justify-start gap-4">
             <div className="flex w-1/2 flex-col">
-              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200 dark:font-omnes-bold">
+              <div className="font-titillium-web text-medium font-normal uppercase text-dark-200 dedswap:font-omnes-bold">
                 {t("assetItem.total")}
               </div>
               <div
-                className="font-titillium-web text-base font-semibold dark:font-omnes-bold"
+                className="font-titillium-web text-base font-semibold dedswap:font-omnes-bold"
                 data-balance={totalBalance && totalBalance !== "0" ? totalBalance : 0}
               >
                 {totalBalance && totalBalance !== "0"
@@ -210,7 +210,7 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
           isOpen={crossChainModalOpen}
           onClose={handleCrosschainModal}
           disableOverlayClick={true}
-          classNames="rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:bg-transparent dark:shadow-none dark:border-none"
+          classNames="rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dedswap:bg-transparent dedswap:shadow-none dedswap:border-none"
         >
           <CrossChainSwap isPopupEdit={false} />
         </Modal>

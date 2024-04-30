@@ -66,12 +66,12 @@ const SwapPage: FC = () => {
     <div className="flex w-full flex-1 flex-col items-start justify-center px-6 py-8">
       <div
         className="z-10 flex gap-2 rounded-3xl bg-white p-1 
-      dark:rounded-sm dark:bg-[#FFFFFFCC] dark:outline dark:outline-[6px] dark:outline-black
+      dedswap:rounded-sm dedswap:bg-[#FFFFFFCC] dedswap:outline dedswap:outline-[6px] dedswap:outline-black
       "
       >
         <button
           className={classNames(
-            "h-[37px] w-[71px] rounded-3xl  dark:rounded-sm dark:px-4 dark:py-3 dark:font-open-sans dark:text-small dark:font-extrabold dark:uppercase",
+            "h-[37px] w-[71px] rounded-3xl  dedswap:rounded-sm dedswap:px-4 dedswap:py-3 dedswap:font-open-sans dedswap:text-small dedswap:font-extrabold dedswap:uppercase",
             {
               "bg-purple-100": swapOrPools === SwapOrPools.swap,
             }
@@ -82,7 +82,7 @@ const SwapPage: FC = () => {
         </button>
         <button
           className={classNames(
-            "h-[37px] w-[71px] rounded-3xl  dark:rounded-sm dark:px-4 dark:py-3 dark:font-open-sans dark:text-small dark:font-extrabold dark:uppercase",
+            "h-[37px] w-[71px] rounded-3xl  dedswap:rounded-sm dedswap:px-4 dedswap:py-3 dedswap:font-open-sans dedswap:text-small dedswap:font-extrabold dedswap:uppercase",
             {
               "bg-purple-100": swapOrPools === SwapOrPools.pools,
             }

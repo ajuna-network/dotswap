@@ -55,8 +55,8 @@ const SelectAccountModal: FC<SelectAccountModalProps> = ({ open, title, onClose,
 
   return (
     <Modal isOpen={open} onClose={onClose} title={title}>
-      <div className="flex min-w-[450px] flex-col gap-1 py-7 dark:pb-7 dark:pt-0">
-        <div className="flex w-full items-start justify-start text-medium dark:font-open-sans dark:font-extrabold">
+      <div className="flex min-w-[450px] flex-col gap-1 py-7 dedswap:pb-7 dedswap:pt-0">
+        <div className="flex w-full items-start justify-start text-medium dedswap:font-open-sans dedswap:font-extrabold">
           {t("wallet.selectAccount")}
         </div>
         {accounts?.map((account: WalletAccount, index: any) => {

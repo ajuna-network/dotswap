@@ -21,7 +21,7 @@ const Modal: FC<ModalProps> = ({
   disableOverlayClick,
   onClose,
   onBack,
-  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dark:rounded-sm dark:border-8 dark:border-black",
+  classNames = "rounded-2xl border border-gray-10 bg-white shadow-modal-box-shadow dedswap:rounded-sm dedswap:border-8 dedswap:border-black",
 }) => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -61,8 +61,8 @@ const Modal: FC<ModalProps> = ({
             >
               <Dialog.Panel className={`relative z-10 transform overflow-hidden  p-[18px] ${classNames}`}>
                 <div
-                  className={classNamesLib("mb-[6px] flex items-center pb-[8px] pr-[24px] pt-[10px] dark:pr-0", {
-                    "border-b border-b-gray-50 dark:mb-6 dark:border-none": title || onBack,
+                  className={classNamesLib("mb-[6px] flex items-center pb-[8px] pr-[24px] pt-[10px] dedswap:pr-0", {
+                    "border-b border-b-gray-50 dedswap:mb-6 dedswap:border-none": title || onBack,
                   })}
                 >
                   {onBack ? (
@@ -71,7 +71,7 @@ const Modal: FC<ModalProps> = ({
                     </button>
                   ) : null}
 
-                  <div className="flex w-full justify-center font-unbounded-variable text-heading-6 leading-[120%] dark:justify-start dark:font-omnes-bold dark:text-heading-4">
+                  <div className="flex w-full justify-center font-unbounded-variable text-heading-6 leading-[120%] dedswap:justify-start dedswap:font-omnes-bold dedswap:text-heading-4">
                     {title}
                   </div>
                   <button className="flex justify-end" onClick={onClose}>

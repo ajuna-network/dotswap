@@ -151,7 +151,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
     if (!currentNotification?.notificationTitle) return null;
 
     return (
-      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em] dark:font-omnes-bold">
+      <div className="text-center font-unbounded-variable text-heading-6 font-bold leading-tight tracking-[0.002em] dedswap:font-omnes-bold">
         {currentNotification?.notificationTitle}
       </div>
     );
@@ -186,13 +186,13 @@ const NotificationsModal: FC<Props> = ({ id }) => {
 
     return (
       <div className="flex items-center justify-center gap-1">
-        <div className="flex items-center gap-2 rounded-medium bg-gray-500 px-2 py-0.5 dark:rounded-md">
+        <div className="flex items-center gap-2 rounded-medium bg-gray-500 px-2 py-0.5 dedswap:rounded-md">
           <span className="font-fira-sans text-sm leading-relaxed">
             {currentNotification?.notificationChainDetails.originChain}
           </span>
           <ArrowRightLong />
         </div>
-        <div className="flex items-center justify-center rounded-medium bg-black px-2 py-0.5 dark:rounded-md">
+        <div className="flex items-center justify-center rounded-medium bg-black px-2 py-0.5 dedswap:rounded-md">
           <span className="font-fira-sans text-sm leading-relaxed text-white">
             {currentNotification?.notificationChainDetails.destinationChain}
           </span>
@@ -222,7 +222,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
           href={currentNotification?.notificationLink.href}
           target="_blank"
           rel="noreferrer"
-          className="text-center font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90 dark:font-omnes-bold dark:text-[16px]"
+          className="text-center font-unbounded-variable text-small leading-tight tracking-[0.06em] text-black text-opacity-90 dedswap:font-omnes-bold dedswap:text-[16px]"
         >
           <span>{currentNotification?.notificationLink.text}</span>
         </a>
@@ -277,7 +277,7 @@ const NotificationsModal: FC<Props> = ({ id }) => {
   return (
     <Modal isOpen={currentNotification?.notificationModalOpen ?? false} onClose={onModalClose}>
       <div className="flex min-h-[310px] w-[390px] flex-col items-center justify-center">
-        <div className="flex h-full w-full flex-col items-center gap-3 py-10  dark:font-open-sans">
+        <div className="flex h-full w-full flex-col items-center gap-3 py-10  dedswap:font-open-sans">
           {currentNotification?.notificationType === ToasterType.PENDING
             ? renderPercentageSpinner()
             : renderNotificationIcon()}

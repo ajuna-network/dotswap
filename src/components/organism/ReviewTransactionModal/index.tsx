@@ -62,35 +62,35 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
     <Modal isOpen={open} onClose={onClose} title={title}>
       <div className="flex w-[360px] flex-col gap-5">
         <div className="flex flex-col items-start" data-dec={tokenDecimalsA}>
-          <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-bold dark:uppercase">
+          <span className="font-inter text-small text-gray-200 dedswap:font-open-sans dedswap:font-bold dedswap:uppercase">
             {transactionType === TransactionTypes.add && ""}
             {transactionType === TransactionTypes.swap && t("modal.reviewTransaction.youPay")}
             {transactionType === TransactionTypes.withdraw && t("modal.reviewTransaction.withdrawAmount")}
             {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
-          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dark:font-omnes-bold dark:text-heading-4">
+          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dedswap:font-omnes-bold dedswap:text-heading-4">
             <div className="flex overflow-y-auto">{inputValueA}</div>
             <TokenIcon tokenSymbol={tokenSymbolA || ""} width="24" height="24" />
           </span>
           {priceA.gt(0) && (
-            <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-extrabold">
+            <span className="font-inter text-small text-gray-200 dedswap:font-open-sans dedswap:font-extrabold">
               {formatNumberEnUs(priceA.toNumber(), undefined, true)}
             </span>
           )}
         </div>
         <div className="flex flex-col items-start" data-dec={tokenDecimalsB}>
-          <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-bold dark:uppercase">
+          <span className="font-inter text-small text-gray-200 dedswap:font-open-sans dedswap:font-bold dedswap:uppercase">
             {transactionType === TransactionTypes.add && ""}
             {transactionType === TransactionTypes.swap && t("modal.reviewTransaction.youReceive")}
             {transactionType === TransactionTypes.withdraw && t("modal.reviewTransaction.withdrawAmount")}
             {transactionType === TransactionTypes.createPool && t("modal.reviewTransaction.youPay")}
           </span>
-          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dark:font-omnes-bold dark:text-heading-4">
+          <span className="flex w-full items-center justify-between font-unbounded-variable text-heading-5 font-bold text-gray-400 dedswap:font-omnes-bold dedswap:text-heading-4">
             <div className="flex overflow-y-auto">{inputValueB}</div>
             <TokenIcon tokenSymbol={tokenSymbolB || ""} width="24" height="24" />
           </span>
           {priceB.gt(0) && (
-            <span className="font-inter text-small text-gray-200 dark:font-open-sans dark:font-extrabold">
+            <span className="font-inter text-small text-gray-200 dedswap:font-open-sans dedswap:font-extrabold">
               {formatNumberEnUs(priceB.toNumber(), undefined, true)}
             </span>
           )}
@@ -98,14 +98,14 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
         {transactionType !== TransactionTypes.createPool && (
           <>
             <hr className="mb-0.5 mt-1 w-full border-[0.7px] border-gray-50" />
-            <div className="flex flex-col pb-5 dark:border-b-[0.7px] dark:border-b-gray-50">
+            <div className="flex flex-col pb-5 dedswap:border-b-[0.7px] dedswap:border-b-gray-50">
               {/* <div className="flex justify-between">
                 <span className="font-inter text-medium text-gray-300">Price impact</span>
                 <span className="font-inter text-medium text-gray-400">{priceImpact}%</span>
               </div> */}
               {showAll ? (
                 <>
-                  <div className="flex justify-between font-inter text-medium dark:font-open-sans dark:font-extrabold">
+                  <div className="flex justify-between font-inter text-medium dedswap:font-open-sans dedswap:font-extrabold">
                     <span className="text-gray-300 ">{t("modal.reviewTransaction.expectedOutput")}</span>
                     <span className="text-gray-400">
                       {tokenValueA} {tokenSymbolA}
@@ -141,7 +141,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                     </span>
                   </div> */}
                   {transactionType !== TransactionTypes.add && transactionType !== TransactionTypes.withdraw && (
-                    <div className="flex justify-between font-inter text-medium dark:mb-2 dark:font-open-sans dark:font-extrabold">
+                    <div className="flex justify-between font-inter text-medium dedswap:mb-2 dedswap:font-open-sans dedswap:font-extrabold">
                       <span className="text-gray-300">
                         {inputType === InputEditedType.exactIn
                           ? t("modal.reviewTransaction.minimumReceived")
@@ -153,7 +153,7 @@ const ReviewTransactionModal: FC<SwapSelectTokenModalProps> = ({
                     </div>
                   )}
 
-                  <div className="flex justify-between font-inter text-medium dark:font-open-sans dark:font-extrabold">
+                  <div className="flex justify-between font-inter text-medium dedswap:font-open-sans dedswap:font-extrabold">
                     <div className="flex">{t("modal.reviewTransaction.transactionCost")}</div>
                     <span className="font-inter text-medium text-gray-400">{swapGasFee}</span>
                   </div>

@@ -19,8 +19,8 @@ const AmountPercentage: FC<AmountPercentageProps> = ({ maxValue, onChange, disab
   };
 
   return (
-    <div className="py-5 dark:pb-5 dark:pt-2">
-      <h6 className="mb-2 text-center text-[13px] dark:font-extrabold">{t("swapPage.amountPercentage")}</h6>
+    <div className="py-5 dedswap:pb-5 dedswap:pt-2">
+      <h6 className="mb-2 text-center text-[13px] dedswap:font-extrabold">{t("swapPage.amountPercentage")}</h6>
       <div className="flex items-center gap-[6px]">
         <div className="relative w-[75px]">
           <NumericFormat
@@ -36,34 +36,34 @@ const AmountPercentage: FC<AmountPercentageProps> = ({ maxValue, onChange, disab
             fixedDecimalScale={true}
             thousandSeparator={false}
             allowNegative={false}
-            className="w-full rounded-lg bg-purple-100 p-2 text-large  text-gray-200 outline-none dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+            className="w-full rounded-lg bg-purple-100 p-2 text-large  text-gray-200 outline-none dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
             disabled={disabled}
           />
           <span className="absolute right-2 top-[10px] text-medium text-gray-100">%</span>
         </div>
         <button
-          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
           onClick={() => handleClick(25)}
           disabled={disabled}
         >
           25%
         </button>
         <button
-          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
           onClick={() => handleClick(50)}
           disabled={disabled}
         >
           50%
         </button>
         <button
-          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
           onClick={() => handleClick(75)}
           disabled={disabled}
         >
           75%
         </button>
         <button
-          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+          className="flex h-[37px] w-[65px] items-center justify-center rounded-[100px] bg-pink bg-opacity-10 text-[11px] tracking-[.66px] text-pink dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
           onClick={() => handleClick(maxValue)}
           disabled={disabled}
         >

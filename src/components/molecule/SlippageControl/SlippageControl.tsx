@@ -44,8 +44,8 @@ const SlippageControl: FC<SlippageControlProps> = ({
         {customIcon || <CustomSlippageIcon />}
       </button>
       {showSlippage && (
-        <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300 font-open-sans dark:rounded-sm dark:border-8 dark:border-black dark:font-omnes-bold">
-          <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6 dark:rounded-none">
+        <div className="top absolute right-0 top-[45px] z-10 w-[333px] rounded-lg border border-solid border-purple-300 font-open-sans dedswap:rounded-sm dedswap:border-8 dedswap:border-black dedswap:font-omnes-bold">
+          <div className="flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-4 py-6 dedswap:rounded-none">
             <div className="flex w-full justify-between text-medium font-normal text-gray-200">
               <div className="flex">{t("tokenAmountInput.slippageTolerance")}</div>
               <span>{slippageValue}%</span>
@@ -54,7 +54,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
               <div className="flex w-full basis-8/12 rounded-xl bg-white p-1 text-large font-normal text-gray-400">
                 <button
                   className={classNames(
-                    "flex basis-1/2 justify-center rounded-lg px-4 py-3 dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none",
+                    "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": !slippageAuto,
                       "bg-purple-100": slippageAuto,
@@ -70,7 +70,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
                 </button>
                 <button
                   className={classNames(
-                    "flex basis-1/2 justify-center rounded-lg px-4 py-3 dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none",
+                    "flex basis-1/2 justify-center rounded-lg px-4 py-3 dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none",
                     {
                       "bg-white text-dark-300": slippageAuto,
                       "bg-purple-100": !slippageAuto,
@@ -106,7 +106,7 @@ const SlippageControl: FC<SlippageControlProps> = ({
                     fixedDecimalScale={true}
                     thousandSeparator={false}
                     allowNegative={false}
-                    className="w-full rounded-lg bg-purple-100 p-2 text-large text-gray-200 outline-none dark:rounded-xl dark:rounded-bl-none dark:rounded-tr-none"
+                    className="w-full rounded-lg bg-purple-100 p-2 text-large text-gray-200 outline-none dedswap:rounded-xl dedswap:rounded-bl-none dedswap:rounded-tr-none"
                     disabled={slippageAuto || loadingState || !selectedAccount.address}
                   />
                   <span className="absolute bottom-1/3 right-2 text-medium text-gray-100">%</span>

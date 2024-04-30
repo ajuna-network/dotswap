@@ -43,7 +43,7 @@ const SwapAndPoolSuccessModal: FC<SwapAndPoolSuccessModalProps> = ({
         <div className="flex min-w-[427px] flex-col">
           <div className="font-unbounded-variable text-heading-6">{contentTitle}</div>
           <div className="my-8 flex flex-col items-center justify-center gap-3">
-            <div className="flex items-center justify-center gap-2 font-unbounded-variable dark:font-omnes-bold">
+            <div className="flex items-center justify-center gap-2 font-unbounded-variable dedswap:font-omnes-bold">
               {tokenA.icon} {tokenA.symbol}
               <ArrowLeft />
               <ArrowRight />
@@ -56,7 +56,7 @@ const SwapAndPoolSuccessModal: FC<SwapAndPoolSuccessModalProps> = ({
               {tokenA.icon} {tokenA.value} {tokenA.symbol} <ArrowRight /> {tokenB.icon} {tokenB.value} {tokenB.symbol}
             </div>
           </div>
-          <div className="flex flex-row items-center justify-center gap-1 font-unbounded-variable text-medium underline dark:font-omnes-bold">
+          <div className="flex flex-row items-center justify-center gap-1 font-unbounded-variable text-medium underline dedswap:font-omnes-bold">
             <a
               href={`${assethubSubscanUrl}/block${nativeTokenSymbol == "WND" ? "s" : ""}/${blockHashFinalized}`}
               target="_blank"

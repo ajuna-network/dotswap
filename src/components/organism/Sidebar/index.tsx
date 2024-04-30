@@ -19,52 +19,52 @@ const Sidebar = () => {
 
   return (
     <div className="shrink-1 sticky top-8 flex max-h-[calc(100vh-64px)] w-full max-w-[194px] flex-col gap-6">
-      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dark:rounded-md dark:bg-black">
+      <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dedswap:rounded-md dedswap:bg-black">
         <div className="flex w-full">
           <AppLogo />
         </div>
-        <div className="flex h-full w-full flex-col justify-between text-dark-300 dark:text-white">
+        <div className="flex h-full w-full flex-col justify-between text-dark-300 dedswap:text-white">
           <div>
             <NavLink
               to={DASHBOARD_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
                     location.pathname.includes(DASHBOARD_ROUTE),
                 }
               )}
             >
-              <DashboardIcon className="dark:hidden" />
-              <DashboardWIcon className="hidden dark:block" />
+              <DashboardIcon className="dedswap:hidden" />
+              <DashboardWIcon className="hidden dedswap:block" />
               {t("button.dashboard")}
             </NavLink>
             <NavLink
               to={SWAP_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
                     location.pathname.includes(SWAP_ROUTE),
                 }
               )}
             >
-              <SwapIcon className="dark:hidden" />
-              <SwapWIcon className="hidden dark:block" />
+              <SwapIcon className="dedswap:hidden" />
+              <SwapWIcon className="hidden dedswap:block" />
               {t("button.swap")}
             </NavLink>
             <NavLink
               to={CROSS_CHAIN_ROUTE}
               className={classNames(
-                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
+                "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
                 {
-                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dark:text-white":
+                  "border-l-2 border-primary-500 bg-dark-100 text-dark-400 dedswap:text-white":
                     location.pathname.includes(CROSS_CHAIN_ROUTE),
                 }
               )}
             >
-              <CrossChainIcon className="dark:hidden" />
-              <CrossChainWIcon className="hidden dark:block" />
+              <CrossChainIcon className="dedswap:hidden" />
+              <CrossChainWIcon className="hidden dedswap:block" />
               {t("button.crossChain")}
             </NavLink>
           </div>
@@ -72,14 +72,14 @@ const Sidebar = () => {
             to={import.meta.env.VITE_ANALYTICS_URL}
             target="_blank"
             className={classNames(
-              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
+              "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dedswap:pl-8 dedswap:font-open-sans dedswap:text-large dedswap:font-extrabold dedswap:hover:bg-dark-100",
               {
                 "border-l-2 border-primary-500 bg-dark-100 text-dark-400": location.pathname.includes(SUPPORT_ROUTE),
               }
             )}
           >
-            <DashboardIcon className="dark:hidden" />
-            <SupportWIcon className="hidden dark:block" />
+            <DashboardIcon className="dedswap:hidden" />
+            <SupportWIcon className="hidden dedswap:block" />
             {t("button.analytics")}
           </NavLink>
         </div>

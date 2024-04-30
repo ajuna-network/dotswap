@@ -1496,10 +1496,10 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
   }, [tokenSelected]);
 
   return (
-    <div className="flex max-w-[460px] flex-col gap-4 dark:mt-[35px] dark:max-w-[604px]">
-      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-80">
+    <div className="flex max-w-[460px] flex-col gap-4 dedswap:mt-[35px] dedswap:max-w-[604px]">
+      <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dedswap:rounded-sm dedswap:border-8 dedswap:border-black dedswap:bg-opacity-80">
         <div className="relative flex w-full items-center justify-between">
-          <h3 className="heading-6 font-unbounded-variable font-normal dark:font-omnes-bold dark:text-[40px] dark:font-bold">
+          <h3 className="heading-6 font-unbounded-variable font-normal dedswap:font-omnes-bold dedswap:text-[40px] dedswap:font-bold">
             {t("swapPage.swap")}
           </h3>
           <SlippageControl
@@ -1510,7 +1510,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             loadingState={swapLoading || assetLoading}
           />
         </div>
-        <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50 dark:hidden" />
+        <hr className="mb-3 mt-3 w-full border-[0.7px] border-gray-50 dedswap:hidden" />
         <TokenAmountInput
           tokenText={selectedTokens.tokenA?.tokenSymbol || urlTokens.from}
           tokenBalance={selectedTokens.tokenA?.tokenBalance}
@@ -1562,8 +1562,8 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             !swapLoading && handleSwitchTokens();
           }}
         >
-          <SwitchArrow className="cursor-pointer hover:rotate-180 dark:hidden" />
-          <SwitchArrowRounded fill="#fff" className="hidden cursor-pointer hover:rotate-180 dark:block" />
+          <SwitchArrow className="cursor-pointer hover:rotate-180 dedswap:hidden" />
+          <SwitchArrowRounded fill="#fff" className="hidden cursor-pointer hover:rotate-180 dedswap:block" />
         </button>
         <Button
           onClick={() => (getSwapButtonProperties.disabled ? null : setReviewModalOpen(true))}
@@ -1577,7 +1577,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
             {" "}
             <div
               className={classNames(
-                "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dark:rounded-sm dark:font-open-sans dark:font-bold",
+                "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dedswap:rounded-sm dedswap:font-open-sans dedswap:font-bold",
                 {
                   "h-[52px]": !swapInfo,
                   "h-[185px]": swapInfo,
@@ -1585,7 +1585,7 @@ const SwapTokens = ({ tokenId, from, to }: SwapTokensProps) => {
               )}
             >
               <div className="flex w-full flex-row">
-                <div className="flex w-full items-center justify-between dark:font-extrabold">
+                <div className="flex w-full items-center justify-between dedswap:font-extrabold">
                   <span>
                     1 {selectedTokens.tokenA.tokenSymbol} ={" "}
                     {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokens.tokenB.decimals))}{" "}

@@ -83,7 +83,7 @@ const AccordionList: FC<AccordionListProps> = ({
             data-height={accordionHeight.titleElmHeight}
             {...conditionalAttributes}
           >
-            <div className="font-unbounded-variable text-heading-6 font-normal dark:font-omnes-bold dark:text-4xl">
+            <div className="font-unbounded-variable text-heading-6 font-normal dedswap:font-omnes-bold dedswap:text-4xl">
               {title}
             </div>
             {!alwaysOpen && children && (

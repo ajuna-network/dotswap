@@ -559,12 +559,12 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
       {tokenBId?.id && poolExists === false ? (
         <CreatePool tokenBSelected={selectedTokenB} />
       ) : (
-        <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dark:rounded-sm dark:border-8 dark:border-black dark:bg-opacity-80">
+        <div className="relative flex w-full flex-col items-center gap-1.5 rounded-2xl bg-white p-5 dedswap:rounded-sm dedswap:border-8 dedswap:border-black dedswap:bg-opacity-80">
           <div className="grid w-full grid-cols-4">
             <button className="col-span-1 flex justify-start" onClick={navigateToPools}>
               <BackArrow width={24} height={24} />
             </button>
-            <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal dark:font-omnes-bold dark:text-lg">
+            <h3 className="heading-6 col-span-2 flex justify-center font-unbounded-variable font-normal dedswap:font-omnes-bold dedswap:text-lg">
               {t("poolsPage.addLiquidity")}
             </h3>
             <div className="col-span-1 flex justify-end">
@@ -622,7 +622,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
             <>
               <div
                 className={classNames(
-                  "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dark:rounded-sm dark:font-open-sans dark:font-bold",
+                  "translate-all easy-and-out flex w-full flex-col gap-2 rounded-lg bg-purple-50 px-2 py-4 text-medium font-normal text-dark-450 duration-300 dedswap:rounded-sm dedswap:font-open-sans dedswap:font-bold",
                   {
                     "h-[52px]": !poolInfo,
                     "h-[185px]": poolInfo,
@@ -630,7 +630,7 @@ const AddPoolLiquidity: FC<AddPoolLiquidityProps> = ({ tokenBId }) => {
                 )}
               >
                 <div className="flex w-full flex-row text-medium font-normal">
-                  <div className="flex w-full items-center justify-between dark:font-extrabold">
+                  <div className="flex w-full items-center justify-between dedswap:font-extrabold">
                     <span>
                       1 {selectedTokenA.nativeTokenSymbol} ={" "}
                       {formatNumberEnUs(Number(assetBPriceOfOneAssetA), Number(selectedTokenB.decimals))}{" "}

@@ -15,8 +15,8 @@ const InfoMessage: FC<InfoMessageProps> = ({ title, message, handleClose }) => {
         <InfoIcon />
       </div>
       <div className="flex flex-1 flex-col items-start justify-start gap-1 text-left">
-        <div className="font-medium dark:font-omnes-bold">{title}</div>
-        <div className="text-medium text-dark-300 dark:font-open-sans dark:font-extrabold dark:text-gray-200">
+        <div className="font-medium dedswap:font-omnes-bold">{title}</div>
+        <div className="text-medium text-dark-300 dedswap:font-open-sans dedswap:font-extrabold dedswap:text-gray-200">
           {message}
         </div>
       </div>
