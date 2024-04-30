@@ -6,14 +6,14 @@ import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  const pluginsList = [react(), svgr()];
+  const pluginsList = [react(), svgr(), EnvironmentPlugin("all")];
 
   if (command === "serve") {
     return {
       server: {
         host: "dedswap.local",
       },
-      plugins: [...pluginsList, mkcert(), EnvironmentPlugin("all")],
+      plugins: [...pluginsList, mkcert()],
     };
   }
 
