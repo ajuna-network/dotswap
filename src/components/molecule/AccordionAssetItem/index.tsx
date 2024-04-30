@@ -150,7 +150,9 @@ const AccordionAssetItem: FC<AccordionAssetItemProps> = ({
             </div>
             {token.spotPrice && token.spotPrice !== "0" && (
               <div className="flex w-1/2 flex-col">
-                <div className="font-titillium-web text-medium font-normal uppercase text-dark-200">Token Price</div>
+                <div className="font-titillium-web text-medium font-normal uppercase text-dark-200 dedswap:font-omnes-bold">
+                  {t("assetItem.tokenPrice")}
+                </div>
                 <div className="font-titillium-web text-base font-semibold" data-spotprice={token.spotPrice || 0}>
                   {formatNumberEnUs(Number(token.spotPrice || 0), Number(token.assetTokenMetadata.decimals), true)}
                 </div>
