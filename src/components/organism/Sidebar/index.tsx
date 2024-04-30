@@ -20,7 +20,7 @@ const Sidebar = () => {
   return (
     <div className="shrink-1 sticky top-8 flex max-h-[calc(100vh-64px)] w-full max-w-[194px] flex-col gap-6">
       <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dark:rounded-md dark:bg-black">
-        <div className="mb-12 pl-4">
+        <div className="flex w-full">
           <AppLogo />
         </div>
         <div className="flex h-full w-full flex-col justify-between text-dark-300 dark:text-white">
@@ -70,6 +70,7 @@ const Sidebar = () => {
           </div>
           <NavLink
             to={import.meta.env.VITE_ANALYTICS_URL}
+            target="_blank"
             className={classNames(
               "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
               {
