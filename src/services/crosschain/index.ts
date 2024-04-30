@@ -28,15 +28,26 @@ export const createCrossInExtrinsic = async (api: ApiPromise, amount: string, de
   return extrinsic;
 };
 
-export const calculateOriginFee = async (account: WalletAccount, extrinsic: CrosschainExtrinsic) => {
-  if (extrinsic) {
-    const wallet = getWalletBySource(account.wallet?.extensionName);
-    if (!wallet?.signer) throw new Error("Wallet signer is not defined.");
-    const paymentInfo = await extrinsic.paymentInfo(account.address, { signer: wallet.signer });
-    // changed to 10 decimals for Polkadot
-    return new Decimal(paymentInfo.partialFee.toString()).dividedBy(Math.pow(10, 10)).toFixed();
+export const calculateOriginFee = async (api: ApiPromise, account: WalletAccount, extrinsic: CrosschainExtrinsic) => {
+  if (extrinsic && api) {
+    try {
+      const paymentInfo = await extrinsic.paymentInfo(account.address);
+      const partialFee = new Decimal(paymentInfo.partialFee.toString()).dividedBy(Math.pow(10, 10)).toFixed();
+
+      const weightFee = await api.call.transactionPaymentCallApi
+        .queryCallFeeDetails(extrinsic, extrinsic.toU8a().length)
+        .then((res: any) => {
+          if (!res) return new Decimal(0);
+          const humanRes = res.inclusionFee.toHuman().adjustedWeightFee.split(" ")[0];
+          const fee = new Decimal(humanRes).dividedBy(Math.pow(10, 4));
+          return fee;
+        });
+      return new Decimal(partialFee).plus(weightFee).toFixed();
+    } catch (error) {
+      return "0";
+    }
   } else {
-    return "";
+    return "0";
   }
 };
 
@@ -45,62 +56,28 @@ export const calculateCrosschainMaxAmount = async (
   decimals: string,
   crosschainTransactionType: CrosschainTransactionTypes,
   destinationAddress: string,
-  api: ApiPromise | null,
+  api: ApiPromise,
+  existentialDeposit: string,
   account: WalletAccount
 ): Promise<string> => {
-  let maxAmount = "";
-  if (api) {
-    let sameFee = false;
-    let count = 0;
-    while (!sameFee) {
-      const { originFeeA, originFeeB, calculatedMaxAmount } = await recurseMaxAmount(
-        freeBalance,
-        parseInt(decimals),
-        crosschainTransactionType,
-        destinationAddress,
-        api,
-        account
-      );
-      if (originFeeA === originFeeB || count > 1) {
-        maxAmount = calculatedMaxAmount;
-        sameFee = true;
-      }
-      count++;
-    }
-  }
-  return maxAmount;
-};
-
-const recurseMaxAmount = async (
-  tokenAmount: string,
-  decimals: number,
-  crosschainTransactionType: CrosschainTransactionTypes,
-  destinationAddress: string,
-  api: ApiPromise,
-  account: WalletAccount
-): Promise<{ originFeeA: string; originFeeB: string; calculatedMaxAmount: string }> => {
-  const tokenAmountDecimal = new Decimal(tokenAmount).times(Math.pow(10, decimals)).toFixed();
+  const tokenAmountDecimal = new Decimal(freeBalance).times(Math.pow(10, parseInt(decimals))).toFixed();
   let extrinsic, originFeeA, calculatedMaxAmount;
   if (crosschainTransactionType === CrosschainTransactionTypes.crossIn) {
     extrinsic = await createCrossInExtrinsic(api, tokenAmountDecimal, destinationAddress);
-    originFeeA = await calculateOriginFee(account, extrinsic);
-    calculatedMaxAmount = calculateMaxAmountForCrossIn(tokenAmount, originFeeA);
+    originFeeA = await calculateOriginFee(api, account, extrinsic);
+    calculatedMaxAmount = calculateMaxAmountForCrossIn(freeBalance, originFeeA, existentialDeposit);
   } else {
     extrinsic = await createCrossOutExtrinsic(api, tokenAmountDecimal, destinationAddress);
-    originFeeA = await calculateOriginFee(account, extrinsic);
-    calculatedMaxAmount = calculateMaxAmountForCrossOut(tokenAmount, originFeeA);
+    originFeeA = await calculateOriginFee(api, account, extrinsic);
+    calculatedMaxAmount = calculateMaxAmountForCrossOut(freeBalance, originFeeA, existentialDeposit);
   }
-  const calculatedMaxAmountDecimal = new Decimal(calculatedMaxAmount).times(Math.pow(10, decimals)).toFixed();
+
   // if the calculated max amount is less 0 then return 0
   if (new Decimal(calculatedMaxAmount).lessThanOrEqualTo(0)) {
-    return { originFeeA, originFeeB: originFeeA, calculatedMaxAmount: "0" };
+    return "0";
   }
-  const verifyingExtrinsic =
-    crosschainTransactionType === CrosschainTransactionTypes.crossIn
-      ? await createCrossInExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress)
-      : await createCrossOutExtrinsic(api, calculatedMaxAmountDecimal, destinationAddress);
-  const originFeeB = await calculateOriginFee(account, verifyingExtrinsic);
-  return { originFeeA, originFeeB, calculatedMaxAmount };
+
+  return calculatedMaxAmount;
 };
 
 async function setupCallAndSign(
@@ -215,7 +192,7 @@ async function sendTransaction(
             },
           });
           percentage += Math.floor(Math.random() * 5) + 1;
-          if (percentage >= 94) {
+          if (percentage >= 92) {
             clearInterval(interval);
           }
         }, 900);

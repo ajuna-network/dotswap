@@ -17,8 +17,8 @@ const SeoHelmet: FC = () => {
   const myLocation = replace.length > 0 ? replace?.[0] : location.pathname;
 
   const { title, description } = SEO_ROUTES[myLocation as keyof typeof SEO_ROUTES] || {
-    title: "DOTswap",
-    description: "DOTswap Page Description",
+    title: t("seo.global.title"),
+    description: t("seo.global.description"),
   };
 
   return (

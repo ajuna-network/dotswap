@@ -1,8 +1,6 @@
 import classNames from "classnames";
 import { NavLink, useLocation } from "react-router-dom";
 import { CROSS_CHAIN_ROUTE, DASHBOARD_ROUTE, SUPPORT_ROUTE, SWAP_ROUTE } from "../../../app/router/routes.ts";
-import DotSwapLogo from "../../../assets/img/dot-swap-logo.svg?react";
-import DedSwapLogo from "../../../assets/img/ded-bird-logo.png";
 import CrossChainIcon from "../../../assets/img/cross-chain-icon.svg?react";
 import CrossChainWIcon from "../../../assets/img/cross-chain-w-icon.svg?react";
 import DashboardIcon from "../../../assets/img/dashboard-icon.svg?react";
@@ -14,6 +12,7 @@ import GitIcon from "../../../assets/img/git-icon.svg?react";
 import XIcon from "../../../assets/img/x-icon.svg?react";
 import TelegramIcon from "../../../assets/img/telegram-icon.svg?react";
 import { t } from "i18next";
+import AppLogo from "../../atom/AppLogo/index.tsx";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -21,11 +20,8 @@ const Sidebar = () => {
   return (
     <div className="shrink-1 sticky top-8 flex max-h-[calc(100vh-64px)] w-full max-w-[194px] flex-col gap-6">
       <div className="flex h-full w-full flex-col items-start gap-7 rounded-2xl bg-white py-8 dark:rounded-md dark:bg-black">
-        <div className="mb-12 pl-4 dark:hidden">
-          <DotSwapLogo />
-        </div>
-        <div className="hidden w-full justify-center dark:flex">
-          <img src={DedSwapLogo} alt="Dedswap Logo" className="w-24" />
+        <div className="flex w-full">
+          <AppLogo />
         </div>
         <div className="flex h-full w-full flex-col justify-between text-dark-300 dark:text-white">
           <div>
@@ -73,7 +69,8 @@ const Sidebar = () => {
             </NavLink>
           </div>
           <NavLink
-            to={SUPPORT_ROUTE}
+            to={import.meta.env.VITE_ANALYTICS_URL}
+            target="_blank"
             className={classNames(
               "flex h-[55px] cursor-pointer items-center justify-start gap-3 pl-6 font-inter tracking-[.96px] hover:bg-dark-100 dark:pl-8 dark:font-open-sans dark:text-large dark:font-extrabold dark:hover:bg-dark-100",
               {
@@ -83,7 +80,7 @@ const Sidebar = () => {
           >
             <DashboardIcon className="dark:hidden" />
             <SupportWIcon className="hidden dark:block" />
-            {t("button.support")}
+            {t("button.analytics")}
           </NavLink>
         </div>
       </div>

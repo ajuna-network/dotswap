@@ -19,7 +19,6 @@ import dotAcpToast from "../../../app/util/toast.tsx";
 import { LottieSmall } from "../../../assets/loader";
 import { TokenBalanceData } from "../../../app/types";
 import Identicon from "@polkadot/react-identicon";
-import CircleLoader from "../../../assets/img/rotating-circle.svg?react";
 import NotificationsModal from "../NotificationsModal/index.tsx";
 
 interface WalletAccountCustom {
@@ -33,9 +32,7 @@ interface WalletAccountCustom {
 
 const ConnectWallet = () => {
   const { state, dispatch } = useAppContext();
-  const { walletConnectLoading, api, relayApi, accounts, notifications } = state;
-
-  const pendingNotifications = notifications.filter((n) => n.notificationType === ToasterType.PENDING);
+  const { walletConnectLoading, api, relayApi, accounts } = state;
 
   const [walletAccount, setWalletAccount] = useState<WalletAccount>({} as WalletAccount);
   const [modalStep, setModalStep] = useState<ModalStepProps>({ step: WalletConnectSteps.stepExtensions });
@@ -94,6 +91,7 @@ const ConnectWallet = () => {
     handleDisconnect(dispatch);
     setWalletAccount({} as WalletAccount);
     setModalStep({ step: WalletConnectSteps.stepExtensions });
+
     dispatch({
       type: ActionType.SET_SWAP_GAS_FEES_MESSAGE,
       payload: "",
@@ -157,61 +155,44 @@ const ConnectWallet = () => {
 
   return (
     <>
-      <div className="flex items-center justify-end gap-8">
-        {pendingNotifications && pendingNotifications.length > 0 && (
-          <div className="group relative flex cursor-pointer items-center gap-4 rounded-medium bg-pink px-4 py-2 text-center">
-            <span className="font-medium lowercase leading-none text-white">
-              {pendingNotifications.length} {t("modal.notifications.pending")}
-            </span>
-            <CircleLoader className="animate-spin" />
-            <div className="invisible absolute right-full top-1/2 z-10 w-max -translate-x-2 -translate-y-1/2 rounded-lg bg-yellow-100 p-2 text-sm text-dark-300 opacity-0 drop-shadow-md transition-all duration-300 group-hover:visible group-hover:opacity-100 dark:bg-primary-500 dark:text-white [&>path]:fill-yellow-100">
-              <div className="font-inter text-medium font-normal normal-case leading-normal dark:font-omnes-bold">
-                {pendingNotifications.length}{" "}
-                {pendingNotifications.length > 1 ? t("wallet.pendingMultiple") : t("wallet.pendingSingle")}{" "}
-                {t("wallet.pending")}
+      {walletConnected ? (
+        <>
+          {walletConnectLoading ? (
+            <Button
+              className="max-w-[171px]"
+              onClick={connectWallet}
+              variant={ButtonVariants.btnPrimaryGhostLg}
+              disabled={walletConnectLoading}
+            >
+              <LottieSmall />
+            </Button>
+          ) : (
+            <button
+              className="flex items-center justify-center rounded-full bg-white px-2 py-[6px] shadow-modal-box-shadow"
+              onClick={() => {
+                setSelectAccountModalOpen(true);
+              }}
+            >
+              <div className="flex flex-col items-start justify-start gap-[3px] px-4 text-gray-300">
+                <div className="text-base font-normal leading-none">{walletAccount?.name || "Account"}</div>
+                <div className="text-small leading-none">{reduceAddress(walletAccount?.address, 6, 6)}</div>
               </div>
-            </div>
-          </div>
-        )}
-        {walletConnected ? (
-          <>
-            {walletConnectLoading ? (
-              <Button
-                className="max-w-[171px]"
-                onClick={connectWallet}
-                variant={ButtonVariants.btnPrimaryGhostLg}
-                disabled={walletConnectLoading}
-              >
-                <LottieSmall />
-              </Button>
-            ) : (
-              <button
-                className="flex items-center justify-center gap-[26px] text-gray-300 dark:bg-white dark:bg-opacity-30 dark:px-6 dark:py-2 dark:font-omnes-bold dark:text-white"
-                onClick={() => {
-                  setSelectAccountModalOpen(true);
-                }}
-              >
-                <div className="flex flex-col items-start justify-start">
-                  <div className="font-[500]">{walletAccount?.name || "Account"}</div>
-                  <div className="text-small dark:uppercase">{reduceAddress(walletAccount?.address, 6, 6)}</div>
-                </div>
-                <div className="flex items-center justify-center">
-                  <Identicon value={walletAccount?.address} size={32} theme="polkadot" className="!cursor-pointer" />
-                </div>
-              </button>
-            )}
-          </>
-        ) : (
-          <Button
-            className="max-w-[171px]"
-            onClick={connectWallet}
-            variant={ButtonVariants.btnPrimaryGhostLg}
-            disabled={walletConnectLoading}
-          >
-            {walletConnectLoading ? <LottieSmall /> : t("button.connectWallet")}
-          </Button>
-        )}
-      </div>
+              <div className="flex items-center justify-center">
+                <Identicon value={walletAccount?.address} size={32} theme="polkadot" className="!cursor-pointer" />
+              </div>
+            </button>
+          )}
+        </>
+      ) : (
+        <Button
+          className="max-w-[171px]"
+          onClick={connectWallet}
+          variant={ButtonVariants.btnPrimaryGhostLg}
+          disabled={walletConnectLoading}
+        >
+          {walletConnectLoading ? <LottieSmall /> : t("button.connectWallet")}
+        </Button>
+      )}
 
       <SelectAccountModal
         open={selectAccountModalOpen}

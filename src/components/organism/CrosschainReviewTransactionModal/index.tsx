@@ -33,37 +33,15 @@ const CrosschainReviewTransactionModal: FC<CrosschainReviewTransactionModalProps
 }) => {
   const { state } = useAppContext();
 
-  const {
-    crosschainExactTokenAmount,
-    crosschainOriginChainFee,
-    crosschainDestinationChainFee,
-    messageQueueProcessedFee,
-  } = state;
+  const { crosschainExactTokenAmount, crosschainOriginChainFee, crosschainDestinationChainFee } = state;
 
-  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee))
-    .plus(
-      destinationChainName === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
-    .toString();
+  const destinationChainFee = new Decimal(Number(crosschainDestinationChainFee)).toString();
 
-  const originChainFee = new Decimal(Number(crosschainOriginChainFee))
-    .plus(destinationChainName === "Asset Hub" ? Number("0.000371525") : Number("0.0005298333"))
-    .plus(
-      destinationChainName === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
-    .toString();
+  const originChainFee = new Decimal(Number(crosschainOriginChainFee)).toString();
 
   const destinationBalanceAfter = new Decimal(Number(destinationBalance))
     .plus(Number(crosschainExactTokenAmount))
-    .minus(
-      destinationChainName === "Asset Hub"
-        ? Number(messageQueueProcessedFee.crossOut)
-        : Number(messageQueueProcessedFee.crossIn)
-    )
+    .minus(Number(destinationChainFee))
     .toNumber();
 
   return (

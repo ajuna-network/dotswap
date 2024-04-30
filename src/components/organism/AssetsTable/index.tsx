@@ -8,9 +8,9 @@ import Modal from "../../atom/Modal";
 import SwapTokens from "../SwapTokens";
 import {
   formatDecimalsFromToken,
-  getSpotPrice,
   formatNumberEnUs,
   getAssetTokenSpotPrice,
+  getSpotPrice,
 } from "../../../app/util/helper";
 import { AssetListToken } from "../../../app/types";
 import { ActionType } from "../../../app/types/enum";
@@ -35,7 +35,7 @@ const AssetsTable = () => {
   const updateSpotPrice = async (tokens: AssetListToken[]) => {
     const newTokens = await Promise.all(
       tokens.map(async (token: AssetListToken) => {
-        if (token.tokenId === "1107") {
+        if (token.tokenId !== "1984" && token.tokenId !== "1337") {
           // get price from pool instead of spot price
           if (!api || !tokenBalances) return token;
 

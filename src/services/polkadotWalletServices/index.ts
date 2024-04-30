@@ -18,6 +18,7 @@ import { defaults as addressDefaults } from "@polkadot/util-crypto/address/defau
 import { base64Encode } from "@polkadot/util-crypto";
 import { getSpecTypes } from "@polkadot/types-known";
 import { t } from "i18next";
+import { NotificationAction } from "../../store/notifications/interface.ts";
 
 export const setupPolkadotApi = async (
   rpcUrl: string,
@@ -28,7 +29,7 @@ export const setupPolkadotApi = async (
     const provider = stateProvider || new WsProvider(rpcUrl);
     await provider.isReady;
 
-    const api = stateApi || new ApiPromise({ provider });
+    const api = stateApi || new ApiPromise({ noInitWarn: true, provider: provider });
     await api.isReadyOrError;
 
     return { provider, api };
@@ -103,6 +104,8 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       frozen: balances?.frozen || "0",
     };
 
+    const existentialDepositRelay = relayApi.consts.balances.existentialDeposit;
+
     // Return data
     return {
       balanceAsset: balanceAsset,
@@ -110,6 +113,7 @@ export const getWalletTokensBalance = async (api: ApiPromise, relayApi: ApiPromi
       spotPrice: spotPrice,
       ss58Format,
       existentialDeposit: existentialDeposit.toHuman(),
+      existentialDepositRelay: existentialDepositRelay.toHuman(),
       tokenDecimals,
       tokenSymbol,
       assets: myAssetTokenData.filter((asset) => asset !== null),
@@ -168,7 +172,6 @@ export const setTokenBalanceUpdate = async (
   const tokenMetadata = api.registry.getChainProperties();
   const tokenDecimals = tokenMetadata?.tokenDecimals?.toHuman()?.toString() as string;
   const nativeTokenNewBalance = formatDecimalsFromToken(balance?.free.toString() || "0", tokenDecimals) || "0";
-  const existentialDeposit = api.consts.balances.existentialDeposit;
 
   const tokenAsset = await api.query.assets.account(assetId, walletAddress);
 
@@ -199,7 +202,6 @@ export const setTokenBalanceUpdate = async (
       free: nativeTokenNewBalance,
     },
     assets: assetsUpdated,
-    existentialDeposit: existentialDeposit.toHuman(),
   };
 };
 
@@ -259,7 +261,7 @@ export const setTokenBalanceAfterAssetsSwapUpdate = async (
   };
 };
 
-export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) => {
+export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction | NotificationAction>) => {
   LocalStorage.remove("wallet-connected");
   dispatch({ type: ActionType.SET_ACCOUNTS, payload: [] });
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: {} as WalletAccount });
@@ -269,6 +271,8 @@ export const handleDisconnect = (dispatch: Dispatch<WalletAction | PoolAction>) 
   dispatch({ type: ActionType.SET_OTHER_ASSETS, payload: [] });
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   dispatch({ type: ActionType.SET_NATIVE_TOKEN_SPOT_PRICE, payload: "0" });
+  dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
+  dispatch({ type: ActionType.RESET_NOTIFICATION_STATE });
   dispatch({ type: ActionType.SET_WALLET_BALANCE_USD, payload: 0 });
 };
 
@@ -286,7 +290,7 @@ const getChainMetadata = (api: ApiPromise) => {
 
 export const checkWalletMetadata = async (api: ApiPromise, account: WalletAccount): Promise<boolean> => {
   const wallet = getWalletBySource(account.wallet?.extensionName);
-  await wallet?.enable("DOTswap");
+  await wallet?.enable(t("seo.global.title"));
   const extension = wallet?.extension;
   if (extension) {
     const metadataCurrentArray = await wallet.extension.metadata.get();
@@ -336,7 +340,7 @@ export const connectWalletAndFetchBalance = async (
   dispatch({ type: ActionType.SET_ASSET_LOADING, payload: true });
   const wallet = getWalletBySource(account.wallet?.extensionName);
   if (!account.wallet?.signer) {
-    await wallet?.enable("DOTswap");
+    await wallet?.enable(t("seo.global.title"));
   }
   dispatch({ type: ActionType.SET_SELECTED_ACCOUNT, payload: account });
   LocalStorage.set("wallet-connected", account);
