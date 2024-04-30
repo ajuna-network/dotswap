@@ -366,19 +366,23 @@ export const getAssetTokenSpotPrice = async (
   tokenDecimals: string,
   tokenBalances: TokenBalanceData
 ) => {
-  if (!api || !Object.keys(api).length || !tokenBalances || !Object.keys(tokenBalances).length) return "0";
+  if (!api || !Object.keys(api).length || !tokenBalances || !Object.keys(tokenBalances).length) return "";
   if (tokenId === "") return tokenBalances.spotPrice;
-  const nativeTokenValue = formatInputTokenValue(tokenBalances.balanceAsset.free, tokenBalances.tokenDecimals);
+  const nativeTokenValue = formatInputTokenValue(
+    tokenBalances.balanceAsset.free && tokenBalances.balanceAsset.free !== "0" ? tokenBalances.balanceAsset.free : "1",
+    tokenBalances.tokenDecimals
+  );
   const assetToken = await getAssetTokenFromNativeToken(api, tokenId, nativeTokenValue);
 
   if (!assetToken) return "0";
 
   const formattedToken =
     Number(formatDecimalsFromToken(assetToken.toString().replace(/[, ]/g, ""), tokenDecimals)) || 0;
+
   if (formattedToken === 0) return "0";
 
-  const spotPrice = new Decimal(tokenBalances.spotPrice).times(
-    new Decimal(tokenBalances?.balanceAsset?.free).div(formattedToken)
+  const spotPrice = new Decimal(Number(tokenBalances.spotPrice)).times(
+    new Decimal(Number(tokenBalances?.balanceAsset?.free) || 1).div(formattedToken)
   );
 
   return spotPrice.toString();
