@@ -1,15 +1,57 @@
-# Dotswap.org
+# Dotswap.org Summer 2024 Testing 
 
-Dotswap.org is an AssetHub DEX UI developed by MVP Workshop and supported + hosted by Colorful Notion.
+Dotswap.org ([link](https://dotswap.org)) is a new Asset Hub DEX UI developed by MVP Workshop and supported + hosted by Colorful Notion.  
 
-Currently, the app is deployed on dotswap.org [here](https://dotswap.org).
+dotswap.org aims to be a full-fledged interface for users to manage Asset Hub-related assets (DOT, USDT, USDC, DED, PINK, to start), with key functionality of swapping assets using a new assetConversion pallet on Asset Hub, as well as basic gateway between Asset Hub and the Relay Chain (v1) and major parachains and Ethereum (v2). 
 
-## Testing
+## Earn up to $100 USDT for testing and providing feedback on Dotswap.org
 
-We invite everyone to test out dotswap.org as part of an alpha test in June.
+We are doing a round of *usability testing* in Summer, where everyday Polkadot community members can earn up to $100 for testing and providing feedback.
 
-Alpha Testers who either complete 3 swaps or supply a video indicating their inability to do will receive 5 DOT, provided they had a balance at the end of March. 
+### Incentive 1 : 10 USDT for doing your first 3 successful operations on Dotswap!
 
-## License
+We invite up to 200 testers to test out dotswap.org as part of an alpha test this summer!
 
-See [LICENSE](LICENSE)
+(a) do 3 operations (swap, pool additions, cross chain transfers) on dotswap.org _from the same address_ 
+
+(b) paste 3 extrinsic IDs on Polkassembly or Subsquare and request 10 USDT (sent to the same address on Asset Hub) along with any feedback you like in a comment
+
+Example:
+```
+I have successfully used Dotswap.org to conduct 3 Swaps:
+(1) https://assethub-polkadot.subscan.io/extrinsic/6392940-2
+(2) https://assethub-polkadot.subscan.io/extrinsic/6453445-2
+(3) https://assethub-polkadot.subscan.io/extrinsic/6453451-2
+Kindly send 10 USDT to 13diZnYMiakbUqdYJhgr4QkAnpFd4LVA8aAG3wUkrpkDAbw5 on Polkadot Asset Hub!
+
+Feedback: Looks good, I'd like some LP incentives and see lower swap costs.  Possible?
+```
+
+Requirements: 
+* your address _existed_ on Polkadot Asset Hub between April 1, 2024 and May 31, 2024 and you execute (a)+(b)
+* you follow [Polkadot Rules of Conduct](https://forum.polkadot.network/t/welcome-to-the-polkadot-forum/7#forum-code-of-conduct-4).
+
+That's it!
+
+### Incentive 2: 90 USDT for relaying your feedback on Dotswap v2!
+
+We invite up to 20 testers to provide dotswap.org v2 usability feedback this month.
+
+If you have completed Incentive 1 and would like to participate in usability testing:
+
+(a) Schedule a Dotswap usability testing session here at this [link](https://calendly.com/dragana-koprivica/dotswap-v2-usability-testing?month=2024-06)
+
+(b) Preview the following [Dotswap v2 video](https://drive.google.com/file/d/1gTOqJ60jmij-v5BibbYBzp0d1DmhlvYg/view)
+
+(c) After your testing session is over, write a follow up comment to your Incentive 1 requesting 90 USDT.  That's it!
+
+Requirements:
+* You must have completed Incentive 1 or be reporting a usability bug and completed (a)+(b)+(c) above. 
+* You need to be an English speaker and provide _actionable feedback_ on v2.
+* In case there are more than 20 testers, the first 20 testers providing actionable feedback get the 90 USDT.  
+* You follow [Polkadot Rules of Conduct](https://forum.polkadot.network/t/welcome-to-the-polkadot-forum/7#forum-code-of-conduct-4)
+
+## Thank you!
+
+Thank you dotswap.org users for your feedback and participation -- Lets make Polkadot even more awesome together!
+
