@@ -41,12 +41,10 @@ If you have completed Incentive 1 and would like to participate in usability tes
 
 (a) Schedule a Dotswap usability testing session here at this [link](https://calendly.com/dragana-koprivica/dotswap-v2-usability-testing?month=2024-06)
 
-(b) Preview the following [Dotswap v2 video](https://drive.google.com/file/d/1gTOqJ60jmij-v5BibbYBzp0d1DmhlvYg/view)
-
-(c) After your testing session is over, write a follow up comment to your Incentive 1 requesting 90 USDT.  That's it!
+(b) After your testing session is over, write a follow up comment to your Incentive 1 requesting 90 USDT.  That's it!
 
 Requirements:
-* You must have completed Incentive 1 or be reporting a usability bug and completed (a)+(b)+(c) above. 
+* You must have completed Incentive 1 or be reporting a usability bug and completed (a)+(b) above. 
 * You need to be an English speaker and provide _actionable feedback_ on v2.
 * In case there are more than 20 testers, the first 20 testers providing actionable feedback get the 90 USDT.  
 * You follow [Polkadot Rules of Conduct](https://forum.polkadot.network/t/welcome-to-the-polkadot-forum/7#forum-code-of-conduct-4)
