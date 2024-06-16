@@ -16,7 +16,8 @@ We invite up to 200 testers to test out dotswap.org as part of an alpha test thi
 
 (b) paste 3 extrinsic IDs on Polkassembly or Subsquare and request 10 USDT (sent to the same address on Asset Hub) along with any feedback you like in a comment
 
-Example:
+
+Example: 
 ```
 I have successfully used Dotswap.org to conduct 3 Swaps:
 (1) https://assethub-polkadot.subscan.io/extrinsic/6392940-2
@@ -27,9 +28,12 @@ Kindly send 10 USDT to 13diZnYMiakbUqdYJhgr4QkAnpFd4LVA8aAG3wUkrpkDAbw5 on Polka
 Feedback: Looks good, I'd like some LP incentives and see lower swap costs.  Possible?
 ```
 
+See [this post](https://polkadot.polkassembly.io/post/2361) for a working post.
+
 Requirements: 
 * your address _existed_ on Polkadot Asset Hub between April 1, 2024 and May 31, 2024 and you execute (a)+(b)
 * you follow [Polkadot Rules of Conduct](https://forum.polkadot.network/t/welcome-to-the-polkadot-forum/7#forum-code-of-conduct-4).
+
 
 That's it!
 
