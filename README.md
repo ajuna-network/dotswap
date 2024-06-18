@@ -23,13 +23,13 @@ Requirements:
 
 That's it!
 
-### Incentive 2: 90 USDT for relaying your feedback on Dotswap v2!
+### Incentive 2: 90 USDT for relaying your feedback on Dotswap v2! 
 
-We invite up to 20 testers to provide dotswap.org v2 usability feedback this month.
+We invite up to 20 testers to provide dotswap.org v2 usability feedback in June+July.
 
 If you have completed Incentive 1 and would like to participate in usability testing:
 
-(a) Schedule a Dotswap usability testing session here at this [link](https://calendly.com/dragana-koprivica/dotswap-v2-usability-testing?month=2024-06)
+(a) Schedule a Dotswap usability testing session here at this [link](https://calendly.com/dragana-koprivica/dotswap-v2-usability-testing?month=2024-06).  Note that the June batch is full, but we will have additional testing in July and August.
 
 (b) After your testing session is over, write a follow up comment to your Incentive 1 requesting 90 USDT.  That's it!
 
